@@ -57,6 +57,9 @@ function App() {
         const allLandMedia = await landNFT.getAllLandsMedia();
         console.log('allLandMedia', allLandMedia);
 
+        const pageNFT = await landNFT.userLandByIndex(0, 12);
+        console.log('pageNFT', pageNFT);
+
         // const firstNFT = await landNFT.userLandByIndex(0);
         // console.log('firstNFT', firstNFT);
 

@@ -53,6 +53,14 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
         return "https://ipfs.io/ipfs/";
     }
 
+    function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721, ERC721Enumerable) {
+        super._beforeTokenTransfer(_from, _to, _tokenId);
+    }
+
+    function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(_tokenId);
+    }
+
     // small=0.01, medium=5, large=9
     function landTypeByPrice() internal view returns (LandType){
         if (msg.value == 0.01 ether) {
@@ -76,8 +84,15 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
         revert("Wrong land type");
     }
 
-    function getAllLandsMedia() public view returns (string[] memory){
-        return (landsMedia);
+    function landZombiePerDay(LandType _landType) internal pure returns (uint){
+        if (_landType == LandType.Small) {
+            return 1;
+        } else if (_landType == LandType.Medium) {
+            return 4;
+        } else if (_landType == LandType.Large) {
+            return 8;
+        }
+        revert("Wrong land type");
     }
 
     function checkLimits(LandType _landType) internal view {
@@ -101,6 +116,12 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
         }
     }
 
+    // ---------------- Public methods ---------------
+
+    function getAllLandsMedia() public view returns (string[] memory){
+        return (landsMedia);
+    }
+
     function safeMint() public payable returns (uint) {
         LandType _landType = landTypeByPrice();
 
@@ -119,17 +140,17 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
         return _tokenId;
     }
 
-    function userLandByIndex(uint index) public view returns (Land memory) {
-        uint landId = super.tokenOfOwnerByIndex(msg.sender, index);
-        return lands[landId];
-    }
+    function userLandByIndex(uint startIndex, uint8 count) public view returns (Land[] memory) {
+        Land[] memory _resultLands = new Land[](count);
+        uint userBalance = super.balanceOf(msg.sender);
 
-    function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(_from, _to, _tokenId);
-    }
-
-    function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(_tokenId);
+        for (uint i = startIndex; i < count; i++) {
+            if (userBalance > i) {
+                uint landId = super.tokenOfOwnerByIndex(msg.sender, i);
+                _resultLands[i] = lands[landId];
+            }
+        }
+        return _resultLands;
     }
 
     function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
