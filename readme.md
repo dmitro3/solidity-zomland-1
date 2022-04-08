@@ -22,7 +22,13 @@ npx hardhat test
 ```
 npx hardhat console --network localhost
 
-const MainContract = await ethers.getContractAt("Main", "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853")
-await MainContract.land_media_hash(0)
+const MainContract = await ethers.getContractAt("Main", "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1")
+
+const LandContract = await ethers.getContractAt("LandNFT", "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707")
+await LandContract.balanceOf("0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266")
+await LandContract.landTypeCount(0)
+
+await LandContract.safeMint({value: "10000000000000000"})
+await LandContract.safeMint({value: "5000000000000000000"})
 
 ```

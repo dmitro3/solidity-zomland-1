@@ -8,10 +8,18 @@ async function main() {
     // deploy contracts here:
     const Main = await ethers.getContractFactory("Main");
     const main = await Main.deploy();
+    const LandNFT = await ethers.getContractFactory("LandNFT");
+    const landNFT = await LandNFT.deploy(main.address);
+
+    const MainContract = await ethers.getContractAt("Main", main.address);
+    await MainContract.setContractAddresses(landNFT.address);
+
     console.log("Main address", main.address);
+    console.log("LandNFT address", landNFT.address);
 
     // For each contract, pass the deployed contract and name to this function to save a copy of the contract ABI and address to the front end.
     saveFrontendFiles(main, "Main");
+    saveFrontendFiles(landNFT, "LandNFT");
 }
 
 function saveFrontendFiles(contract, name) {

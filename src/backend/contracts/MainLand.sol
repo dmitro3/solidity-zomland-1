@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
@@ -17,15 +17,15 @@ contract MainLand {
         uint discover_events;
     }
 
-    function land_media_hash(LandType land_type) internal pure returns (string memory){
-        string memory result = "bafkreihvcoraixdyx6jbrlmlfw45psrjlkwemp7ie3wckye7frnyhbdnoi";
-        if (land_type == LandType.Medium) {
-            result = "bafkreiepzrmwcequ5u6b5dx2jdrr2vq5ujehibu4v32zdxrg4jdgts2ozq";
-        } else if (land_type == LandType.Large) {
-            result = "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju";
-        }
-        return result;
-    }
+//    function land_media_hash(LandType land_type) internal pure returns (string memory){
+//        string memory result = "bafkreihvcoraixdyx6jbrlmlfw45psrjlkwemp7ie3wckye7frnyhbdnoi";
+//        if (land_type == LandType.Medium) {
+//            result = "bafkreiepzrmwcequ5u6b5dx2jdrr2vq5ujehibu4v32zdxrg4jdgts2ozq";
+//        } else if (land_type == LandType.Large) {
+//            result = "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju";
+//        }
+//        return result;
+//    }
 
     function land_limits(LandType land_type) internal pure returns (uint){
         uint result = 59999;
@@ -57,15 +57,6 @@ contract MainLand {
         return result;
     }
 
-    // Small=0.01, Medium=5, Large=9
-    function land_prices(LandType land_type) internal pure returns (uint){
-        uint result = 1e16;
-        if (land_type == LandType.Medium) {
-            result = 5e18;
-        } else if (land_type == LandType.Large) {
-            result = 9e18;
-        }
-        return result;
-    }
+
 
 }
