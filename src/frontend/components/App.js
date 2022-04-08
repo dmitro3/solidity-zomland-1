@@ -1,8 +1,6 @@
 import {BrowserRouter,} from "react-router-dom";
-import MarketAbi from '../contractsData/Market.json'
-import MarketAddress from '../contractsData/Market-address.json'
-import NFTAbi from '../contractsData/NFT.json'
-import NFTAddress from '../contractsData/NFT-address.json'
+import LandNFTAbi from '../contractsData/LandNFT.json'
+import LandNFTAddress from '../contractsData/LandNFT-address.json'
 import {useState, useEffect} from 'react'
 import {ethers} from "ethers"
 import {Spinner} from 'react-bootstrap'
@@ -13,19 +11,22 @@ import {Navbar, Nav, Button, Container} from 'react-bootstrap'
 
 import './App.css';
 
+let provider;
+let signer;
+let landNFT;
+
 function App() {
     const [loading, setLoading] = useState(true)
     const [account, setAccount] = useState(null)
-    const [nft, setNFT] = useState({})
-    const [market, setMarket] = useState({})
+    const [ListNFT, setListNFT] = useState([])
 
     // MetaMask Login/Connect
     const web3Handler = async () => {
         const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
         setAccount(accounts[0]);
 
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = provider.getSigner();
+        provider = new ethers.providers.Web3Provider(window.ethereum)
+        signer = provider.getSigner();
 
         console.log(await provider.getNetwork());
 
@@ -39,16 +40,41 @@ function App() {
             setAccount(accounts[0])
             await web3Handler()
         })
-        loadContracts(signer)
+
+        loadContracts();
     }
 
-    const loadContracts = async (signer) => {
-        // Get deployed copies of contracts
-        const market = new ethers.Contract(MarketAddress.address, MarketAbi.abi, signer)
-        setMarket(market)
-        const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer)
-        setNFT(nft)
+    const loadContracts = async () => {
+        landNFT = new ethers.Contract(LandNFTAddress.address, LandNFTAbi.abi, signer);
+
+        // setNFT(nft)
+        const totalCount = await landNFT.totalSupply();
+        console.log('totalCount', parseInt(totalCount));
+
+        const userTotalCount = await landNFT.balanceOf(signer.getAddress());
+        console.log('userTotalCount', parseInt(userTotalCount));
+
+        const allLandMedia = await landNFT.getAllLandsMedia();
+        console.log('allLandMedia', allLandMedia);
+
+        // const firstNFT = await landNFT.userLandByIndex(0);
+        // console.log('firstNFT', firstNFT);
+
         setLoading(false)
+    }
+
+    const handleMint = (deposit) => {
+        // let res = await landNFT.safeMint({
+        //     value: ethers.utils.parseEther(deposit)
+        // });
+        // console.log('res', res);
+        landNFT.safeMint({
+            value: ethers.utils.parseEther(deposit)
+        }).then(result => {
+            console.log(`Result`, result);
+        }).catch(err => {
+            console.log(`ERR:`, err);
+        });
     }
 
     useEffect(() => {
@@ -59,39 +85,15 @@ function App() {
         <BrowserRouter>
             <div className="App">
                 <>
-                    <Navbar expand="lg" bg="secondary" variant="dark">
-                        <Container>
-                            <Navbar.Brand href="http://www.dappuniversity.com/bootcamp">
-                                <img src={market} width="40" height="40" className="" alt=""/>
-                                &nbsp; DApp NFT Marketplace
-                            </Navbar.Brand>
-                            <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
-                            <Navbar.Collapse id="responsive-navbar-nav">
-                                <Nav className="me-auto">
-                                    <Nav.Link as={Link} to="/">Home</Nav.Link>
-                                    <Nav.Link as={Link} to="/create">Create</Nav.Link>
-                                    <Nav.Link as={Link} to="/my-listed-items">My Listed Items</Nav.Link>
-                                    <Nav.Link as={Link} to="/my-purchases">My Purchases</Nav.Link>
-                                </Nav>
-                                <Nav>
-                                    {account ? (
-                                        <Nav.Link
-                                            href={`https://etherscan.io/address/${account}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="button nav-button btn-sm mx-4">
-                                            <Button variant="outline-light">
-                                                {account.slice(0, 5) + '...' + account.slice(38, 42)}
-                                            </Button>
-
-                                        </Nav.Link>
-                                    ) : (
-                                        <Button onClick={web3Handler} variant="outline-light">Connect Wallet</Button>
-                                    )}
-                                </Nav>
-                            </Navbar.Collapse>
-                        </Container>
-                    </Navbar>
+                    <div>
+                        {account ? (
+                            <Nav.Link className="button nav-button btn-sm mx-4">
+                                {account.slice(0, 5) + '...' + account.slice(38, 42)}
+                            </Nav.Link>
+                        ) : (
+                            <Button onClick={web3Handler} variant="outline-light">LogIn</Button>
+                        )}
+                    </div>
                 </>
                 <div>
                     {loading ? (
@@ -102,6 +104,10 @@ function App() {
                     ) : (
                         <div>
                             ...
+
+                            <button onClick={() => handleMint("0.01")}>Mint Small</button>
+                            <button onClick={() => handleMint("5")}>Mint Medium</button>
+                            <button onClick={() => handleMint("9")}>Mint Large</button>
                         </div>
                     )}
                 </div>

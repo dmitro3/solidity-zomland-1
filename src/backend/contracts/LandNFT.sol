@@ -15,28 +15,42 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
-    mapping(LandType => uint) public landTypeCount;
-    mapping(address => bool) accountsWithSmallLand;
-    mapping(uint => LandType) landType;
-
-    address contractMain;
     enum LandType {
         Small,
         Medium,
         Large
     }
 
-    modifier onlyMainContract() {
-        require(contractMain == _msgSender(), "Caller is not main contract");
-        _;
+    struct Land {
+        uint tokenId;
+        LandType landType;
+        uint lastZombieClaim;
+        uint salePrice;
+        string nftType;
+        uint discoverEvents;
     }
+
+    address contractMain;
+    string[] landsMedia;
+    mapping(LandType => uint) public landTypeCount;
+    mapping(address => bool) accountsWithSmallLand;
+    mapping(uint => Land) lands;
+
+    //    modifier onlyMainContract() {
+    //        require(contractMain == _msgSender(), "Caller is not main contract");
+    //        _;
+    //    }
 
     constructor(address _contractMain) ERC721("ZomLand", "ZMLL") {
         contractMain = _contractMain;
+
+        landsMedia.push("bafkreihvcoraixdyx6jbrlmlfw45psrjlkwemp7ie3wckye7frnyhbdnoi");
+        landsMedia.push("bafkreiepzrmwcequ5u6b5dx2jdrr2vq5ujehibu4v32zdxrg4jdgts2ozq");
+        landsMedia.push("bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju");
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://";
+        return "https://ipfs.io/ipfs/";
     }
 
     // small=0.01, medium=5, large=9
@@ -51,18 +65,19 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
         revert("Wrong deposit amount");
     }
 
-    function getLandURI(LandType _landType) internal pure returns (string memory){
-        string memory _result;
+    function getLandURI(LandType _landType) internal view returns (string memory){
         if (_landType == LandType.Small) {
-            _result = "bafkreihvcoraixdyx6jbrlmlfw45psrjlkwemp7ie3wckye7frnyhbdnoi";
+            return landsMedia[0];
         } else if (_landType == LandType.Medium) {
-            _result = "bafkreiepzrmwcequ5u6b5dx2jdrr2vq5ujehibu4v32zdxrg4jdgts2ozq";
+            return landsMedia[1];
         } else if (_landType == LandType.Large) {
-            _result = "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju";
-        } else {
-            revert("Wrong land type");
+            return landsMedia[2];
         }
-        return _result;
+        revert("Wrong land type");
+    }
+
+    function getAllLandsMedia() public view returns (string[] memory){
+        return (landsMedia);
     }
 
     function checkLimits(LandType _landType) internal view {
@@ -99,12 +114,15 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
 
         landTypeCount[_landType]++;
         accountsWithSmallLand[msg.sender] = true;
-        landType[_tokenId] = _landType;
+        lands[_tokenId] = Land(_tokenId, _landType, 0, 0, "land", 0);
 
         return _tokenId;
     }
 
-    // The following functions are overrides required by Solidity.
+    function userLandByIndex(uint index) public view returns (Land memory) {
+        uint landId = super.tokenOfOwnerByIndex(msg.sender, index);
+        return lands[landId];
+    }
 
     function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721, ERC721Enumerable) {
         super._beforeTokenTransfer(_from, _to, _tokenId);
