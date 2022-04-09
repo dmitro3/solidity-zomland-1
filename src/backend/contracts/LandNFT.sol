@@ -140,14 +140,14 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
         return _tokenId;
     }
 
-    function userLandByIndex(uint startIndex, uint8 count) public view returns (Land[] memory) {
-        Land[] memory _resultLands = new Land[](count);
-        uint userBalance = super.balanceOf(msg.sender);
+    function userLands(uint _startIndex, uint8 _count) public view returns (Land[] memory) {
+        Land[] memory _resultLands = new Land[](_count);
+        uint _userBalance = super.balanceOf(msg.sender);
 
-        for (uint i = startIndex; i < count; i++) {
-            if (userBalance > i) {
-                uint landId = super.tokenOfOwnerByIndex(msg.sender, i);
-                _resultLands[i] = lands[landId];
+        for (uint _i = _startIndex; _i < _count; _i++) {
+            if (_userBalance > _i) {
+                uint _landId = super.tokenOfOwnerByIndex(msg.sender, _i);
+                _resultLands[_i] = lands[_landId];
             }
         }
         return _resultLands;

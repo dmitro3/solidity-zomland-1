@@ -1,10 +1,19 @@
-import { render } from "react-dom";
-import 'bootstrap/dist/css/bootstrap.css'
-import App from './frontend/components/App';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from './frontend/App';
 import * as serviceWorker from './serviceWorker';
 
-const rootElement = document.getElementById("root");
-render( <App />, rootElement);
+if (process.env.NODE_ENV !== "production") {
+    const parcelSocket = new WebSocket("ws://localhost:1234/");
+    parcelSocket.onmessage = () => {
+        window.location.reload();
+    };
+}
+
+ReactDOM.render(
+    <App/>,
+    document.querySelector('#root')
+)
 
 
 // If you want your app to work offline and load faster, you can change

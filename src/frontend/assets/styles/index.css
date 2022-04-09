@@ -1,0 +1,87 @@
+@import url("https://fonts.googleapis.com/css2?family=Exo:wght@200;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Metal+Mania:wght@400;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-size: cover;
+    background-color: #090029;
+    line-height: 1.35;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    visibility: visible;
+    font-family: "Exo", sans-serif;
+    letter-spacing: 0.02em;
+    @apply text-indigo-100;
+}
+
+.zombie-font {
+    font-family: "Metal Mania", sans-serif;
+}
+
+.landing-bg {
+    background: url("../images/body-bg.webp") repeat-y top/cover;
+}
+
+.top-block {
+    background: url("../images/hero-bg1.webp") no-repeat top/contain;
+}
+
+.title-shadow {
+    text-shadow: 3px 3px 0 #893ebb;
+}
+
+.active {
+    @apply border-solid border-2 border-purple-500 text-purple-500;
+}
+
+.landing-bg .active {
+    @apply bg-transparent;
+}
+
+/* Pagination */
+.page-item,
+.page-item.active {
+    @apply inline-block bg-transparent mr-2 font-semibold;
+}
+
+.page-item .page-link {
+    @apply inline-block w-9 h-9 pt-2 rounded-full;
+}
+
+.page-item.active .page-link {
+    @apply bg-[#065e88];
+}
+
+.timeline-body {
+    width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.mint-success {
+    background: #34336d;
+    cursor: pointer;
+}
+
+.mint-success:hover {
+    background-color: #373577;
+}
+
+#landing a,
+a.link {
+    color: orange;
+}
+
+#landing a:hover,
+a.link:hover {
+    border-bottom-color: orange;
+    border-bottom-width: 2px;
+    border-bottom-style: dotted;
+}
