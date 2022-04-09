@@ -3,9 +3,9 @@ import {
   NavLink,
   ScrollLink,
 } from "../../assets/styles/common.style";
-import { animateScroll } from "react-scroll";
+import {animateScroll} from "react-scroll";
 
-export const NavLinks = ({ currentUser }) => {
+export const NavLinks = ({currentUser}) => {
   const toggleHome = () => {
     animateScroll.scrollToTop();
   };
@@ -20,36 +20,36 @@ export const NavLinks = ({ currentUser }) => {
   };
 
   return (
-    <>
-      {currentUser ? (
-        <>
-          <NavLink to="/lands">Lands</NavLink>
-          <NavLink to="/zombies">Zombies</NavLink>
-          <NavLink to="/collections">Collections</NavLink>
-          <NavLink to="/monsters">Monsters</NavLink>
-          <NavLink to="/market">Market</NavLink>
-          <NavLink to="/token">Staking</NavLink>
-          <NavLink to="/faq">FAQ</NavLink>
-        </>
-      ) : (
-        <>
-          <ScrollLink to="/" onClick={toggleHome}>
-            Home
-          </ScrollLink>
-          <ScrollLink to="how_to_play" {...scrollProps}>
-            How to play
-          </ScrollLink>
-          <ScrollLink to="tokenomic" {...scrollProps}>
-            Tokenomic
-          </ScrollLink>
-          <ScrollLink to="roadmap" {...scrollProps}>
-            Roadmap
-          </ScrollLink>
-          <ScrollLink to="contact_us" {...scrollProps}>
-            Contact Us
-          </ScrollLink>
-        </>
-      )}
-    </>
+      <>
+        {currentUser.accountId ? (
+            <>
+              <NavLink to="/lands">Lands</NavLink>
+              <NavLink to="/zombies">Zombies</NavLink>
+              <NavLink to="/collections">Collections</NavLink>
+              <NavLink to="/monsters">Monsters</NavLink>
+              <NavLink to="/market">Market</NavLink>
+              <NavLink to="/token">Staking</NavLink>
+              <NavLink to="/faq">FAQ</NavLink>
+            </>
+        ) : (
+            <>
+              <ScrollLink to="/" onClick={toggleHome}>
+                Home
+              </ScrollLink>
+              <ScrollLink to="how_to_play" {...scrollProps}>
+                How to play
+              </ScrollLink>
+              <ScrollLink to="tokenomic" {...scrollProps}>
+                Tokenomic
+              </ScrollLink>
+              <ScrollLink to="roadmap" {...scrollProps}>
+                Roadmap
+              </ScrollLink>
+              <ScrollLink to="contact_us" {...scrollProps}>
+                Contact Us
+              </ScrollLink>
+            </>
+        )}
+      </>
   );
 };
