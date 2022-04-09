@@ -21,7 +21,7 @@ export default function App() {
   const [currentUser, setCurrentUser] = React.useState({});
   const [contract, setContract] = React.useState(false);
   const [ftContract, setFtContract] = React.useState(false);
-  const [landContract, setLandFtContract] = React.useState(false);
+  const [landContract, setLandContract] = React.useState(false);
   const [zombieContract, setZombieContract] = React.useState(false);
   const [isReady, setIsReady] = React.useState(false);
   const [sellList, setSellList] = React.useState({
@@ -37,6 +37,8 @@ export default function App() {
         accountId: account,
         tokenBalance: 0
       });
+      setLandContract(landContract);
+
       console.log(account, signer, landContract);
 
       window.ethereum.on('chainChanged', (chainId) => {
@@ -130,6 +132,7 @@ export default function App() {
                       <Lands
                           currentUser={currentUser}
                           contract={contract}
+                          landContract={landContract}
                           sellList={sellList}
                           setSellList={setSellList}
                       />
