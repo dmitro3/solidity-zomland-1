@@ -8,8 +8,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-    error LandsLimitError(string message, uint limit);
-    error LandsSmallLimitError(string message);
+error LandsLimitError(string message, uint limit);
+error LandsSmallLimitError(string message);
 
 contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
     using Counters for Counters.Counter;
