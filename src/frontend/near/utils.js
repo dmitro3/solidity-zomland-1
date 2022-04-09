@@ -1,16 +1,16 @@
 import Big from "big.js";
 
 export const defaultGas = Big(60)
-  .times(10 ** 12)
-  .toFixed();
+    .times(10 ** 12)
+    .toFixed();
 
 export const getMedia = (media) =>
-  `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
+    `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
 
 export const convertFromYocto = (amount, digits = 1) => {
   return Big(amount)
-    .div(10 ** 24)
-    .toFixed(digits);
+      .div(10 ** 18)
+      .toFixed(digits);
 };
 
 export const convertFromNanoSeconds = (timestamp) => {
@@ -19,13 +19,13 @@ export const convertFromNanoSeconds = (timestamp) => {
 
 export const convertToYocto = (amount) => {
   return Big(amount)
-    .times(10 ** 24)
-    .toFixed();
+      .times(10 ** 18)
+      .toFixed();
 };
 export const convertToTera = (amount) => {
   return Big(amount)
-    .times(10 ** 12)
-    .toFixed();
+      .times(10 ** 12)
+      .toFixed();
 };
 
 export const formatId = (token_id) => {

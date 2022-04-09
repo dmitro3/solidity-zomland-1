@@ -148,7 +148,7 @@ export const LandContent = {
     <a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
   no_lands: "You don't have Lands",
   no_lands_details:
-    "But you can mint Small Land for free (only 0.01 of storage cost) or buy Medium and Large lands",
+    "But you can mint Small Land for free or buy Medium and Large lands",
 };
 
 export const ZombieContent = {

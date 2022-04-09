@@ -21,41 +21,64 @@ import {Popup} from "../../components/Popup";
 import {MintLandSection} from "./MintLandSection";
 import {Card} from "../../components/card/Card";
 
+const landTypeMap = {0: "Small", 1: "Medium", 2: "Large"};
+
 export const Lands = ({currentUser, contract, landContract, sellList, setSellList}) => {
-  const [allLands, setAllLands] = useState({});
+  const [allLands, setAllLands] = useState([]);
   const [userLands, setUserLands] = useState([]);
+  const [userTotalLands, setUserTotalLands] = useState();
   const [mintPopupVisible, setMintPopupVisible] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    const userTotalLandsPromise = new Promise(async (resolve, reject) => {
+      try {
+        const userTotalCount = await landContract.balanceOf(currentUser.accountId);
+        resolve(parseInt(userTotalCount));
+      } catch (e) {
+        reject(e);
+      }
+    });
+
     const userLandsPromise = new Promise(async (resolve, reject) => {
-      // const userLands = await contract
-      //   .user_lands({
-      //     account_id: currentUser.accountId,
-      //   })
-      //   .catch((err) => reject(err));
-      // resolve(userLands);
-      const userTotalCount = await landContract.balanceOf(currentUser.accountId);
-      console.log(parseInt(userTotalCount));
+      try {
+        const landsObj = await landContract.userLands(0, 12);
+        const lands = landsObj.filter(land => land.nft_type);
+        resolve(lands || []);
+      } catch (e) {
+        reject(e);
+      }
     });
 
     const allLandsPromise = new Promise(async (resolve, reject) => {
-      // const allLands = await contract
-      //   .total_lands_count()
-      //   .catch((err) => reject(err));
-      // resolve(allLands);
+      try {
+        const allLands = {};
+        const allLandsObj = await landContract.getAllLands();
+
+        allLandsObj.map((land, index) => {
+          allLands[landTypeMap[index]] = {
+            land_type: landTypeMap[index],
+            total_count: parseInt(land.limitCount),
+            price: parseInt(land.price),
+            zombie_per_day: parseInt(land.zombiesPerDay),
+            media: land.media,
+          };
+        });
+        resolve(allLands);
+      } catch (e) {
+        reject(e);
+      }
     });
 
-    Promise.all([userLandsPromise, allLandsPromise]).then((result) => {
-      // const lands = result[0].map((ln) => {
-      //   if (ln.sale_price) {
-      //     ln.sale_price = convertFromYocto(ln.sale_price);
-      //   }
-      //   return ln;
-      // });
-      // setUserLands(lands);
-      // setAllLands(result[1]);
-      // setIsReady(true);
+    Promise.all([
+      userLandsPromise,
+      allLandsPromise,
+      userTotalLandsPromise
+    ]).then((result) => {
+      setUserLands(result[0]);
+      setAllLands(result[1]);
+      setUserTotalLands(result[2]);
+      setIsReady(true);
     });
   }, []);
 
@@ -72,14 +95,13 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
   };
 
   const appendToSellList = (land) => {
-    if (
-        !sellList["lands"].filter((exist) => exist.token_id === land.token_id)
-            .length
-    ) {
-      sellList["lands"].push(land);
-      sellList["zombies"] = sellList["monsters"] = [];
-      setSellList({...sellList});
-    }
+    // if (
+    //     !sellList["lands"].filter((exist) => exist.token_id === land.token_id).length
+    // ) {
+    //   sellList["lands"].push(land);
+    //   sellList["zombies"] = sellList["monsters"] = [];
+    //   setSellList({...sellList});
+    // }
   };
 
   const showMintPopup = async () => {
@@ -97,15 +119,20 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
                 description={LandContent.description}
             />
 
-            {!userLands.length || (
-                <Button
-                    title="Buy More Lands"
-                    size="lg"
-                    animated
-                    noIcon
-                    onClick={showMintPopup}
-                />
+            {isReady && (
+                <>
+                  {!userLands.length || (
+                      <Button
+                          title="Buy More Lands"
+                          size="lg"
+                          animated
+                          noIcon
+                          onClick={showMintPopup}
+                      />
+                  )}
+                </>
             )}
+
 
             <ListWrapper>
               {isReady ? (
@@ -139,7 +166,7 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
                           </div>
                           <MintLandSection
                               currentUser={currentUser}
-                              contract={contract}
+                              landContract={landContract}
                               allLands={allLands}
                               userLands={userLands}
                           />
@@ -161,7 +188,7 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
             <div className="mt-2">
               <MintLandSection
                   currentUser={currentUser}
-                  contract={contract}
+                  landContract={landContract}
                   allLands={allLands}
                   userLands={userLands}
               />
