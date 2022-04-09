@@ -3,6 +3,7 @@ import {convertFromYocto, convertToYocto, defaultGas} from "../../near/utils";
 import {Row} from "../../assets/styles/common.style";
 import {Button} from "../../components/basic/Button";
 import {Card} from "../../components/card/Card";
+import {ethers} from 'ethers';
 
 export const MintLandSection = ({
   currentUser,
@@ -34,15 +35,13 @@ export const MintLandSection = ({
   };
 
   const handleMint = async (depositAmount) => {
-    console.log(landContract);
-    // const deposit = convertToYocto(depositAmount);
-    // await contract.mint_land_nft(
-    //   {
-    //     account_id: currentUser.accountId,
-    //   },
-    //   defaultGas,
-    //   deposit
-    // );
+    landContract.safeMint({
+      value: ethers.utils.parseEther(depositAmount)
+    }).then(result => {
+      console.log(`Result`, result);
+    }).catch(err => {
+      console.log(`ERR:`, err);
+    });
   };
 
   return (
@@ -50,10 +49,10 @@ export const MintLandSection = ({
         {allLands && (
             <>
               {!isSmallLand() && (
-                  <MintCard type="Small" handleMint={() => handleMint(0)}/>
+                  <MintCard type="Small" handleMint={() => handleMint("0")}/>
               )}
-              <MintCard type="Medium" handleMint={() => handleMint(5)}/>
-              <MintCard type="Large" handleMint={() => handleMint(9)}/>
+              <MintCard type="Medium" handleMint={() => handleMint("5")}/>
+              <MintCard type="Large" handleMint={() => handleMint("9")}/>
             </>
         )}
       </Row>

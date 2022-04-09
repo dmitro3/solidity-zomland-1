@@ -28,6 +28,7 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
     uint salePrice;
     string nftType;
     uint discoverEvents;
+    address ownerId;
   }
 
   struct LandTypeData {
@@ -139,7 +140,7 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
 
     landTypeCount[_landType]++;
     accountsWithSmallLand[msg.sender] = true;
-    lands[_tokenId] = Land(_tokenId, _landType, 0, 0, "land", 0);
+    lands[_tokenId] = Land(_tokenId, _landType, 0, 0, "land", 0, msg.sender);
 
     return _tokenId;
   }

@@ -24,13 +24,57 @@ import {Card} from "../../components/card/Card";
 const landTypeMap = {0: "Small", 1: "Medium", 2: "Large"};
 
 export const Lands = ({currentUser, contract, landContract, sellList, setSellList}) => {
-  const [allLands, setAllLands] = useState([]);
+  const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
   const [userTotalLands, setUserTotalLands] = useState();
   const [mintPopupVisible, setMintPopupVisible] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
+  const loadAllLands = async () => {
+    const allLands = {};
+    const allLandsObj = await landContract.getAllLands();
+
+    allLandsObj.map((land, index) => {
+      allLands[landTypeMap[index]] = {
+        land_type: landTypeMap[index],
+        total_count: parseInt(land.limitCount),
+        price: parseInt(land.price),
+        zombie_per_day: parseInt(land.zombiesPerDay),
+        media: land.media,
+      };
+    });
+
+    setAllLands(allLands);
+  }
+
   useEffect(() => {
+    loadAllLands();
+  }, []);
+
+
+  useEffect(() => {
+    const userLandsPromise = new Promise(async (resolve, reject) => {
+      try {
+        const landsObj = await landContract.userLands(0, 12);
+        const lands = landsObj.filter(land => land.nftType).map(land => {
+          return {
+            token_id: landTypeMap[land.landType][0] + '-' + parseInt(land.tokenId),
+            land_type: landTypeMap[land.landType],
+            last_zombie_claim: parseInt(land.lastZombieClaim),
+            sale_price: parseInt(land.salePrice) || null,
+            media: allLands[landTypeMap[land.landType]].media,
+            nft_type: land.nftType,
+            owner_id: land.ownerId,
+            discover_events: parseInt(land.discoverEvents)
+          }
+        });
+
+        resolve(lands || []);
+      } catch (e) {
+        reject(e);
+      }
+    });
+
     const userTotalLandsPromise = new Promise(async (resolve, reject) => {
       try {
         const userTotalCount = await landContract.balanceOf(currentUser.accountId);
@@ -40,47 +84,15 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
       }
     });
 
-    const userLandsPromise = new Promise(async (resolve, reject) => {
-      try {
-        const landsObj = await landContract.userLands(0, 12);
-        const lands = landsObj.filter(land => land.nft_type);
-        resolve(lands || []);
-      } catch (e) {
-        reject(e);
-      }
-    });
-
-    const allLandsPromise = new Promise(async (resolve, reject) => {
-      try {
-        const allLands = {};
-        const allLandsObj = await landContract.getAllLands();
-
-        allLandsObj.map((land, index) => {
-          allLands[landTypeMap[index]] = {
-            land_type: landTypeMap[index],
-            total_count: parseInt(land.limitCount),
-            price: parseInt(land.price),
-            zombie_per_day: parseInt(land.zombiesPerDay),
-            media: land.media,
-          };
-        });
-        resolve(allLands);
-      } catch (e) {
-        reject(e);
-      }
-    });
-
     Promise.all([
       userLandsPromise,
-      allLandsPromise,
       userTotalLandsPromise
     ]).then((result) => {
       setUserLands(result[0]);
-      setAllLands(result[1]);
-      setUserTotalLands(result[2]);
+      setUserTotalLands(result[1]);
       setIsReady(true);
     });
-  }, []);
+  }, [allLands]);
 
   const handleTransfer = async (land, transferAddress) => {
     // let gas = convertToTera("60");
