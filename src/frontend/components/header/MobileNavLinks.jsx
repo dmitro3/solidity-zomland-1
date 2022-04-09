@@ -5,7 +5,7 @@ import {
   Link as ScrollLink
 } from "react-scroll";
 
-export const MobileNavLinks = ({ currentUser, setIsMobileOpened, onClickOutside, login, logout }) => {
+export const MobileNavLinks = ({ currentUser, setIsMobileOpened, onClickOutside, login }) => {
   const ref = useRef(null);
 
   const toggleHome = () => {
@@ -67,9 +67,6 @@ export const MobileNavLinks = ({ currentUser, setIsMobileOpened, onClickOutside,
           <li className={menuItem}>
             <Link className={menuLink} to="/faq"
                   onClick={() => setIsMobileOpened(false)}>FAQ</Link>
-          </li>
-          <li className={menuItem}>
-            <div className={menuLink} onClick={logout}>Logout</div>
           </li>
         </ul>
       ) : (

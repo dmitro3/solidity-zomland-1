@@ -24,10 +24,6 @@ export const login = () => {
   console.log('Call web3Handler');
 }
 
-export const logout = () => {
-  console.log('Remove logout button');
-}
-
 export const loadContracts = async () => {
   let landNFT = new ethers.Contract(LandNFTAddress.address, LandNFTAbi.abi, signer);
 

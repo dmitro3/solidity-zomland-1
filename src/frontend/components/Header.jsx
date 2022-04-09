@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import logo from "../assets/images/logo.png";
 import {Container, Link, Row} from "../assets/styles/common.style";
 import {convertFromYocto} from "../near/utils";
-import {login, logout} from "../web3/api";
+import {login} from "../web3/api";
 import {Button} from "./basic/Button";
 import {SocialLinks} from "./SocialLinks";
 import {NavLinks} from "./header/NavLinks";
@@ -37,7 +37,6 @@ export const Header = ({currentUser}) => {
               setIsMobileOpened={setIsMobileOpened}
               onClickOutside={() => setIsMobileOpened(false)}
               login={login}
-              logout={logout}
           />
         </div>
       </>
@@ -86,20 +85,16 @@ export const Header = ({currentUser}) => {
                     <div className="text-right">
                       <div className="mr-6 xl:mr-10 w-36 xl:w-40 hover:text-indigo-200">
                         <Link to="/token">
-                          <p className="truncate text-sm font-semibold">
+                          <p className="truncate font-semibold">
                             {currentUser.accountId.slice(0, 5) + '...' + currentUser.accountId.slice(38, 42)}
                           </p>
                           {userTokenBalance != null && (
                               <span className="font-bold text-orange-500 text-xl">
-                                                  {convertFromYocto(userTokenBalance, 2)} ZML
-                                                </span>
+                                {convertFromYocto(userTokenBalance, 2)} ZML
+                              </span>
                           )}
                         </Link>
                       </div>
-                    </div>
-
-                    <div className="pt-1 hidden sm:inline-flex">
-                      <Button secondary title="Log Out" onClick={logout}/>
                     </div>
 
                     <div className="w-12 mt-1 sm:ml-4 lg:hidden relative">
