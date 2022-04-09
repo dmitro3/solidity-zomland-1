@@ -21,6 +21,8 @@ export default function App() {
   const [currentUser, setCurrentUser] = React.useState({});
   const [contract, setContract] = React.useState(false);
   const [ftContract, setFtContract] = React.useState(false);
+  const [landContract, setLandFtContract] = React.useState(false);
+  const [zombieContract, setZombieContract] = React.useState(false);
   const [isReady, setIsReady] = React.useState(false);
   const [sellList, setSellList] = React.useState({
     lands: [],
@@ -121,18 +123,18 @@ export default function App() {
                       <Landing currentUser={currentUser} contract={contract}/>
                     }
                 />
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/lands"*/}
-                {/*    element={*/}
-                {/*      <Lands*/}
-                {/*        currentUser={currentUser}*/}
-                {/*        contract={contract}*/}
-                {/*        sellList={sellList}*/}
-                {/*        setSellList={setSellList}*/}
-                {/*      />*/}
-                {/*    }*/}
-                {/*  />*/}
+                <Route
+                    exact
+                    path="/lands"
+                    element={
+                      <Lands
+                          currentUser={currentUser}
+                          contract={contract}
+                          sellList={sellList}
+                          setSellList={setSellList}
+                      />
+                    }
+                />
                 {/*  <Route*/}
                 {/*    exact*/}
                 {/*    path="/zombies"*/}
