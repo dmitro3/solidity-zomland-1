@@ -5,13 +5,13 @@ import {
 //     ContactUs,
 //     Faq,
   Landing,
-//     Lands,
+  Lands,
 //     Market,
 //     Monsters,
 //     OneCollection,
 //     Zombies,
 //     Terms,
-//     Privacy,
+  Privacy,
 //     Token,
 } from "./pages";
 // import {Sidebar} from "./components/sidebar/Sidebar";
@@ -29,8 +29,7 @@ export default function App() {
   });
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
 
-  React.useEffect(() => {
-
+  window.web3Login = () => {
     web3Handler().then(({account, signer, landContract}) => {
       setCurrentUser({
         accountId: account,
@@ -52,10 +51,27 @@ export default function App() {
       });
 
       setIsReady(true);
+
     }).catch(err => {
       console.log('ERR', err);
-      setIsReady(true);
+
+      let allowPathList = [
+        "/",
+        "/terms-conditions",
+        "/privacy-policy",
+        "/faq",
+      ];
+      if (allowPathList.indexOf(window.location.pathname) === -1) {
+        window.location.href = "/";
+      } else {
+        setIsReady(true);
+      }
     });
+  }
+
+  React.useEffect(() => {
+
+    window.web3Login();
 
     // window.nearInitPromise = initContract()
     //   .then(async () => {
@@ -186,11 +202,11 @@ export default function App() {
                 {/*    path="/terms-conditions"*/}
                 {/*    element={<Terms currentUser={currentUser} />}*/}
                 {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/privacy-policy"*/}
-                {/*    element={<Privacy currentUser={currentUser} />}*/}
-                {/*  />*/}
+                <Route
+                    exact
+                    path="/privacy-policy"
+                    element={<Privacy currentUser={currentUser}/>}
+                />
               </Routes>
 
               {/*<Sidebar*/}

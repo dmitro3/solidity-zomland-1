@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import logo from "../assets/images/logo.png";
 import {Container, Link, Row} from "../assets/styles/common.style";
 import {convertFromYocto} from "../near/utils";
-import {login} from "../web3/api";
 import {Button} from "./basic/Button";
 import {SocialLinks} from "./SocialLinks";
 import {NavLinks} from "./header/NavLinks";
@@ -36,7 +35,6 @@ export const Header = ({currentUser}) => {
               currentUser={currentUser}
               setIsMobileOpened={setIsMobileOpened}
               onClickOutside={() => setIsMobileOpened(false)}
-              login={login}
           />
         </div>
       </>
@@ -114,7 +112,7 @@ export const Header = ({currentUser}) => {
                       </div>
                   ) : (
                       <div className="hidden sm:inline-flex">
-                        <Button secondary title="Log In" onClick={login}/>
+                        <Button secondary title="Log In" onClick={() => window.web3Login()}/>
                       </div>
                   )}
 
