@@ -1,26 +1,27 @@
 import React from "react";
-import { convertFromYocto, convertToYocto, defaultGas } from "../../near/utils";
-import { Row } from "../../assets/styles/common.style";
-import { Button } from "../../components/basic/Button";
-import { Card } from "../../components/card/Card";
+import {convertFromYocto, convertToYocto, defaultGas} from "../../near/utils";
+import {Row} from "../../assets/styles/common.style";
+import {Button} from "../../components/basic/Button";
+import {Card} from "../../components/card/Card";
+import {ethers} from 'ethers';
 
 export const MintLandSection = ({
   currentUser,
-  contract,
+  landContract,
   userLands,
   allLands,
 }) => {
-  const MintCard = ({ type, handleMint }) => (
-    <div className="sm:flex sm:flex-col">
-      <Card noFlip nft={allLands[type]} />
-      <div className="mt-4">
-        <Button title={`Mint ${type} Land`} onClick={handleMint} />
-        <div className="mt-3 font-semibold">
-          {convertFromYocto(allLands[type].price, type === "Small" ? 2 : 0)}{" "}
-          NEAR
+  const MintCard = ({type, handleMint}) => (
+      <div className="sm:flex sm:flex-col">
+        <Card noFlip nft={allLands[type]}/>
+        <div className="mt-4">
+          <Button title={`Mint ${type} Land`} onClick={handleMint}/>
+          <div className="mt-3 font-semibold">
+            {convertFromYocto(allLands[type].price, 0)}{" "}
+            NEAR
+          </div>
         </div>
       </div>
-    </div>
   );
 
   const isSmallLand = () => {
@@ -34,27 +35,26 @@ export const MintLandSection = ({
   };
 
   const handleMint = async (depositAmount) => {
-    const deposit = convertToYocto(depositAmount);
-    await contract.mint_land_nft(
-      {
-        account_id: currentUser.accountId,
-      },
-      defaultGas,
-      deposit
-    );
+    landContract.safeMint({
+      value: ethers.utils.parseEther(depositAmount)
+    }).then(result => {
+      console.log(`Result`, result);
+    }).catch(err => {
+      console.log(`ERR:`, err);
+    });
   };
 
   return (
-    <Row className="justify-center gap-8 flex-wrap">
-      {allLands && (
-        <>
-          {!isSmallLand() && (
-            <MintCard type="Small" handleMint={() => handleMint(0.01)} />
-          )}
-          <MintCard type="Medium" handleMint={() => handleMint(5)} />
-          <MintCard type="Large" handleMint={() => handleMint(9)} />
-        </>
-      )}
-    </Row>
+      <Row className="justify-center gap-8 flex-wrap">
+        {allLands && (
+            <>
+              {!isSmallLand() && (
+                  <MintCard type="Small" handleMint={() => handleMint("0")}/>
+              )}
+              <MintCard type="Medium" handleMint={() => handleMint("5")}/>
+              <MintCard type="Large" handleMint={() => handleMint("9")}/>
+            </>
+        )}
+      </Row>
   );
 };
