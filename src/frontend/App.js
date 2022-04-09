@@ -3,14 +3,14 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {
 //     Collections,
 //     ContactUs,
-//     Faq,
+  Faq,
   Landing,
   Lands,
 //     Market,
 //     Monsters,
 //     OneCollection,
 //     Zombies,
-//     Terms,
+  Terms,
   Privacy,
 //     Token,
 } from "./pages";
@@ -189,19 +189,19 @@ export default function App() {
                 {/*  />*/}
                 {/*  <Route*/}
                 {/*    exact*/}
-                {/*    path="/faq"*/}
-                {/*    element={<Faq currentUser={currentUser} contract={contract} />}*/}
-                {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
                 {/*    path="/contact-us"*/}
                 {/*    element={<ContactUs currentUser={currentUser} />}*/}
                 {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/terms-conditions"*/}
-                {/*    element={<Terms currentUser={currentUser} />}*/}
-                {/*  />*/}
+                <Route
+                    exact
+                    path="/faq"
+                    element={<Faq currentUser={currentUser} contract={contract}/>}
+                />
+                <Route
+                    exact
+                    path="/terms-conditions"
+                    element={<Terms currentUser={currentUser}/>}
+                />
                 <Route
                     exact
                     path="/privacy-policy"
