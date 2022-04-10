@@ -41,13 +41,21 @@ export default function App() {
     setTransactionList([...transactionList]);
 
     tx.wait().then(receipt => {
+      const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
+
       if (receipt.status === 1) {
         console.log('success', receipt);
-        // update transaction
+        transactionList[index].status = "success";
       } else {
         console.log('error', receipt);
-        // update transaction
+        transactionList[index].status = "error";
       }
+      setTransactionList([...transactionList]);
+
+      setTimeout(() => {
+        transactionList.splice(index, 1);
+        setTransactionList([...transactionList]);
+      }, 4000);
     })
   }
 
