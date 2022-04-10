@@ -23,7 +23,7 @@ import {Card} from "../../components/card/Card";
 
 const landTypeMap = {0: "Small", 1: "Medium", 2: "Large"};
 
-export const Lands = ({currentUser, contract, landContract, sellList, setSellList}) => {
+export const Lands = ({currentUser, contract, landContract, sellList, setSellList, appendTransactionList}) => {
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
   const [userTotalLands, setUserTotalLands] = useState();
@@ -51,7 +51,6 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
     loadAllLands();
   }, []);
 
-
   useEffect(() => {
     const userLandsPromise = new Promise(async (resolve, reject) => {
       try {
@@ -62,13 +61,12 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
             land_type: landTypeMap[land.landType],
             last_zombie_claim: parseInt(land.lastZombieClaim),
             sale_price: parseInt(land.salePrice) || null,
-            media: allLands[landTypeMap[land.landType]].media,
+            media: allLands[landTypeMap[land.landType]]?.media,
             nft_type: land.nftType,
             owner_id: land.ownerId,
             discover_events: parseInt(land.discoverEvents)
           }
         });
-
         resolve(lands || []);
       } catch (e) {
         reject(e);
@@ -106,15 +104,25 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
     // );
   };
 
+  const watchMintTransaction = (tx) => {
+    appendTransactionList(tx);
+    tx.wait().then(receipt => {
+      if (receipt.status === 1) {
+        loadAllLands();
+      }
+    });
+  }
+
   const appendToSellList = (land) => {
-    // if (
-    //     !sellList["lands"].filter((exist) => exist.token_id === land.token_id).length
-    // ) {
-    //   sellList["lands"].push(land);
-    //   sellList["zombies"] = sellList["monsters"] = [];
-    //   setSellList({...sellList});
-    // }
+    if (
+        !sellList["lands"].filter((exist) => exist.token_id === land.token_id).length
+    ) {
+      sellList["lands"].push(land);
+      sellList["zombies"] = sellList["monsters"] = [];
+      setSellList({...sellList});
+    }
   };
+
 
   const showMintPopup = async () => {
     setMintPopupVisible(true);
@@ -181,6 +189,7 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
                               landContract={landContract}
                               allLands={allLands}
                               userLands={userLands}
+                              appendTransactionList={(tx) => watchMintTransaction(tx)}
                           />
                         </div>
                     )}
@@ -203,6 +212,10 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
                   landContract={landContract}
                   allLands={allLands}
                   userLands={userLands}
+                  appendTransactionList={(tx) => {
+                    watchMintTransaction(tx);
+                    setMintPopupVisible(false);
+                  }}
               />
             </div>
           </Popup>

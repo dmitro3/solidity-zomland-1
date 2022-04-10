@@ -10,6 +10,7 @@ export const MintLandSection = ({
   landContract,
   userLands,
   allLands,
+  appendTransactionList
 }) => {
   const MintCard = ({type, handleMint}) => (
       <div className="sm:flex sm:flex-col">
@@ -37,8 +38,8 @@ export const MintLandSection = ({
   const handleMint = async (depositAmount) => {
     landContract.safeMint({
       value: ethers.utils.parseEther(depositAmount)
-    }).then(result => {
-      console.log(`Result`, result);
+    }).then(transaction => {
+      appendTransactionList(transaction);
     }).catch(err => {
       console.log(`ERR:`, err);
     });

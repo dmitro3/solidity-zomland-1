@@ -14,8 +14,9 @@ import {
   Privacy,
 //     Token,
 } from "./pages";
-// import {Sidebar} from "./components/sidebar/Sidebar";
+import {Sidebar} from "./components/sidebar/Sidebar";
 import {web3Handler, loadContracts} from './web3/api';
+import {TransactionList} from './components/TransactionList';
 
 export default function App() {
   const [currentUser, setCurrentUser] = React.useState({});
@@ -24,12 +25,31 @@ export default function App() {
   const [landContract, setLandContract] = React.useState(false);
   const [zombieContract, setZombieContract] = React.useState(false);
   const [isReady, setIsReady] = React.useState(false);
+  const [transactionList, setTransactionList] = React.useState([]);
   const [sellList, setSellList] = React.useState({
     lands: [],
     zombies: [],
     monsters: [],
   });
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
+
+  const appendTransactionList = (tx) => {
+    transactionList.push({
+      hash: tx.hash,
+      status: "pending"
+    });
+    setTransactionList([...transactionList]);
+
+    tx.wait().then(receipt => {
+      if (receipt.status === 1) {
+        console.log('success', receipt);
+        // update transaction
+      } else {
+        console.log('error', receipt);
+        // update transaction
+      }
+    })
+  }
 
   window.web3Login = () => {
     web3Handler().then(({account, signer, landContract}) => {
@@ -74,39 +94,7 @@ export default function App() {
   }
 
   React.useEffect(() => {
-
     window.web3Login();
-
-    // window.nearInitPromise = initContract()
-    //   .then(async () => {
-    //     setContract(window.contract);
-    //     setFtContract(window.ftContract);
-    //
-    //     if (window.walletConnection.isSignedIn()) {
-    //       const accountId = window.walletConnection?.getAccountId();
-    //       let tokenBalance = await window.ftContract.ft_balance_of({
-    //         account_id: accountId,
-    //       });
-    //
-    //       setCurrentUser({
-    //         accountId: accountId,
-    //         tokenBalance: tokenBalance,
-    //       });
-    //     } else {
-    //       let allowPathList = [
-    //         "/",
-    //         "/terms-conditions",
-    //         "/privacy-policy",
-    //         "/faq",
-    //       ];
-    //       if (allowPathList.indexOf(window.location.pathname) === -1) {
-    //         window.location.href = "/";
-    //       }
-    //     }
-    //
-    //     setIsReady(true);
-    //   })
-    //   .catch(console.error);
   }, []);
 
   React.useEffect(() => {
@@ -135,6 +123,7 @@ export default function App() {
                           landContract={landContract}
                           sellList={sellList}
                           setSellList={setSellList}
+                          appendTransactionList={(tx) => appendTransactionList(tx)}
                       />
                     }
                 />
@@ -214,14 +203,15 @@ export default function App() {
                 />
               </Routes>
 
-              {/*<Sidebar*/}
-              {/*  currentUser={currentUser}*/}
-              {/*  contract={contract}*/}
-              {/*  sellList={sellList}*/}
-              {/*  setSellList={setSellList}*/}
-              {/*  isOpen={sidebarIsOpen}*/}
-              {/*  setIsOpen={setSidebarIsOpen}*/}
-              {/*/>*/}
+              <Sidebar
+                  currentUser={currentUser}
+                  contract={contract}
+                  sellList={sellList}
+                  setSellList={setSellList}
+                  isOpen={sidebarIsOpen}
+                  setIsOpen={setSidebarIsOpen}
+              />
+              <TransactionList txList={transactionList}/>
             </>
         )}
       </BrowserRouter>
