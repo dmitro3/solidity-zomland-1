@@ -24,25 +24,31 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
 
     struct Zombie {
         uint tokenId;
-        CardRarity cardRarity;
-        string killTokens;
+        string cardRarity;
+        uint killTokens;
         uint salePrice;
         string media;
-        int8 collectionId;
-        int8 collectionIndex;
-        int8 mintDate;
-        int8 health;
-        int8 attack;
-        int8 brain;
-        int8 speed;
         string nftType;
-        string ownerId;
+        address ownerId;
     }
 
     address contractMain;
 
-    mapping(uint => Zombie) Zombies;
+    mapping(uint => Zombie) zombies;
     mapping(uint256 => string) public cardRarity;
+
+    string[] public zombieMedia = [
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju",
+        "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju"
+    ];
 
     constructor(address _contractMain) ERC721("ZomLand", "ZMLZ") {
         contractMain = _contractMain;
@@ -65,25 +71,27 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
         super._burn(_tokenId);
     }
 
-    function randomRarity() public view returns (string memory) {
+    function randomRarity() internal view returns (string memory) {
         uint _index = uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, uint(1))))%4;
         return cardRarity[_index];
+    }
+
+    function randomZombieMedia() internal view returns (string memory) {
+        uint _index = uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, uint(1))))%zombieMedia.length;
+        return zombieMedia[_index];
     }
 
     // ---------------- Public methods ---------------
 
     function safeMint() public payable returns (uint) {
-        string _rarity = randomRarity();
-
-        checkLimits(_zombieType);
-        string memory _uri = getLandURI(_zombieType);
-
+        string memory _rarity = randomRarity();
+        string memory _uri = randomZombieMedia();
         uint _tokenId = _tokenIdCounter.current();
+
         _tokenIdCounter.increment();
         _safeMint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, _uri);
-
-        zombies[_tokenId] = Zombie(_tokenId, _zombieType, 0, 0, "zombie", 0);
+        zombies[_tokenId] = Zombie(_tokenId, _rarity, uint(100), uint(0), _uri, "zombie", msg.sender);
 
         return _tokenId;
     }
