@@ -10,7 +10,8 @@ export const MintLandSection = ({
   landContract,
   userLands,
   allLands,
-  appendTransactionList
+  appendTransactionList,
+  appendTransactionError
 }) => {
   const MintCard = ({type, handleMint}) => (
       <div className="sm:flex sm:flex-col">
@@ -41,7 +42,8 @@ export const MintLandSection = ({
     }).then(transaction => {
       appendTransactionList(transaction);
     }).catch(err => {
-      console.log(`ERR:`, err);
+      appendTransactionError(err.message);
+      console.log(`ERR:`, err.message);
     });
   };
 

@@ -23,7 +23,7 @@ import {Card} from "../../components/card/Card";
 
 const landTypeMap = {0: "Small", 1: "Medium", 2: "Large"};
 
-export const Lands = ({currentUser, contract, landContract, sellList, setSellList, appendTransactionList}) => {
+export const Lands = ({currentUser, contract, landContract, sellList, setSellList, appendTransactionList, appendTransactionError}) => {
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
   const [userTotalLands, setUserTotalLands] = useState();
@@ -189,6 +189,7 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
                               landContract={landContract}
                               allLands={allLands}
                               userLands={userLands}
+                              appendTransactionError={(tx) => appendTransactionError(tx)}
                               appendTransactionList={(tx) => watchMintTransaction(tx)}
                           />
                         </div>
@@ -212,6 +213,7 @@ export const Lands = ({currentUser, contract, landContract, sellList, setSellLis
                   landContract={landContract}
                   allLands={allLands}
                   userLands={userLands}
+                  appendTransactionError={(tx) => appendTransactionError(tx)}
                   appendTransactionList={(tx) => {
                     watchMintTransaction(tx);
                     setMintPopupVisible(false);

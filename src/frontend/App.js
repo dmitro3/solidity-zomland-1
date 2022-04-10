@@ -51,6 +51,14 @@ export default function App() {
     })
   }
 
+  const appendTransactionError = (message) => {
+    transactionList.push({
+      text: message,
+      status: "error"
+    });
+    setTransactionList([...transactionList]);
+  }
+
   window.web3Login = () => {
     web3Handler().then(({account, signer, landContract}) => {
       setCurrentUser({
@@ -124,6 +132,7 @@ export default function App() {
                           sellList={sellList}
                           setSellList={setSellList}
                           appendTransactionList={(tx) => appendTransactionList(tx)}
+                          appendTransactionError={(tx) => appendTransactionError(tx)}
                       />
                     }
                 />
