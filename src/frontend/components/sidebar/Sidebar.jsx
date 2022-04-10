@@ -12,17 +12,17 @@ export const Sidebar = ({
   isOpen,
   setIsOpen,
 }) => {
-  const cancelItemSell = (token_id, nftType) => {
+  const cancelItemSell = (tokenId, nftType) => {
     sellList[nftType] = sellList[nftType].filter(
-        (zombie) => zombie.token_id !== token_id
+        (zombie) => zombie.tokenId !== tokenId
     );
     setSellList({...sellList});
   };
 
   const setItemPrice = (nft, price, nftType) => {
     sellList[nftType] = sellList[nftType].map((item) => {
-      if (item.token_id === nft.token_id) {
-        item.sale_price = price;
+      if (item.tokenId === nft.tokenId) {
+        item.salePrice = price;
       }
       return item;
     });
@@ -33,8 +33,8 @@ export const Sidebar = ({
     let sellObject = {};
     let isError = false;
     list.forEach((item) => {
-      if (item.sale_price > 0) {
-        sellObject[item.token_id] = convertToYocto(item.sale_price);
+      if (item.salePrice > 0) {
+        sellObject[item.tokenId] = convertToYocto(item.salePrice);
       } else {
         isError = true;
       }
@@ -161,10 +161,10 @@ export const Sidebar = ({
                           >
                             {sellList[key].map((item) => (
                                 <SellItem
-                                    key={item.token_id}
-                                    item_type={item.card_rarity || item.land_type}
+                                    key={item.tokenId}
+                                    item_type={item.card_rarity || item.landType}
                                     nft={item}
-                                    cancelSell={() => cancelItemSell(item.token_id, key)}
+                                    cancelSell={() => cancelItemSell(item.tokenId, key)}
                                     setItemPrice={setItemPrice}
                                     id={key}
                                 />

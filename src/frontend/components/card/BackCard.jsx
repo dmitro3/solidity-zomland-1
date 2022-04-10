@@ -25,16 +25,16 @@ export const BackCard = ({
     <img
       className={`absolute ${sizeMapping[size || "md"]}`}
       src={land_back}
-      alt={nft.token_id ? formatId(nft.token_id) : ""}
+      alt={nft.tokenId ? formatId(nft.tokenId) : ""}
     />
   );
 
   const SellPriceSection = () => (
     <>
-      {nft.sale_price && (
+      {nft.salePrice && (
         <div className="flex text-4xl items-center font-semibold mb-5 mt-2">
           <img className="h-8 mr-2" src={near_logo} alt="near logo" />
-          {nft.sale_price}
+          {nft.salePrice}
         </div>
       )}
     </>
@@ -43,10 +43,10 @@ export const BackCard = ({
   const InfoSection = () => (
     <>
       <div className="font-semibold text-purple-600">
-        {nft.card_rarity || nft.land_type}
+        {nft.card_rarity || nft.landType}
       </div>
       <div className="text-4xl font-semibold text-purple-600">
-        #{nft.token_id ? formatId(nft.token_id) : ""}
+        #{nft.tokenId ? formatId(nft.tokenId) : ""}
       </div>
     </>
   );
@@ -93,7 +93,7 @@ export const BackCard = ({
   );
 
   return (
-    <CardBack type={nft.land_type ?? nft.card_rarity} className="relative">
+    <CardBack type={nft.landType ?? nft.card_rarity} className="relative">
       <BackImage />
       <div className="absolute flex flex-col h-full w-full justify-center items-center">
         <SellPriceSection />

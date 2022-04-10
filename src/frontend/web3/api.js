@@ -33,3 +33,38 @@ export const web3Handler = () => {
     }
   });
 };
+
+export const appendTransactionList = (transactionList, setTransactionList, tx) => {
+  transactionList.push({
+    hash: tx.hash,
+    message: tx.message || null,
+    status: "pending"
+  });
+  setTransactionList([...transactionList]);
+
+  tx.wait().then(receipt => {
+    const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
+    if (index !== -1) {
+      transactionList[index].status = (receipt.status === 1) ? "success" : "error";
+      setTransactionList([...transactionList]);
+
+      setTimeout(() => {
+        transactionList.splice(index, 1);
+        setTransactionList([...transactionList]);
+      }, 5000);
+    }
+  })
+}
+
+export const appendTransactionError = (transactionList, setTransactionList, message) => {
+  transactionList.push({
+    message,
+    status: "error"
+  });
+  setTransactionList([...transactionList]);
+};
+
+export const hideTransaction = (transactionList, setTransactionList, index) => {
+  transactionList.splice(index, 1);
+  setTransactionList([...transactionList]);
+}

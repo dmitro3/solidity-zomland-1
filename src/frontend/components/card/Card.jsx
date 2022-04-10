@@ -47,24 +47,24 @@ export const Card = ({
               src={getMedia(
                 "bafkreifdecdvospry7lmu6e3wzb5pgqj4e7shxgtwqwltj4brwxge7dipm"
               )}
-              alt={nft.token_id ? formatId(nft.token_id) : ""}
+              alt={nft.tokenId ? formatId(nft.tokenId) : ""}
             />
             <div className="absolute flex flex-col h-full w-full justify-center items-center">
-              {nft.sale_price && (
+              {nft.salePrice && (
                 <>
                   <div className="flex text-4xl items-center font-semibold mb-5 mt-2">
                     <img className="h-8 mr-2" src={near_logo} alt="near logo" />
-                    {nft.sale_price}
+                    {nft.salePrice}
                   </div>
                 </>
               )}
 
               <div className="font-semibold text-purple-600">
-                {nft.card_rarity || nft.land_type}
+                {nft.card_rarity || nft.landType}
               </div>
 
               <div className="text-4xl font-semibold text-purple-600">
-                #{nft.token_id ? formatId(nft.token_id) : ""}
+                #{nft.tokenId ? formatId(nft.tokenId) : ""}
               </div>
 
               {nft.health && nft.attack && nft.brain && (

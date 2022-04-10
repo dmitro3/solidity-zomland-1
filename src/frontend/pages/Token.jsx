@@ -114,7 +114,7 @@ export const Token = ({ currentUser, contract, ftContract }) => {
     let gas = convertToTera("100");
     await contract.stake_monster(
       {
-        monster_id: monster.token_id,
+        monster_id: monster.tokenId,
       },
       gas,
       1
@@ -432,7 +432,7 @@ export const Token = ({ currentUser, contract, ftContract }) => {
                     {userMonsters[1]?.map((monster, index) => (
                       <div
                         className="cursor-pointer"
-                        key={monster.token_id}
+                        key={monster.tokenId}
                         onClick={() => selectMonster(monster)}
                       >
                         <Card nft={monster} key={index} size="sm" noMenu />

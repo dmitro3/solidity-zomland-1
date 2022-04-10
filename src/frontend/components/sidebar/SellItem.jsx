@@ -12,12 +12,12 @@ export const SellItem = ({ item_type, nft, cancelSell, setItemPrice, id }) => {
           item_type
         )}`}
         src={getMedia(nft.media)}
-        alt={nft.token_id}
+        alt={nft.tokenId}
       />
       <div>
         <div className="font-semibold pt-2 mb-1">
           <span className="text-indigo-100 mr-1">{item_type}</span> #
-          {formatId(nft.token_id)}
+          {formatId(nft.tokenId)}
         </div>
         <div>
           <input

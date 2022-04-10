@@ -59,34 +59,34 @@ export default function MintZombiePopup({
     >
       <div className="mt-2 text-left">
         {userLands.map((land) => (
-          <div className="flex sm:gap-4 mb-3" key={land.token_id}>
+          <div className="flex sm:gap-4 mb-3" key={land.tokenId}>
             <div className="hidden sm:flex">
               <img src={getMedia(land.media)} alt="land" width="40" />
             </div>
             <div className="basis-1/3 sm:pt-4 pt-2 font-semibold">
-              {land.land_type} Land #{formatId(land.token_id)}
+              {land.landType} Land #{formatId(land.tokenId)}
             </div>
             <div className="basis-1/4 pt-4 hidden sm:flex">
-              {availabilityMap[land.land_type]}
+              {availabilityMap[land.landType]}
             </div>
             <div className="grow text-right">
-              {timeDiff(land.last_zombie_claim) < 0 ? (
+              {timeDiff(land.lastZombieClaim) < 0 ? (
                 <div className="pt-1">
                   <Button
                     title="Mint Zombies"
                     size="sm"
                     secondary
-                    onClick={() => handleMint(land.token_id, land.land_type)}
+                    onClick={() => handleMint(land.tokenId, land.landType)}
                   />
                 </div>
               ) : (
                 <div>
-                  {timeDiff(land.last_zombie_claim) < 86400 && (
+                  {timeDiff(land.lastZombieClaim) < 86400 && (
                     <p className="text-red-300 text-center pl-7 text-base pt-2 leading-4 font-[Exo]">
                       <small>Next mint:</small>
                       <br />
                       <small>
-                        {secondsToString(timeDiff(land.last_zombie_claim))}
+                        {secondsToString(timeDiff(land.lastZombieClaim))}
                       </small>
                     </p>
                   )}

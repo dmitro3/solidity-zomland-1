@@ -115,7 +115,7 @@ export const OneCollection = ({ currentUser, contract }) => {
     if (countZombieSelected() === COLLECTION_ZOMBIES_COUNT) {
       const zombie_list = zombieCards
         .filter((zombie) => zombie)
-        .map((zombie) => zombie.token_id);
+        .map((zombie) => zombie.tokenId);
       const GAS = convertToTera("200");
       const DEPOSIT = convertToYocto("0.01");
       await contract.mint_collection(
@@ -294,7 +294,7 @@ export const OneCollection = ({ currentUser, contract }) => {
                       zombieCards.map((innerZombie) => {
                         if (
                           innerZombie &&
-                          innerZombie.token_id === zombie.token_id
+                          innerZombie.tokenId === zombie.tokenId
                         ) {
                           exists = true;
                         }
@@ -304,7 +304,7 @@ export const OneCollection = ({ currentUser, contract }) => {
                     .map((zombie) => (
                       <div
                         className="w-34 mb-1 cursor-pointer"
-                        key={zombie.token_id}
+                        key={zombie.tokenId}
                         onClick={() => selectZombie(zombie)}
                       >
                         <Card nft={zombie} size="sm" noMenu />

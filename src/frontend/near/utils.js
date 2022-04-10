@@ -28,8 +28,8 @@ export const convertToTera = (amount) => {
       .toFixed();
 };
 
-export const formatId = (token_id) => {
-  let token = token_id.split("-");
+export const formatId = (tokenId) => {
+  let token = tokenId.split("-");
   return token[0].toUpperCase() + token[1];
 };
 
@@ -60,7 +60,7 @@ export const statusColorBorderMap = (status) => {
 export const rmFromMarket = async (contract, item) => {
   let contract_method = "";
 
-  switch (item.nft_type) {
+  switch (item.nftType) {
     case "Land":
       contract_method = "remove_lands_from_market";
       break;
@@ -74,6 +74,6 @@ export const rmFromMarket = async (contract, item) => {
   }
 
   await contract[contract_method]({
-    token_list: [item.token_id],
+    token_list: [item.tokenId],
   });
 };

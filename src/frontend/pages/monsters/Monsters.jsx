@@ -46,8 +46,8 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
 
     // Convert price from Yocto NEAR
     monsters[1] = monsters[1].map((mn) => {
-      if (mn.sale_price) {
-        mn.sale_price = convertFromYocto(mn.sale_price);
+      if (mn.salePrice) {
+        mn.salePrice = convertFromYocto(mn.salePrice);
       }
       return mn;
     });
@@ -100,7 +100,7 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
     let gas = convertToTera("60");
     await contract.transfer_monster(
       {
-        token_id: monster.token_id,
+        tokenId: monster.tokenId,
         recipient_id: transferAddress,
       },
       gas,
@@ -117,7 +117,7 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
     let gas = convertToTera("90");
     await contract.kill_monster(
       {
-        monster_id: killItem.token_id,
+        monster_id: killItem.tokenId,
       },
       gas,
       1
@@ -127,7 +127,7 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
   const appendToSellList = (monster) => {
     if (
       !sellList["zombies"].filter(
-        (exist) => exist.token_id === monster.token_id
+        (exist) => exist.tokenId === monster.tokenId
       ).length
     ) {
       sellList["monsters"].push(monster);
@@ -226,7 +226,7 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
               <p className="mb-6">
                 Monster{" "}
                 <span className="text-xl font-semibold">
-                  #{formatId(killItem.token_id)}
+                  #{formatId(killItem.tokenId)}
                 </span>{" "}
                 will be killed and you will receive{" "}
                 <span className="text-xl font-semibold">

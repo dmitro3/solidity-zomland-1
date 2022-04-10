@@ -97,8 +97,8 @@ export const Zombies = ({
 
   //   // Convert price from Yocto NEAR
   //   zombies[1] = zombies[1].map((zm) => {
-  //     if (zm.sale_price) {
-  //       zm.sale_price = convertFromYocto(zm.sale_price);
+  //     if (zm.salePrice) {
+  //       zm.salePrice = convertFromYocto(zm.salePrice);
   //     }
   //     return zm;
   //   });
@@ -113,7 +113,7 @@ export const Zombies = ({
 
   // const appendToSellList = (zombie) => {
   //   if (
-  //     !sellList["zombies"].filter((exist) => exist.token_id === zombie.token_id)
+  //     !sellList["zombies"].filter((exist) => exist.tokenId === zombie.tokenId)
   //       .length
   //   ) {
   //     sellList["zombies"].push(zombie);
@@ -142,9 +142,9 @@ export const Zombies = ({
   //     const lastClaimTime = convertFromNanoSeconds(land.last_zombie_claim);
   //     if (!lastClaimTime || timeNow - lastClaimTime > oneDay) {
   //       land.can_claim = true;
-  //       if (land.land_type === "Small") {
+  //       if (land.landType === "Small") {
   //         totalZombiesToMint += 1;
-  //       } else if (land.land_type === "Medium") {
+  //       } else if (land.landType === "Medium") {
   //         totalZombiesToMint += 4;
   //       } else {
   //         totalZombiesToMint += 8;
@@ -220,7 +220,7 @@ export const Zombies = ({
   //   let gas = convertToTera("60");
   //   await contract.transfer_zombie(
   //     {
-  //       token_id: zombie.token_id,
+  //       tokenId: zombie.tokenId,
   //       recipient_id: transferAddress,
   //     },
   //     gas,
@@ -279,7 +279,7 @@ export const Zombies = ({
   // const showKillPopup = async (item) => {
   //   setKillItem(item);
   //   let tokens = await contract.zombie_kill_tokens({
-  //     token_id: item.token_id,
+  //     tokenId: item.tokenId,
   //   });
   //   setKillTokens(tokens);
   //   setKillPopupVisible(true);
@@ -289,7 +289,7 @@ export const Zombies = ({
   //   let gas = convertToTera("90");
   //   await contract.kill_zombie(
   //     {
-  //       zombie_id: killItem.token_id,
+  //       zombie_id: killItem.tokenId,
   //     },
   //     gas,
   //     1
@@ -419,7 +419,7 @@ export const Zombies = ({
               <p className="mb-6">
                 Zombie{" "}
                 <span className="text-xl font-semibold">
-                  #{formatId(killItem.token_id)}
+                  #{formatId(killItem.tokenId)}
                 </span>{" "}
                 will be killed and you will receive{" "}
                 {killTokens && (

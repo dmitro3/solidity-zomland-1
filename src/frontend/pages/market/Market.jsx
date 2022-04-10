@@ -36,7 +36,7 @@ export const Market = ({ currentUser, contract }) => {
     }).catch((err) => console.log(err));
 
     items = items?.map((item) => {
-      item.sale_price = convertFromYocto(item.sale_price);
+      item.salePrice = convertFromYocto(item.salePrice);
       return item;
     });
 
@@ -52,13 +52,13 @@ export const Market = ({ currentUser, contract }) => {
   const handleBuy = async (item) => {
     setIsReady(false);
     let GAS = convertToTera("100");
-    let DEPOSIT = convertToYocto(item.sale_price);
+    let DEPOSIT = convertToYocto(item.salePrice);
 
     await contract
       .transfer_nft_on_market(
         {
-          nft_type: item.nft_type,
-          token_id: item.token_id,
+          nftType: item.nftType,
+          tokenId: item.tokenId,
         },
         GAS,
         DEPOSIT
@@ -109,7 +109,7 @@ export const Market = ({ currentUser, contract }) => {
                     <>
                       {items.map((item, index) => (
                         <>
-                          {currentUser.accountId === item.owner_id ? (
+                          {currentUser.accountId === item.ownerId ? (
                             <Card
                               nft={item}
                               key={index}
