@@ -11,34 +11,33 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 //}
 
 contract Main is ReentrancyGuard, Ownable {
-    address public contractFt;
-    address public contractNftZombie;
-    address public contractNftLand;
-    //    mapping(uint => Land) public lands;
+  address public contractLandNFT;
+  address public contractZombieNFT;
+  address public contractTokenFT;
 
-    //    function updateAddresses(address _contractFt, address _contractNftZombie, address _contractNftLand) public onlyOwner {
-    //        contractFt = _contractFt;
-    //        contractNftZombie = _contractNftZombie;
-    //        contractNftLand = _contractNftLand;
-    //    }
+  function updateContractAddress(address _landNFT, address _zombieNFT, address _tokenFT) public onlyOwner {
+    contractLandNFT = _landNFT;
+    contractZombieNFT = _zombieNFT;
+    contractTokenFT = _tokenFT;
+  }
 
-    function setContractAddresses(address _contractNftLand) public onlyOwner {
-        contractNftLand = _contractNftLand;
-    }
+  //  function setContractAddresses(address _contractNftLand) public onlyOwner {
+  //    contractNftLand = _contractNftLand;
+  //  }
 
-    // Mint new Land
-    //    function mintLandNft() public returns (uint) {
-    //        INftLand nftLand = INftLand(contractNftLand);
-    //
-    //        return nftLand.safeMint(msg.sender, "test URI");
-    //    }
+  // Mint new Land
+  //    function mintLandNft() public returns (uint) {
+  //        INftLand nftLand = INftLand(contractNftLand);
+  //
+  //        return nftLand.safeMint(msg.sender, "test URI");
+  //    }
 
-    //    function getLandsById(uint[] memory id_list) internal view returns (Land[] memory) {
-    //        Land[] memory result;
-    //        for (uint i = 0; i < id_list.length; i++) {
-    //            result[i] = lands[id_list[i]];
-    //        }
-    //        return result;
-    //    }
+  //    function getLandsById(uint[] memory id_list) internal view returns (Land[] memory) {
+  //        Land[] memory result;
+  //        for (uint i = 0; i < id_list.length; i++) {
+  //            result[i] = lands[id_list[i]];
+  //        }
+  //        return result;
+  //    }
 
 }

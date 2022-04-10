@@ -43,7 +43,7 @@ export const BackCard = ({
   const InfoSection = () => (
     <>
       <div className="font-semibold text-purple-600">
-        {nft.card_rarity || nft.landType}
+        {nft.cardRarity || nft.landType}
       </div>
       <div className="text-4xl font-semibold text-purple-600">
         #{nft.tokenId ? formatId(nft.tokenId) : ""}
@@ -93,7 +93,7 @@ export const BackCard = ({
   );
 
   return (
-    <CardBack type={nft.landType ?? nft.card_rarity} className="relative">
+    <CardBack type={nft.landType ?? nft.cardRarity} className="relative">
       <BackImage />
       <div className="absolute flex flex-col h-full w-full justify-center items-center">
         <SellPriceSection />

@@ -15,7 +15,7 @@ export const FrontCard = ({
   rmFromMarket,
   handleBuy,
 }) => {
-  const type = nft.landType ?? nft.card_rarity;
+  const type = nft.landType ?? nft.cardRarity;
 
   return (
     <CardFront type={type}>

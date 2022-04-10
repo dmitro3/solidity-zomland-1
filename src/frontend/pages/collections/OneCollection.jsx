@@ -106,7 +106,7 @@ export const OneCollection = ({ currentUser, contract }) => {
     const totalZombies = countZombieSelected();
     const oneZombiePct = 100 / totalZombies;
     const countZombieType = zombieCards.filter(
-      (zombie) => zombie && zombie.card_rarity === card_type
+      (zombie) => zombie && zombie.cardRarity === card_type
     ).length;
     return (countZombieType * oneZombiePct).toFixed(1);
   };

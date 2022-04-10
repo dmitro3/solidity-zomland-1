@@ -162,7 +162,7 @@ export const Sidebar = ({
                             {sellList[key].map((item) => (
                                 <SellItem
                                     key={item.tokenId}
-                                    item_type={item.card_rarity || item.landType}
+                                    item_type={item.cardRarity || item.landType}
                                     nft={item}
                                     cancelSell={() => cancelItemSell(item.tokenId, key)}
                                     setItemPrice={setItemPrice}

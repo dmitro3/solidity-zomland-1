@@ -60,7 +60,7 @@ export const Card = ({
               )}
 
               <div className="font-semibold text-purple-600">
-                {nft.card_rarity || nft.landType}
+                {nft.cardRarity || nft.landType}
               </div>
 
               <div className="text-4xl font-semibold text-purple-600">

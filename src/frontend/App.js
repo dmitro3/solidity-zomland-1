@@ -24,6 +24,7 @@ export default function App() {
   const [ftContract, setFtContract] = React.useState(false);
   const [landContract, setLandContract] = React.useState(false);
   const [zombieContract, setZombieContract] = React.useState(false);
+  const [tokenContract, setTokenContract] = React.useState(false);
   const [isReady, setIsReady] = React.useState(false);
   const [transactionList, setTransactionList] = React.useState([]);
   const [sellList, setSellList] = React.useState({
@@ -35,13 +36,16 @@ export default function App() {
 
   window.web3Login = () => {
     web3Handler()
-      .then(({ account, signer, landContract, zombieContract }) => {
+      .then(async ({ account, signer, landContract, zombieContract, tokenContract }) => {
+        const balance = await tokenContract.balanceOf(account);
+
         setCurrentUser({
           accountId: account,
-          tokenBalance: 0,
+          tokenBalance: balance,
         });
         setLandContract(landContract);
         setZombieContract(zombieContract);
+        setTokenContract(tokenContract);
 
         window.ethereum.on("chainChanged", (chainId) => {
           console.log("chainChanged", chainId);
@@ -50,16 +54,17 @@ export default function App() {
 
         window.ethereum.on("accountsChanged", async function (accounts) {
           console.log("accountsChanged", accounts);
+          const balance = await tokenContract.balanceOf(account);
           setCurrentUser({
             accountId: accounts[0],
-            tokenBalance: 0,
+            tokenBalance: balance,
           });
         });
 
         setIsReady(true);
       })
       .catch((err) => {
-        console.log("ERR", err);
+        console.log("ERR web3Handler", err);
 
         let allowPathList = [
           "/",

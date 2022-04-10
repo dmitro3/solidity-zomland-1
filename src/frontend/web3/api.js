@@ -3,6 +3,8 @@ import LandNFTAddress from "../contractsData/LandNFT-address.json";
 import LandNFTAbi from "../contractsData/LandNFT.json";
 import ZombieNFTAddress from "../contractsData/ZombieNFT-address.json";
 import ZombieNFTAbi from "../contractsData/ZombieNFT.json";
+import TokenFTAddress from "../contractsData/TokenFT-address.json";
+import TokenFTAbi from "../contractsData/TokenFT.json";
 
 export const web3Handler = () => {
   return new Promise(async (resolve, reject) => {
@@ -13,6 +15,7 @@ export const web3Handler = () => {
         });
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
+
         const landContract = new ethers.Contract(
           LandNFTAddress.address,
           LandNFTAbi.abi,
@@ -23,8 +26,19 @@ export const web3Handler = () => {
           ZombieNFTAbi.abi,
           signer
         );
+        const tokenContract = new ethers.Contract(
+          TokenFTAddress.address,
+          TokenFTAbi.abi,
+          signer
+        );
 
-        resolve({ account: accounts[0], signer, landContract, zombieContract });
+        resolve({
+          account: accounts[0],
+          signer,
+          landContract,
+          zombieContract,
+          tokenContract
+        });
       } catch (err) {
         reject("Metamask connection error");
       }
