@@ -1,16 +1,30 @@
-import {ethers} from "ethers"
-import LandNFTAddress from '../contractsData/LandNFT-address.json';
-import LandNFTAbi from '../contractsData/LandNFT.json';
+import { ethers } from "ethers";
+import LandNFTAddress from "../contractsData/LandNFT-address.json";
+import LandNFTAbi from "../contractsData/LandNFT.json";
+import ZombieNFTAddress from "../contractsData/ZombieNFT-address.json";
+import ZombieNFTAbi from "../contractsData/ZombieNFT.json";
 
 export const web3Handler = () => {
   return new Promise(async (resolve, reject) => {
-    if (typeof window.ethereum !== 'undefined') {
+    if (typeof window.ethereum !== "undefined") {
       try {
-        const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const landContract = new ethers.Contract(LandNFTAddress.address, LandNFTAbi.abi, signer);
-        resolve({account: accounts[0], signer, landContract});
+        const landContract = new ethers.Contract(
+          LandNFTAddress.address,
+          LandNFTAbi.abi,
+          signer
+        );
+        const zombieContract = new ethers.Contract(
+          ZombieNFTAddress.address,
+          ZombieNFTAbi.abi,
+          signer
+        );
+
+        resolve({ account: accounts[0], signer, landContract, zombieContract });
       } catch (err) {
         reject("Metamask connection error");
       }
@@ -18,26 +32,4 @@ export const web3Handler = () => {
       reject("Metamask not installed");
     }
   });
-}
-
-export const loadContracts = async () => {
-  let landNFT = new ethers.Contract(LandNFTAddress.address, LandNFTAbi.abi, signer);
-
-  // setNFT(nft)
-  const totalCount = await landNFT.totalSupply();
-  console.log('totalCount', parseInt(totalCount));
-
-  const userTotalCount = await landNFT.balanceOf(signer.getAddress());
-  console.log('userTotalCount', parseInt(userTotalCount));
-
-  const allLandMedia = await landNFT.getAllLandsMedia();
-  console.log('allLandMedia', allLandMedia);
-
-  const pageNFT = await landNFT.userLands(0, 12);
-  console.log('pageNFT', pageNFT);
-
-  // const firstNFT = await landNFT.userLandByIndex(0);
-  // console.log('firstNFT', firstNFT);
-
-  // setLoading(false)
-}
+};

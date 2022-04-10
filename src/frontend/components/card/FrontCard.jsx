@@ -24,7 +24,7 @@ export const FrontCard = ({
           size !== "sm" ? "h-80" : "h-[11.9rem] rounded-lg"
         }`}
         src={getMedia(nft.media)}
-        alt={nft.token_id ? nft.token_id : ""}
+        alt={nft.tokenId ? nft.tokenId : ""}
       />
       <div className="absolute flex w-full">
         <div className="flex w-full p-2 items-center justify-between">
@@ -35,57 +35,18 @@ export const FrontCard = ({
             {type}
           </Rarity>
 
-          {nft.sale_price && size !== "sm" && !handleBuy && (
-            <Price title={nft.sale_price} />
-          )}
-
-          {nft.token_id && !noMenu && !nft.sale_price ? (
-            <CardDropdown
-              setTransferPopupVisible={setTransferPopupVisible}
-              setSellItems={setSellItems}
-              setKillItem={setKillItem}
-              rmFromMarket={rmFromMarket}
-            />
-          ) : (
-            handleBuy && (
-              <Rarity type={type} className="text-sm p-1">
-                <span>#{formatId(nft.token_id)}</span>
-              </Rarity>
-            )
+          {nft.salePrice && size !== "sm" && !handleBuy && (
+            <Price title={nft.salePrice} />
           )}
         </div>
       </div>
-      {nft.token_id && (
+      {nft.tokenId && (
         <div
           className={`absolute flex font-semibold drop-shadow-md justify-center bg-main/60 py-2 rounded-md w-full bottom-0 ${
             size === "sm" ? "text-base pb-1" : "text-xl pb-2"
           }`}
         >
-          <>
-            {handleBuy ? (
-              <Button
-                title={
-                  <>
-                    <span className="mr-1">Buy for</span>
-                    {nft.sale_price} NEAR
-                  </>
-                }
-                size="xs"
-                noIcon
-                onClick={handleBuy}
-              />
-            ) : nft.sale_price && size !== "sm" ? (
-              <Button
-                title="Remove from Market"
-                size="xs"
-                noIcon
-                secondary
-                onClick={rmFromMarket}
-              />
-            ) : (
-              <>#{formatId(nft.token_id)}</>
-            )}
-          </>
+          <>#{formatId(nft.tokenId)}</>
         </div>
       )}
     </CardFront>

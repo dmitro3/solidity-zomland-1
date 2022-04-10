@@ -1,22 +1,22 @@
-import React, {useState} from "react";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import React, { useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
-//     Collections,
-//     ContactUs,
+  //     Collections,
+  //     ContactUs,
+  //     Market,
+  //     Monsters,
+  //     OneCollection,
   Faq,
   Landing,
   Lands,
-//     Market,
-//     Monsters,
-//     OneCollection,
-//     Zombies,
+  Zombies,
   Terms,
   Privacy,
-//     Token,
+  //     Token,
 } from "./pages";
-import {Sidebar} from "./components/sidebar/Sidebar";
-import {web3Handler, loadContracts} from './web3/api';
-import {TransactionList} from './components/TransactionList';
+import { Sidebar } from "./components/sidebar/Sidebar";
+import { web3Handler, loadContracts } from "./web3/api";
+import { TransactionList } from "./components/TransactionList";
 
 export default function App() {
   const [currentUser, setCurrentUser] = React.useState({});
@@ -65,49 +65,49 @@ export default function App() {
       status: "error"
     });
     setTransactionList([...transactionList]);
-  }
+  };
 
   window.web3Login = () => {
-    web3Handler().then(({account, signer, landContract}) => {
-      setCurrentUser({
-        accountId: account,
-        tokenBalance: 0
-      });
-      setLandContract(landContract);
-
-      console.log(account, signer, landContract);
-
-      window.ethereum.on('chainChanged', (chainId) => {
-        console.log('chainChanged', chainId);
-        window.location.reload();
-      });
-
-      window.ethereum.on('accountsChanged', async function (accounts) {
-        console.log('accountsChanged', accounts);
+    web3Handler()
+      .then(({ account, signer, landContract, zombieContract }) => {
         setCurrentUser({
-          accountId: accounts[0],
-          tokenBalance: 0
+          accountId: account,
+          tokenBalance: 0,
         });
-      });
+        setLandContract(landContract);
+        setZombieContract(zombieContract);
 
-      setIsReady(true);
+        window.ethereum.on("chainChanged", (chainId) => {
+          console.log("chainChanged", chainId);
+          window.location.reload();
+        });
 
-    }).catch(err => {
-      console.log('ERR', err);
+        window.ethereum.on("accountsChanged", async function (accounts) {
+          console.log("accountsChanged", accounts);
+          setCurrentUser({
+            accountId: accounts[0],
+            tokenBalance: 0,
+          });
+        });
 
-      let allowPathList = [
-        "/",
-        "/terms-conditions",
-        "/privacy-policy",
-        "/faq",
-      ];
-      if (allowPathList.indexOf(window.location.pathname) === -1) {
-        window.location.href = "/";
-      } else {
         setIsReady(true);
-      }
-    });
-  }
+      })
+      .catch((err) => {
+        console.log("ERR", err);
+
+        let allowPathList = [
+          "/",
+          "/terms-conditions",
+          "/privacy-policy",
+          "/faq",
+        ];
+        if (allowPathList.indexOf(window.location.pathname) === -1) {
+          window.location.href = "/";
+        } else {
+          setIsReady(true);
+        }
+      });
+  };
 
   React.useEffect(() => {
     window.web3Login();
@@ -118,119 +118,120 @@ export default function App() {
   }, [sellList]);
 
   return (
-      <BrowserRouter>
-        {isReady && (
-            <>
-              <Routes>
-                <Route
-                    exact
-                    path="/"
-                    element={
-                      <Landing currentUser={currentUser} contract={contract}/>
-                    }
-                />
-                <Route
-                    exact
-                    path="/lands"
-                    element={
-                      <Lands
-                          currentUser={currentUser}
-                          contract={contract}
-                          landContract={landContract}
-                          sellList={sellList}
-                          setSellList={setSellList}
-                          appendTransactionList={(tx) => appendTransactionList(tx)}
-                          appendTransactionError={(tx) => appendTransactionError(tx)}
-                      />
-                    }
-                />
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/zombies"*/}
-                {/*    element={*/}
-                {/*      <Zombies*/}
-                {/*        currentUser={currentUser}*/}
-                {/*        contract={contract}*/}
-                {/*        sellList={sellList}*/}
-                {/*        setSellList={setSellList}*/}
-                {/*      />*/}
-                {/*    }*/}
-                {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/collections"*/}
-                {/*    element={*/}
-                {/*      <Collections currentUser={currentUser} contract={contract} />*/}
-                {/*    }*/}
-                {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/collections/:collection_id"*/}
-                {/*    element={*/}
-                {/*      <OneCollection currentUser={currentUser} contract={contract} />*/}
-                {/*    }*/}
-                {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/monsters"*/}
-                {/*    element={*/}
-                {/*      <Monsters*/}
-                {/*        currentUser={currentUser}*/}
-                {/*        contract={contract}*/}
-                {/*        sellList={sellList}*/}
-                {/*        setSellList={setSellList}*/}
-                {/*      />*/}
-                {/*    }*/}
-                {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/market"*/}
-                {/*    element={<Market currentUser={currentUser} contract={contract} />}*/}
-                {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/token"*/}
-                {/*    element={*/}
-                {/*      <Token*/}
-                {/*        currentUser={currentUser}*/}
-                {/*        contract={contract}*/}
-                {/*        ftContract={ftContract}*/}
-                {/*      />*/}
-                {/*    }*/}
-                {/*  />*/}
-                {/*  <Route*/}
-                {/*    exact*/}
-                {/*    path="/contact-us"*/}
-                {/*    element={<ContactUs currentUser={currentUser} />}*/}
-                {/*  />*/}
-                <Route
-                    exact
-                    path="/faq"
-                    element={<Faq currentUser={currentUser} contract={contract}/>}
-                />
-                <Route
-                    exact
-                    path="/terms-conditions"
-                    element={<Terms currentUser={currentUser}/>}
-                />
-                <Route
-                    exact
-                    path="/privacy-policy"
-                    element={<Privacy currentUser={currentUser}/>}
-                />
-              </Routes>
-
-              <Sidebar
+    <BrowserRouter>
+      {isReady && (
+        <>
+          <Routes>
+            <Route
+              exact
+              path="/"
+              element={
+                <Landing currentUser={currentUser} contract={contract} />
+              }
+            />
+            <Route
+              exact
+              path="/lands"
+              element={
+                <Lands
                   currentUser={currentUser}
                   contract={contract}
+                  landContract={landContract}
                   sellList={sellList}
                   setSellList={setSellList}
-                  isOpen={sidebarIsOpen}
-                  setIsOpen={setSidebarIsOpen}
-              />
-              <TransactionList txList={transactionList}/>
-            </>
-        )}
-      </BrowserRouter>
+                  appendTransactionList={(tx) => appendTransactionList(tx)}
+                  appendTransactionError={(tx) => appendTransactionError(tx)}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/zombies"
+              element={
+                <Zombies
+                  currentUser={currentUser}
+                  contract={contract}
+                  zombieContract={zombieContract}
+                  sellList={sellList}
+                  setSellList={setSellList}
+                />
+              }
+            />
+            {/*  <Route*/}
+            {/*    exact*/}
+            {/*    path="/collections"*/}
+            {/*    element={*/}
+            {/*      <Collections currentUser={currentUser} contract={contract} />*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*  <Route*/}
+            {/*    exact*/}
+            {/*    path="/collections/:collection_id"*/}
+            {/*    element={*/}
+            {/*      <OneCollection currentUser={currentUser} contract={contract} />*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*  <Route*/}
+            {/*    exact*/}
+            {/*    path="/monsters"*/}
+            {/*    element={*/}
+            {/*      <Monsters*/}
+            {/*        currentUser={currentUser}*/}
+            {/*        contract={contract}*/}
+            {/*        sellList={sellList}*/}
+            {/*        setSellList={setSellList}*/}
+            {/*      />*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*  <Route*/}
+            {/*    exact*/}
+            {/*    path="/market"*/}
+            {/*    element={<Market currentUser={currentUser} contract={contract} />}*/}
+            {/*  />*/}
+            {/*  <Route*/}
+            {/*    exact*/}
+            {/*    path="/token"*/}
+            {/*    element={*/}
+            {/*      <Token*/}
+            {/*        currentUser={currentUser}*/}
+            {/*        contract={contract}*/}
+            {/*        ftContract={ftContract}*/}
+            {/*      />*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*  <Route*/}
+            {/*    exact*/}
+            {/*    path="/contact-us"*/}
+            {/*    element={<ContactUs currentUser={currentUser} />}*/}
+            {/*  />*/}
+            <Route
+              exact
+              path="/faq"
+              element={<Faq currentUser={currentUser} contract={contract} />}
+            />
+            <Route
+              exact
+              path="/terms-conditions"
+              element={<Terms currentUser={currentUser} />}
+            />
+            <Route
+              exact
+              path="/privacy-policy"
+              element={<Privacy currentUser={currentUser} />}
+            />
+          </Routes>
+
+          <Sidebar
+            currentUser={currentUser}
+            contract={contract}
+            sellList={sellList}
+            setSellList={setSellList}
+            isOpen={sidebarIsOpen}
+            setIsOpen={setSidebarIsOpen}
+          />
+          <TransactionList txList={transactionList} />
+        </>
+      )}
+    </BrowserRouter>
   );
 }
