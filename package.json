@@ -38,6 +38,8 @@
   "scripts": {
     "deploy": "npx hardhat run src/backend/scripts/deploy.js --network localhost",
     "start": "NODE_ENV=local parcel src/index.html --open",
+    "console": "npx hardhat console --network localhost",
+    "local": "npx hardhat node",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
