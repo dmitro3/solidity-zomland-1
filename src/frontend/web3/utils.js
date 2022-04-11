@@ -1,16 +1,29 @@
 import Big from "big.js";
 
+export const landTypeMap = {
+  0: "Small",
+  1: "Medium",
+  2: "Large"
+};
+
+export const rarityMap = {
+  0: "Common",
+  1: "Uncommon",
+  2: "Rare",
+  3: "Epic",
+};
+
 export const defaultGas = Big(60)
-    .times(10 ** 12)
-    .toFixed();
+  .times(10 ** 12)
+  .toFixed();
 
 export const getMedia = (media) =>
-    `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
+  `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
 
 export const convertFromYocto = (amount, digits = 1) => {
   return Big(amount)
-      .div(10 ** 18)
-      .toFixed(digits);
+    .div(10 ** 18)
+    .toFixed(digits);
 };
 
 export const convertFromNanoSeconds = (timestamp) => {
@@ -19,18 +32,17 @@ export const convertFromNanoSeconds = (timestamp) => {
 
 export const convertToYocto = (amount) => {
   return Big(amount)
-      .times(10 ** 18)
-      .toFixed();
+    .times(10 ** 18)
+    .toFixed();
 };
 export const convertToTera = (amount) => {
   return Big(amount)
-      .times(10 ** 12)
-      .toFixed();
+    .times(10 ** 12)
+    .toFixed();
 };
 
 export const formatId = (tokenId) => {
-  let token = tokenId.split("-");
-  return token[0].toUpperCase() + token[1];
+  return tokenId;
 };
 
 export const statusColorTextMap = (status) => {
@@ -77,3 +89,34 @@ export const rmFromMarket = async (contract, item) => {
     token_list: [item.tokenId],
   });
 };
+
+export const transformLand = (land) => {
+  return {
+    tokenId: parseInt(land.tokenId).toString(),
+    landType: landTypeMap[land.landType],
+    lastZombieClaim: parseInt(land.lastZombieClaim),
+    salePrice: parseInt(land.salePrice) || null,
+    media: land.media,
+    nftType: land.nftType,
+    ownerId: land.ownerId,
+    discoverEvents: parseInt(land.discoverEvents)
+  };
+}
+
+export const transformZombie = (zombie) => {
+  return {
+    tokenId: parseInt(zombie.tokenId).toString(),
+    cardRarity: rarityMap[zombie.cardRarity],
+    killTokens: parseInt(zombie.killTokens),
+    salePrice: parseInt(zombie.salePrice) || null,
+    media: zombie.media,
+    nftType: zombie.nftType,
+    ownerId: zombie.ownerId,
+    health: zombie.health,
+    attack: zombie.attack,
+    brain: zombie.brain,
+    speed: zombie.speed,
+    mintDate: zombie.mintDate,
+    collection: zombie.collection,
+  }
+}

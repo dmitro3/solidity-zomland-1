@@ -3,24 +3,30 @@ import { statusColorBorderMap, statusColorTextMap } from "../../web3/utils";
 
 export const CardInner = styled.div.attrs(() => ({
   className: `relative h-full w-full text-center`,
+}))``;
+
+export const InfoWrapper = styled.div.attrs(() => ({
+  className:
+    "absolute z-10 font-semibold flex drop-shadow-md justify-center pt-1 bg-main/80 rounded-md w-full bottom-0",
 }))`
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
+  bottom: ${(props) => (props.withBtn ? "-202px" : "-156px")};
+  transition: 0.5s;
 `;
 
 export const FlipCard = styled.div`
   width: 220px;
   height: 328px;
-  perspective: 600px;
+  position: relative;
+  overflow: hidden;
 
   &.small {
     width: 140px;
     height: 198px;
-    perspective: 300px;
   }
 
-  &:hover ${CardInner} {
-    transform: ${(props) => !props.noFlip && "rotateY(180deg)"};
+  &:hover ${InfoWrapper} {
+    transition: 0.4s;
+    bottom: 0;
   }
 `;
 

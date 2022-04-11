@@ -7,7 +7,7 @@ export default function MintZombiePopup({
   mintPopupVisible,
   setMintPopupVisible,
   userLands,
-  handleMint,
+  handleMint
 }) {
   const funRef = useRef(null);
   const [currentDate, setCurrentDate] = useState(Date.now());
@@ -61,7 +61,7 @@ export default function MintZombiePopup({
         {userLands.map((land) => (
           <div className="flex sm:gap-4 mb-3" key={land.tokenId}>
             <div className="hidden sm:flex">
-              <img src={getMedia(land.media)} alt="land" width="40" />
+              <img src={getMedia(land.media)} alt="land" width="40"/>
             </div>
             <div className="basis-1/3 sm:pt-4 pt-2 font-semibold">
               {land.landType} Land #{formatId(land.tokenId)}
@@ -76,7 +76,7 @@ export default function MintZombiePopup({
                     title="Mint Zombies"
                     size="sm"
                     secondary
-                    onClick={() => handleMint(land.tokenId, land.landType)}
+                    onClick={() => handleMint(land.tokenId)}
                   />
                 </div>
               ) : (
@@ -84,7 +84,7 @@ export default function MintZombiePopup({
                   {timeDiff(land.lastZombieClaim) < 86400 && (
                     <p className="text-red-300 text-center pl-7 text-base pt-2 leading-4 font-[Exo]">
                       <small>Next mint:</small>
-                      <br />
+                      <br/>
                       <small>
                         {secondsToString(timeDiff(land.lastZombieClaim))}
                       </small>

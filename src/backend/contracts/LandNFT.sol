@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
@@ -8,8 +9,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-error LandsLimitError(string message, uint limit);
-error LandsSmallLimitError(string message);
+  error LandsLimitError(string message, uint limit);
+  error LandsSmallLimitError(string message);
 
 contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
   using Counters for Counters.Counter;
@@ -26,6 +27,7 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
     LandType landType;
     uint lastZombieClaim;
     uint salePrice;
+    string media;
     string nftType;
     uint discoverEvents;
     address ownerId;
@@ -34,7 +36,7 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
   struct LandTypeData {
     uint price;
     uint limitCount;
-    uint zombiesPerDay;
+    uint8 zombiesPerDay;
     string media;
   }
 
@@ -127,6 +129,20 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
     return result;
   }
 
+  function getLandMintZombiesCount(uint landId) external view returns (uint8) {
+    uint oneDaySeconds = 60 * 60 * 24;
+    if (block.timestamp - lands[landId].lastZombieClaim >= oneDaySeconds) {
+      LandType landType = lands[landId].landType;
+      return landTypeData[landType].zombiesPerDay;
+    }
+    return 0;
+  }
+
+  function landSetMintTimestamp(uint landId) external {
+    // TODO: allow just for Zombies contract.
+    lands[landId].lastZombieClaim = block.timestamp;
+  }
+
   function safeMint() public payable returns (uint) {
     LandType _landType = landTypeByPrice();
 
@@ -140,20 +156,18 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
 
     landTypeCount[_landType]++;
     accountsWithSmallLand[msg.sender] = true;
-    lands[_tokenId] = Land(_tokenId, _landType, 0, 0, "land", 0, msg.sender);
+    lands[_tokenId] = Land(_tokenId, _landType, 0, 0, landTypeData[_landType].media, "Land", 0, msg.sender);
 
     return _tokenId;
   }
 
-  function userLands(uint _startIndex, uint8 _count) public view returns (Land[] memory) {
-    Land[] memory _resultLands = new Land[](_count);
-    uint _userBalance = super.balanceOf(msg.sender);
+  function userLands() public view returns (Land[] memory) {
+    uint _userLandsCount = super.balanceOf(msg.sender);
+    Land[] memory _resultLands = new Land[](_userLandsCount);
 
-    for (uint _i = _startIndex; _i < _count; _i++) {
-      if (_userBalance > _i) {
-        uint _landId = super.tokenOfOwnerByIndex(msg.sender, _i);
-        _resultLands[_i] = lands[_landId];
-      }
+    for (uint _i = 0; _i < _userLandsCount; _i++) {
+      uint _landId = super.tokenOfOwnerByIndex(msg.sender, _i);
+      _resultLands[_i] = lands[_landId];
     }
     return _resultLands;
   }

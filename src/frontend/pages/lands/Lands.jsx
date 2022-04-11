@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
   convertFromYocto,
-  convertToTera,
-  rmFromMarket,
+  convertToTera, landTypeMap,
+  rmFromMarket, transformLand,
 } from "../../web3/utils";
 import { LandContent } from "../../web3/content";
 import {
@@ -20,8 +20,6 @@ import { Loader } from "../../components/basic/Loader";
 import { Popup } from "../../components/Popup";
 import { MintLandSection } from "./MintLandSection";
 import { Card } from "../../components/card/Card";
-
-const landTypeMap = { 0: "Small", 1: "Medium", 2: "Large" };
 
 export const Lands = ({ currentUser, contract, landContract, sellList, setSellList, appendTransactionList, appendTransactionError }) => {
   const [allLands, setAllLands] = useState({});
@@ -54,19 +52,8 @@ export const Lands = ({ currentUser, contract, landContract, sellList, setSellLi
   useEffect(() => {
     const userLandsPromise = new Promise(async (resolve, reject) => {
       try {
-        const landsObj = await landContract.userLands(0, 12);
-        const lands = landsObj.filter(land => land.nftType).map(land => {
-          return {
-            tokenId: landTypeMap[land.landType][0] + '-' + parseInt(land.tokenId),
-            landType: landTypeMap[land.landType],
-            lastZombieClaim: parseInt(land.lastZombieClaim),
-            salePrice: parseInt(land.salePrice) || null,
-            media: allLands[landTypeMap[land.landType]]?.media,
-            nftType: land.nftType,
-            ownerId: land.ownerId,
-            discoverEvents: parseInt(land.discoverEvents)
-          }
-        });
+        const landsObj = await landContract.userLands();
+        const lands = landsObj.map(land => transformLand(land));
         resolve(lands || []);
       } catch (e) {
         reject(e);

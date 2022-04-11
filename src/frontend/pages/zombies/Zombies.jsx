@@ -6,7 +6,7 @@ import {
   convertToTera,
   convertToYocto,
   formatId,
-  rmFromMarket,
+  rmFromMarket, transformLand, transformZombie,
 } from "../../web3/utils";
 import {
   Container,
@@ -27,17 +27,21 @@ import Dropdown from "../../components/basic/Dropdown";
 import { Pagination } from "../../components/Pagination";
 import { Popup } from "../../components/Popup";
 
-const PAGE_LIMIT = "40";
+const PAGE_LIMIT = "20";
 
 export const Zombies = ({
   currentUser,
   contract,
-  zombieContract,
   sellList,
   setSellList,
+  zombieContract,
+  landContract,
+  appendTransactionList,
+  appendTransactionError
 }) => {
   const [isReady, setIsReady] = useState(false);
-  const [userZombies, setUserZombies] = useState([0, []]); // [<count>, [<arrayOfZombies>]]
+  const [userZombies, setUserZombies] = useState([]);
+  const [userZombiesCount, setUserZombiesCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [userLands, setUserLands] = useState([]);
   const [userClaimCount, setUserClaimCount] = useState(0);
@@ -49,287 +53,244 @@ export const Zombies = ({
   const [filterCollection, setFilterCollection] = useState(null);
   const [allCollections, setAllCollections] = useState([]);
 
-  const [zombieList, setZombieList] = useState([]);
-
   const navigate = useNavigate();
   const location = useLocation();
 
-  const GAS = 100000000000;
-
-  useEffect(() => {
-    async function getZombies() {
-      const zombies = await zombieContract.userZombies(0, 12);
-      console.log(zombies);
-      setZombieList(zombies);
-      setIsReady(true);
-    }
-
-    getZombies();
-  }, []);
-
-  const mintZombie = async () => {
-    setIsReady(false);
-    await zombieContract.safeMint({ value: GAS });
+  async function fetchUserZombies(currentPage) {
+    // if (filterCollection) {
+    //   requestParams["filter_collection"] = Number(filterCollection);
+    // }
+    // if (filterRarity) {
+    //   requestParams["filter_rarity"] = filterRarity;
+    // }
+    const startIndex = (currentPage - 1) * PAGE_LIMIT;
+    let zombiesObj = await zombieContract.userZombies(startIndex, PAGE_LIMIT);
+    let zombies = zombiesObj.filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
+    setUserZombies(zombies);
     setIsReady(true);
+  }
+
+  const fetchCollections = async () => {
+    // setAllCollections(await contract.get_collections());
+  }
+  const fetchCountUserZombies = async () => {
+    const userTotalCount = await zombieContract.balanceOf(currentUser.accountId);
+    setUserZombiesCount(parseInt(userTotalCount));
+  }
+
+  const appendToSellList = (zombie) => {
+    if (
+      !sellList["zombies"].filter((exist) => exist.token_id === zombie.token_id)
+        .length
+    ) {
+      sellList["zombies"].push(zombie);
+      sellList["lands"] = sellList["monsters"] = [];
+      setSellList({ ...sellList });
+    }
   };
 
-  // useEffect(() => {
-  //   async () => {
-  //     const zombies = await zombieContract.userZombies(0, 12);
+  const buildUrl = () => {
+    let url = `/zombies?page=${currentPage}`;
+    // if (filterRarity) url = `${url}&rarity=${filterRarity}`;
+    // if (filterCollection) url = `${url}&collection=${filterCollection}`;
 
-  //     setZombieList(zombies);
-  //   };
-  // },);
+    return url;
+  };
 
-  // async function fetchUserZombies(currentPage) {
-  //   let requestParams = {
-  //     account_id: currentUser.accountId,
-  //     page_num: currentPage.toString(),
-  //     page_limit: PAGE_LIMIT,
-  //   };
-  //   if (filterCollection) {
-  //     requestParams["filter_collection"] = Number(filterCollection);
-  //   }
-  //   if (filterRarity) {
-  //     requestParams["filter_rarity"] = filterRarity;
-  //   }
-  //   let zombies = await contract.user_zombies(requestParams);
+  async function fetchUserLands() {
+    let timeNow = new Date().getTime();
+    let oneDay = 24 * 60 * 60 * 1000;
+    let totalZombiesToMint = 0;
 
-  //   // Convert price from Yocto NEAR
-  //   zombies[1] = zombies[1].map((zm) => {
-  //     if (zm.salePrice) {
-  //       zm.salePrice = convertFromYocto(zm.salePrice);
-  //     }
-  //     return zm;
-  //   });
+    let userLandsObj = await landContract.userLands();
+    let userLands = userLandsObj.map(land => {
+      const lastClaimTimestamp = parseInt(land.lastZombieClaim);
+      if (!lastClaimTimestamp || timeNow - lastClaimTimestamp > oneDay) {
+        if (land.landType === 0) {
+          totalZombiesToMint += 1;
+        } else if (land.landType === 1) {
+          totalZombiesToMint += 4;
+        } else {
+          totalZombiesToMint += 8;
+        }
+      }
 
-  //   setUserZombies(zombies);
-  //   setIsReady(true);
-  // }
+      return transformLand(land);
+    });
 
-  // async function fetchCollections() {
-  //   setAllCollections(await contract.get_collections());
-  // }
+    setUserClaimCount(totalZombiesToMint);
+    setUserLands(userLands);
+  }
 
-  // const appendToSellList = (zombie) => {
-  //   if (
-  //     !sellList["zombies"].filter((exist) => exist.tokenId === zombie.tokenId)
-  //       .length
-  //   ) {
-  //     sellList["zombies"].push(zombie);
-  //     sellList["lands"] = sellList["monsters"] = [];
-  //     setSellList({ ...sellList });
-  //   }
-  // };
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = JSON.parse(searchParams.has("page"))
+      ? searchParams.get("page")
+      : currentPage;
+    // const rarity = JSON.parse(searchParams.has("rarity"))
+    //   ? searchParams.get("rarity")
+    //   : filterRarity;
+    // const collection = JSON.parse(searchParams.has("collection"))
+    //   ? searchParams.get("collection")
+    //   : filterCollection;
 
-  // const buildUrl = () => {
-  //   let url = `/zombies?page=${currentPage}`;
-  //   if (filterRarity) url = `${url}&rarity=${filterRarity}`;
-  //   if (filterCollection) url = `${url}&collection=${filterCollection}`;
+    setCurrentPage(page);
+    // setFilterRarity(rarity);
+    // setFilterCollection(collection);
 
-  //   return url;
-  // };
+    fetchUserLands();
+    fetchCollections();
+    fetchUserZombies(page);
+    fetchCountUserZombies();
+  }, []);
 
-  // async function fetchUserLands() {
-  //   let timeNow = new Date().getTime();
-  //   let oneDay = 24 * 60 * 60 * 1000;
-  //   let userLands = await contract.user_lands({
-  //     account_id: currentUser.accountId,
-  //   });
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchCollections();
+    fetchUserZombies(1);
+    navigate(buildUrl());
+  }, [filterRarity, filterCollection]);
 
-  //   let totalZombiesToMint = 0;
-  //   userLands = userLands.map((land) => {
-  //     const lastClaimTime = convertFromNanoSeconds(land.last_zombie_claim);
-  //     if (!lastClaimTime || timeNow - lastClaimTime > oneDay) {
-  //       land.can_claim = true;
-  //       if (land.landType === "Small") {
-  //         totalZombiesToMint += 1;
-  //       } else if (land.landType === "Medium") {
-  //         totalZombiesToMint += 4;
-  //       } else {
-  //         totalZombiesToMint += 8;
-  //       }
-  //     } else {
-  //       land.can_claim = false;
-  //     }
-  //     return land;
-  //   });
+  useEffect(() => navigate(buildUrl()), [currentPage]);
 
-  //   setUserClaimCount(totalZombiesToMint);
-  //   setUserLands(userLands);
-  // }
+  const handleMint = async (landId) => {
+    await zombieContract.safeMint(landId).then(transaction => {
+      transaction.message = "Minting Zombies";
+      appendTransactionList(transaction);
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          setCurrentPage(1);
+          fetchUserZombies(1);
+          fetchUserLands();
+        } else {
+          alert('Minting error');
+        }
+      });
+    }).catch(err => {
+      appendTransactionError(err.message);
+    });
+  };
 
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams(location.search);
-  //   const page = JSON.parse(searchParams.has("page"))
-  //     ? searchParams.get("page")
-  //     : currentPage;
-  //   const rarity = JSON.parse(searchParams.has("rarity"))
-  //     ? searchParams.get("rarity")
-  //     : filterRarity;
-  //   const collection = JSON.parse(searchParams.has("collection"))
-  //     ? searchParams.get("collection")
-  //     : filterCollection;
+  const showMintZombiesBlock = () => {
+    setMintPopupVisible(true);
+  };
 
-  //   setCurrentPage(page);
-  //   setFilterRarity(rarity);
-  //   setFilterCollection(collection);
+  const handleTransfer = async (zombie, transferAddress) => {
+    // let gas = convertToTera("60");
+    // await contract.transfer_zombie(
+    //   {
+    //     token_id: zombie.token_id,
+    //     recipient_id: transferAddress,
+    //   },
+    //   gas,
+    //   1
+    // );
+  };
 
-  //   fetchUserLands();
-  //   fetchCollections();
-  //   fetchUserZombies(page);
-  // }, []);
+  const rarityOptions = () => {
+    return [
+      {
+        title: "All",
+        onClick: () => setFilterRarity(null),
+      },
+      {
+        title: "Common",
+        onClick: () => setFilterRarity("Common"),
+      },
+      {
+        title: "Uncommon",
+        onClick: () => setFilterRarity("Uncommon"),
+      },
+      {
+        title: "Rare",
+        onClick: () => setFilterRarity("Rare"),
+      },
+      {
+        title: "Epic",
+        onClick: () => setFilterRarity("Epic"),
+      },
+    ];
+  };
 
-  // useEffect(() => {
-  //   setCurrentPage(1);
-  //   fetchCollections();
-  //   fetchUserZombies(1);
-  //   navigate(buildUrl());
-  // }, [filterRarity, filterCollection]);
+  const collectionOptions = () => {
+    const collections = Object.keys(allCollections).map((key) => {
+      return {
+        title: allCollections[key].title,
+        onClick: () => setFilterCollection(key),
+      };
+    });
+    return [
+      {
+        title: "All",
+        onClick: () => setFilterCollection(null),
+      },
+      ...collections,
+    ];
+  };
 
-  // useEffect(() => navigate(buildUrl()), [currentPage]);
+  const onPageChanged = (page) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
-  // const handleMint = async (landId, landType) => {
-  //   let gas;
-  //   let deposit;
+    setCurrentPage(page);
+    fetchUserZombies(page);
+  };
 
-  //   if (landType === "Small") {
-  //     gas = convertToTera("50");
-  //     deposit = convertToYocto("0.01");
-  //   } else if (landType === "Medium") {
-  //     gas = convertToTera("120");
-  //     deposit = convertToYocto("0.035");
-  //   } else {
-  //     gas = convertToTera("200");
-  //     deposit = convertToYocto("0.07");
-  //   }
+  const showKillPopup = async (item) => {
+    // setKillItem(item);
+    // let tokens = await contract.zombie_kill_tokens({
+    //   token_id: item.token_id,
+    // });
+    // setKillTokens(tokens);
+    // setKillPopupVisible(true);
+  };
 
-  //   let newZombies = await contract.mint_free_zombie_nft(
-  //     { land_id: landId },
-  //     gas,
-  //     deposit
-  //   );
-  //   setUserZombies([...userZombies, ...newZombies]);
-  // };
+  const handleKill = async () => {
+    // let gas = convertToTera("90");
+    // await contract.kill_zombie(
+    //   {
+    //     zombie_id: killItem.token_id,
+    //   },
+    //   gas,
+    //   1
+    // );
+  };
 
-  // const showMintZombiesBlock = () => {
-  //   setMintPopupVisible(true);
-  // };
-
-  // const handleTransfer = async (zombie, transferAddress) => {
-  //   let gas = convertToTera("60");
-  //   await contract.transfer_zombie(
-  //     {
-  //       tokenId: zombie.tokenId,
-  //       recipient_id: transferAddress,
-  //     },
-  //     gas,
-  //     1
-  //   );
-  // };
-
-  // const rarityOptions = () => {
-  //   return [
-  //     {
-  //       title: "All",
-  //       onClick: () => setFilterRarity(null),
-  //     },
-  //     {
-  //       title: "Common",
-  //       onClick: () => setFilterRarity("Common"),
-  //     },
-  //     {
-  //       title: "Uncommon",
-  //       onClick: () => setFilterRarity("Uncommon"),
-  //     },
-  //     {
-  //       title: "Rare",
-  //       onClick: () => setFilterRarity("Rare"),
-  //     },
-  //     {
-  //       title: "Epic",
-  //       onClick: () => setFilterRarity("Epic"),
-  //     },
-  //   ];
-  // };
-
-  // const collectionOptions = () => {
-  //   const collections = Object.keys(allCollections).map((key) => {
-  //     return {
-  //       title: allCollections[key].title,
-  //       onClick: () => setFilterCollection(key),
-  //     };
-  //   });
-  //   return [
-  //     {
-  //       title: "All",
-  //       onClick: () => setFilterCollection(null),
-  //     },
-  //     ...collections,
-  //   ];
-  // };
-
-  // const onPageChanged = (page) => {
-  //   window.scrollTo({ top: 0, behavior: "smooth" });
-
-  //   setCurrentPage(page);
-  //   fetchUserZombies(page);
-  // };
-
-  // const showKillPopup = async (item) => {
-  //   setKillItem(item);
-  //   let tokens = await contract.zombie_kill_tokens({
-  //     tokenId: item.tokenId,
-  //   });
-  //   setKillTokens(tokens);
-  //   setKillPopupVisible(true);
-  // };
-
-  // const handleKill = async () => {
-  //   let gas = convertToTera("90");
-  //   await contract.kill_zombie(
-  //     {
-  //       zombie_id: killItem.tokenId,
-  //     },
-  //     gas,
-  //     1
-  //   );
-  // };
-
-  // const hasLands = userLands.length > 0;
-  // const hasZombies = zombieList[0] > 0;
+  const hasLands = userLands.length > 0;
+  const hasZombies = userZombiesCount > 0;
 
   return (
     <InnerPageWrapper>
-      <Header currentUser={currentUser} />
+      <Header currentUser={currentUser}/>
 
       <Wrapper>
         <Container className="text-white text-center mt-6">
           <InnerPageHead
             title={ZombieContent.title}
-            description={ZombieContent.description}
+            description={hasLands ? ZombieContent.description : ""}
           />
 
           {isReady ? (
             <>
-              {zombieList?.length > 0 ? (
+              {hasLands ? (
                 <div className="sm:flex justify-between mt-8">
                   <div className="lg:basis-4/12 lg:flex hidden text-lg text-left pt-4 pl-1">
                     Available:
                     <span className="ml-2 font-semibold text-orange-500">
-                      {zombieList.length} NFTs
+                      {userZombiesCount} NFTs
                     </span>
                   </div>
 
                   <Button
-                    title="Mint Zombie"
+                    title={`Mint ${
+                      userClaimCount > 0 ? userClaimCount : ""
+                    } Zombie${userClaimCount !== 1 ? "s" : ""}`}
                     size="lg"
                     noIcon
-                    // readonly={userClaimCount === 0}
-                    onClick={mintZombie}
+                    disabled={userClaimCount === 0}
+                    onClick={showMintZombiesBlock}
                   />
 
-                  {/* <div className="lg:basis-4/12 basis-full z-10 sm:text-right ml-2 mt-3 sm:mt-0">
+                  <div className="lg:basis-4/12 basis-full z-10 sm:text-right ml-2 mt-3 sm:mt-0">
                     <div className="inline-block mr-3">
                       <Dropdown
                         title="Rarity"
@@ -348,14 +309,11 @@ export const Zombies = ({
                         options={collectionOptions()}
                       />
                     </div>
-                  </div> */}
+                  </div>
                 </div>
               ) : (
                 <div className="mb-7 mt-10 leading-10">
-                  <b className="text-xl text-orange-500">
-                    {LandContent.no_lands}.
-                  </b>{" "}
-                  <br />
+                  <b className="text-xl text-orange-500">{LandContent.no_lands}.</b> <br/>
                   <p className="text-cyan-200 sm:w-1/2 w-3/4 sm:px-16 mx-auto leading-6">
                     {ZombieContent.no_lands_details}
                   </p>
@@ -363,53 +321,59 @@ export const Zombies = ({
               )}
 
               <ListWrapper>
-                {zombieList?.length > 0 ? (
+                {hasZombies ? (
                   <List>
-                    {userZombies[1]?.map((zombie, index) => (
+                    {userZombies?.map((zombie, index) => (
                       <Card
                         nft={zombie}
                         key={index}
-                        // sellItems={sellList["zombies"]}
-                        // setSellItems={() => appendToSellList(zombie)}
-                        // rmFromMarket={async () => {
-                        //   setIsReady(false);
-                        //   await rmFromMarket(contract, zombie);
-                        //   setIsReady(true);
-                        // }}
-                        // handleTransfer={(transferAddress) =>
-                        //   handleTransfer(zombie, transferAddress)
-                        // }
-                        // setKillItem={() => showKillPopup(zombie)}
+                        sellItems={sellList["zombies"]}
+                        setSellItems={() => appendToSellList(zombie)}
+                        rmFromMarket={async () => {
+                          setIsReady(false);
+                          await rmFromMarket(contract, zombie);
+                          setIsReady(true);
+                        }}
+                        handleTransfer={(transferAddress) =>
+                          handleTransfer(zombie, transferAddress)
+                        }
+                        setKillItem={() => showKillPopup(zombie)}
                       />
                     ))}
                   </List>
                 ) : (
-                  <div>You don't have Zombies.</div>
+                  <div>
+                    You don't have <span>{filterRarity}</span>{" "}
+                    {filterCollection
+                      ? allCollections[filterCollection].title
+                      : ""}{" "}
+                    Zombies.
+                  </div>
                 )}
               </ListWrapper>
 
-              {/* <div className="mb-8">
+              <div className="mb-8">
                 <Pagination
-                  total={parseInt(userZombies[0])}
+                  total={userZombiesCount}
                   limit={parseInt(PAGE_LIMIT)}
                   selectedPage={currentPage}
                   onPageChanged={onPageChanged}
                 />
-              </div> */}
+              </div>
             </>
           ) : (
-            <Loader />
+            <Loader/>
           )}
         </Container>
 
-        {/* <MintZombiePopup
+        <MintZombiePopup
           mintPopupVisible={mintPopupVisible}
           setMintPopupVisible={setMintPopupVisible}
           userLands={userLands}
           handleMint={handleMint}
-        /> */}
+        />
 
-        {/* <Popup
+        <Popup
           title="Kill Zombie"
           popupVisible={killPopupVisible}
           setPopupVisible={setKillPopupVisible}
@@ -419,7 +383,7 @@ export const Zombies = ({
               <p className="mb-6">
                 Zombie{" "}
                 <span className="text-xl font-semibold">
-                  #{formatId(killItem.tokenId)}
+                  #{formatId(killItem.token_id)}
                 </span>{" "}
                 will be killed and you will receive{" "}
                 {killTokens && (
@@ -439,14 +403,14 @@ export const Zombies = ({
                 />
               </div>
               <div className="inline-block">
-                <Button title="Kill Zombie" onClick={handleKill} />
+                <Button title="Kill Zombie" onClick={handleKill}/>
               </div>
             </div>
           )}
-        </Popup> */}
+        </Popup>
       </Wrapper>
 
-      <Footer />
+      <Footer/>
     </InnerPageWrapper>
   );
 };

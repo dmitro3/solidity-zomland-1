@@ -116,8 +116,11 @@ export default function App() {
                   currentUser={currentUser}
                   contract={contract}
                   zombieContract={zombieContract}
+                  landContract={landContract}
                   sellList={sellList}
                   setSellList={setSellList}
+                  appendTransactionList={(tx) => appendTransactionList(transactionList, setTransactionList, tx)}
+                  appendTransactionError={(tx) => appendTransactionError(transactionList, setTransactionList, tx)}
                 />
               }
             />
