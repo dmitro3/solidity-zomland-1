@@ -115,13 +115,13 @@ export const Card = ({
           </FlipCard>
           <div className="ml-10 text-left">
             <p className="mb-6 mt-6">
-              You can transfer this NFT to any NEAR account.
+              You can transfer this NFT to any ${process.env.TOKEN_NAME} account.
             </p>
             <p className="mb-3">
               <input
                 type="text"
                 className="px-4 py-2 w-full rounded-md bg-transparent border-indigo-500 text-indigo-100 border-2"
-                placeholder="NEAR Address"
+                placeholder={`${process.env.TOKEN_NAME} Address`}
                 value={transferAddress}
                 onChange={(e) => setTransferAddress(e.target.value)}
               />

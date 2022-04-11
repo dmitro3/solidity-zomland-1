@@ -173,7 +173,7 @@ export const Token = ({currentUser, contract, ftContract}) => {
 
   const handleTransferToken = async () => {
     if (!transferAddress || transferAddress.length < 5) {
-      alert("Please provide correct NEAR Address");
+      alert(`Please provide correct ${process.env.TOKEN_NAME} Address`);
       return false;
     }
     if (!transferAmount || parseFloat(transferAmount) <= 0) {
@@ -224,7 +224,7 @@ export const Token = ({currentUser, contract, ftContract}) => {
         );
       }
     } else {
-      alert("Please, provide correct NEAR Address")
+      alert(`Please, provide correct ${process.env.TOKEN_NAME} Address`)
     }
   };
 
@@ -460,7 +460,7 @@ export const Token = ({currentUser, contract, ftContract}) => {
                       <input
                           type="text"
                           className="px-4 py-2 w-full rounded-md bg-transparent border-indigo-500 text-indigo-100 border-2"
-                          placeholder="NEAR Address"
+                          placeholder={`${process.env.TOKEN_NAME} Address`}
                           value={transferAddress}
                           onChange={(e) => {
                             setTransferAddress(e.target.value);

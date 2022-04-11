@@ -34,7 +34,7 @@ export const SellItem = ({ item_type, nft, cancelSell, setItemPrice, id }) => {
             }}
             className="w-20 px-2 py-1 rounded-md bg-transparent border-2 border-gray-600 mr-1"
           />{" "}
-          NEAR
+          ${process.env.TOKEN_SYMBOL}
         </div>
       </div>
       <div className="absolute right-0 top-5">

@@ -20,7 +20,7 @@ export const MintLandSection = ({
         <Button title={`Mint ${type} Land`} onClick={handleMint}/>
         <div className="mt-3 font-semibold">
           {convertFromYocto(allLands[type].price, 0)}{" "}
-          NEAR
+          {process.env.TOKEN_SYMBOL}
         </div>
       </div>
     </div>
