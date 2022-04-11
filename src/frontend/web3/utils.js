@@ -3,7 +3,7 @@ import Big from "big.js";
 export const landTypeMap = {
   0: "Small",
   1: "Medium",
-  2: "Large"
+  2: "Large",
 };
 
 export const rarityMap = {
@@ -99,9 +99,9 @@ export const transformLand = (land) => {
     media: land.media,
     nftType: land.nftType,
     ownerId: land.ownerId,
-    discoverEvents: parseInt(land.discoverEvents)
+    discoverEvents: parseInt(land.discoverEvents),
   };
-}
+};
 
 export const transformZombie = (zombie) => {
   return {
@@ -118,5 +118,13 @@ export const transformZombie = (zombie) => {
     speed: zombie.speed,
     mintDate: zombie.mintDate,
     collection: zombie.collection,
-  }
-}
+  };
+};
+
+export const transformCollections = (coll, index) => {
+  return {
+    id: parseInt(index).toString(),
+    title: coll.title,
+    image: coll.image,
+  };
+};

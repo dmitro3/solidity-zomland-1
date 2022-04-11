@@ -1,5 +1,4 @@
 async function main() {
-
   const [deployer] = await ethers.getSigners();
 
   console.log("Deploying contracts with the account:", deployer.address);
@@ -19,7 +18,11 @@ async function main() {
   const tokenFT = await TokenFT.deploy(main.address);
 
   const MainContract = await ethers.getContractAt("Main", main.address);
-  await MainContract.updateContractAddress(landNFT.address, zombieNFT.address, tokenFT.address);
+  await MainContract.updateContractAddress(
+    landNFT.address,
+    zombieNFT.address,
+    tokenFT.address
+  );
 
   console.log("Main address", main.address);
   console.log("LandNFT address", landNFT.address);
@@ -66,7 +69,7 @@ function saveFrontendFiles(contract, name) {
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });
