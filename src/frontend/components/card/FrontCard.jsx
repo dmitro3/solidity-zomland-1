@@ -1,9 +1,9 @@
 import React from "react";
-import { getMedia, formatId } from "../../web3/utils";
-import { CardFront, Rarity } from "../../assets/styles/card";
-import { Price } from "../Price";
-import { CardDropdown } from "./CardDropdown";
-import { Button } from "../basic/Button";
+import {getMedia, formatId} from "../../web3/utils";
+import {CardFront, Rarity} from "../../assets/styles/card";
+import {Price} from "../Price";
+import {CardDropdown} from "./CardDropdown";
+import {Button} from "../basic/Button";
 
 export const FrontCard = ({
   nft,
@@ -18,37 +18,52 @@ export const FrontCard = ({
   const type = nft.landType ?? nft.cardRarity;
 
   return (
-    <CardFront type={type}>
-      <img
-        className={`absolute max-w-full ${
-          size !== "sm" ? "h-80" : "h-[11.9rem] rounded-lg"
-        }`}
-        src={getMedia(nft.media)}
-        alt={nft.tokenId ? nft.tokenId : ""}
-      />
-      <div className="absolute flex w-full">
-        <div className="flex w-full p-2 items-center justify-between">
-          <Rarity
-            type={type}
-            className={`${size !== "sm" ? "text-sm pl-2" : "text-xs pl-1"}`}
-          >
-            {type}
-          </Rarity>
+      <CardFront type={type}>
+        <img
+            className={`absolute max-w-full ${
+                size !== "sm" ? "h-80" : "h-[11.9rem] rounded-lg"
+            }`}
+            src={getMedia(nft.media)}
+            alt={nft.tokenId ? nft.tokenId : ""}
+        />
+        <div className="absolute flex w-full">
+          <div className="flex w-full p-2 items-center justify-between">
+            <Rarity
+                type={type}
+                className={`${size !== "sm" ? "text-sm pl-2" : "text-xs pl-1"}`}
+            >
+              {type}
+            </Rarity>
 
-          {nft.salePrice && size !== "sm" && !handleBuy && (
-            <Price title={nft.salePrice}/>
-          )}
+            {nft.salePrice && size !== "sm" && !handleBuy && (
+                <Price title={nft.salePrice}/>
+            )}
+
+            {nft.tokenId && !noMenu && !nft.salePrice ? (
+                <CardDropdown
+                    setTransferPopupVisible={setTransferPopupVisible}
+                    setSellItems={setSellItems}
+                    setKillItem={setKillItem}
+                    rmFromMarket={rmFromMarket}
+                />
+            ) : (
+                handleBuy && (
+                    <Rarity type={type} className="text-sm p-1">
+                      <span>#{formatId(nft.tokenId)}</span>
+                    </Rarity>
+                )
+            )}
+          </div>
         </div>
-      </div>
-      {nft.tokenId && (
-        <div
-          className={`absolute flex font-semibold drop-shadow-md justify-center bg-main/60 py-2 rounded-md w-full bottom-0 ${
-            size === "sm" ? "text-base pb-1" : "text-xl pb-2"
-          }`}
-        >
-          <>#{formatId(nft.tokenId)}</>
-        </div>
-      )}
-    </CardFront>
+        {nft.tokenId && (
+            <div
+                className={`absolute flex font-semibold drop-shadow-md justify-center bg-main/60 py-2 rounded-md w-full bottom-0 ${
+                    size === "sm" ? "text-base pb-1" : "text-xl pb-2"
+                }`}
+            >
+              <>#{formatId(nft.tokenId)}</>
+            </div>
+        )}
+      </CardFront>
   );
 };

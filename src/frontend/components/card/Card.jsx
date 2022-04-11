@@ -115,7 +115,7 @@ export const Card = ({
           </FlipCard>
           <div className="ml-10 text-left">
             <p className="mb-6 mt-6">
-              You can transfer this NFT to any ${process.env.TOKEN_NAME} account.
+              You can transfer this NFT to any {process.env.TOKEN_NAME} account.
             </p>
             <p className="mb-3">
               <input
