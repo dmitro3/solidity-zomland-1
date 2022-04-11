@@ -7,7 +7,8 @@ export default function MintZombiePopup({
   mintPopupVisible,
   setMintPopupVisible,
   userLands,
-  handleMint
+  handleMint,
+  mintInProgressList
 }) {
   const funRef = useRef(null);
   const [currentDate, setCurrentDate] = useState(Date.now());
@@ -75,6 +76,7 @@ export default function MintZombiePopup({
                     title="Mint Zombies"
                     size="sm"
                     secondary
+                    disabled={mintInProgressList.indexOf(land.tokenId) !== -1}
                     onClick={() => handleMint(land.tokenId)}
                   />
                 </div>

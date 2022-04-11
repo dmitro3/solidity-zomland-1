@@ -63,8 +63,11 @@ export const appendTransactionList = (transactionList, setTransactionList, tx) =
       setTransactionList([...transactionList]);
 
       setTimeout(() => {
-        transactionList.splice(index, 1);
-        setTransactionList([...transactionList]);
+        const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
+        if (index !== -1) {
+          transactionList.splice(index, 1);
+          setTransactionList([...transactionList]);
+        }
       }, 5000);
     }
   })
@@ -83,7 +86,7 @@ export const appendTransactionError = (transactionList, setTransactionList, mess
       transactionList.splice(index, 1);
       setTransactionList([...transactionList]);
     }
-  }, 10000);
+  }, 8000);
 };
 
 export const hideTransaction = (transactionList, setTransactionList, index) => {

@@ -52,6 +52,7 @@ export const Zombies = ({
   const [filterRarity, setFilterRarity] = useState(null);
   const [filterCollection, setFilterCollection] = useState(null);
   const [allCollections, setAllCollections] = useState([]);
+  const [mintInProgressList, setMintInProgressList] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -105,10 +106,6 @@ export const Zombies = ({
     let userLandsObj = await landContract.userLands();
     let userLands = userLandsObj.map(land => {
       const lastClaimTimestamp = parseInt(land.lastZombieClaim);
-
-      console.log(timeNow, lastClaimTimestamp, oneDay);
-      console.log(timeNow - lastClaimTimestamp);
-
       if (!lastClaimTimestamp || timeNow - lastClaimTimestamp > oneDay) {
         if (land.landType === 0) {
           totalZombiesToMint += 1;
@@ -158,9 +155,10 @@ export const Zombies = ({
   useEffect(() => navigate(buildUrl()), [currentPage]);
 
   const handleMint = async (landId) => {
+    mintInProgressList.push(landId);
+    setMintInProgressList([...mintInProgressList]);
 
     const gas = await zombieContract.estimateGas.safeMint(landId);
-
     await zombieContract.safeMint(landId, {
       gasLimit: gas * 2
     }).then(transaction => {
@@ -171,15 +169,27 @@ export const Zombies = ({
           fetchUserLands();
           setCurrentPage(1);
           fetchUserZombies(1);
-          console.log("+++");
         } else {
           alert('Minting error');
         }
+
+        setTimeout(() => {
+          removeMintInProgressList(landId);
+        }, 2000);
       });
     }).catch(err => {
       appendTransactionError(err.message);
+      removeMintInProgressList(landId);
     });
   };
+
+  const removeMintInProgressList = (landId) => {
+    let index = mintInProgressList.indexOf(landId);
+    if (index !== -1) {
+      mintInProgressList.splice(index, 1);
+      setMintInProgressList([...mintInProgressList]);
+    }
+  }
 
   const showMintZombiesBlock = () => {
     setMintPopupVisible(true);
@@ -378,6 +388,7 @@ export const Zombies = ({
           setMintPopupVisible={setMintPopupVisible}
           userLands={userLands}
           handleMint={handleMint}
+          mintInProgressList={mintInProgressList}
         />
 
         <Popup
