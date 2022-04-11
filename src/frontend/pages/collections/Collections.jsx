@@ -22,8 +22,8 @@ export const Collections = ({ currentUser, contract, zombieContract }) => {
   useEffect(() => {
     async function fetchCollections() {
       let collectionsObj = await zombieContract.collections(0);
-      let collections = transformCollections(collectionsObj, 0);
-      setAllCollections([collections]);
+      let collection = transformCollections(collectionsObj, 0);
+      setAllCollections([collection]);
       setIsReady(true);
     }
 
