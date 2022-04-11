@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-//import "hardhat/console.sol";
+import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract TokenFT is ERC20 {
   address contractMain;
 
-  uint public rewardRate = 1000000000000;
+  uint public rewardRate = 1000000000000000;
   uint public lastUpdateTime;
   uint public rewardPerTokenStored;
 
@@ -27,11 +28,6 @@ contract TokenFT is ERC20 {
     if (stakingTotalSupply == 0) {
       return rewardPerTokenStored;
     }
-
-    //    console.log("block.timestamp", block.timestamp);
-    //    console.log("lastUpdateTime", lastUpdateTime);
-    //    console.log("rewardRate", rewardRate);
-    //    console.log("stakingTotalSupply", stakingTotalSupply);
 
     return rewardPerTokenStored +
     (((block.timestamp - lastUpdateTime) * rewardRate * 1e18) / stakingTotalSupply);
@@ -55,19 +51,19 @@ contract TokenFT is ERC20 {
   function stake(uint _amount) external updateReward(msg.sender) {
     stakingTotalSupply += _amount;
     _balances[msg.sender] += _amount;
-    transferFrom(msg.sender, address(this), _amount);
+    transfer(address(this), _amount);
   }
 
   function withdraw(uint _amount) external updateReward(msg.sender) {
     stakingTotalSupply -= _amount;
     _balances[msg.sender] -= _amount;
-    transfer(msg.sender, _amount);
+    IERC20(address(this)).transfer(msg.sender, _amount);
   }
 
   function getReward() external updateReward(msg.sender) {
     uint reward = rewards[msg.sender];
     rewards[msg.sender] = 0;
-    transfer(msg.sender, reward);
+    IERC20(address(this)).transfer(msg.sender, reward);
   }
 
   function myBalance() external view returns (uint) {

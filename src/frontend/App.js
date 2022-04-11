@@ -33,7 +33,7 @@ export default function App() {
   });
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
 
-  const web3Login = () => {
+  window.web3Login = () => {
     web3Handler()
       .then(async ({ account, signer, landContract, zombieContract, tokenContract }) => {
         setLandContract(landContract);
@@ -74,7 +74,7 @@ export default function App() {
   };
 
   React.useEffect(() => {
-    web3Login();
+    window.web3Login();
   }, []);
 
   React.useEffect(() => {

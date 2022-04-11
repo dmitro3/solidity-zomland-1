@@ -108,25 +108,26 @@ export const Token = ({ currentUser, setCurrentUser, contract, ftContract, appen
       return false;
     }
 
-    let allowedAmount = await ftContract.allowance(ftContract.address, currentUser.accountId);
-    if (parseInt(allowedAmount) < depositAmount) {
-      await ftContract.approve(currentUser.accountId, depositAmount).then(transaction => {
-        transaction.message = "Approve ZML for staking";
-        appendTransactionList(transaction);
-        transaction.wait().then(async receipt => {
-          if (receipt.status === 1) {
-            console.log('Approved');
-            handleDeposit(depositAmount);
-          } else {
-            appendTransactionError("Approve transaction Failed");
-          }
-        });
-      }).catch(err => {
-        appendTransactionError(err.message);
-      });
-    } else {
-      handleDeposit(depositAmount);
-    }
+    handleDeposit(depositAmount);
+    // let allowedAmount = await ftContract.allowance(ftContract.address, currentUser.accountId);
+    // if (parseInt(allowedAmount) < depositAmount) {
+    //   await ftContract.approve(currentUser.accountId, depositAmount).then(transaction => {
+    //     transaction.message = "Approve ZML for staking";
+    //     appendTransactionList(transaction);
+    //     transaction.wait().then(async receipt => {
+    //       if (receipt.status === 1) {
+    //         console.log('Approved');
+    //         handleDeposit(depositAmount);
+    //       } else {
+    //         appendTransactionError("Approve transaction Failed");
+    //       }
+    //     });
+    //   }).catch(err => {
+    //     appendTransactionError(err.message);
+    //   });
+    // } else {
+    //   handleDeposit(depositAmount);
+    // }
   };
 
   const handleDeposit = async (depositAmount) => {
@@ -170,8 +171,19 @@ export const Token = ({ currentUser, setCurrentUser, contract, ftContract, appen
     });
   };
 
-  const handleWithdrawRewards = () => {
-    ftContract.withdraw_reward();
+  const handleWithdrawRewards = async () => {
+    await ftContract.getReward().then(transaction => {
+      transaction.message = "Claim ZML Rewards";
+      appendTransactionList(transaction);
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          updateEarnedRewards();
+          updateUserBalance(ftContract, setCurrentUser, currentUser.accountId);
+        }
+      });
+    }).catch(err => {
+      appendTransactionError(err.message);
+    });
   };
 
   // const checkApprovedAmount = async (amount) => {
