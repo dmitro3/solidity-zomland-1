@@ -98,13 +98,17 @@ export const Zombies = ({
   };
 
   async function fetchUserLands() {
-    let timeNow = new Date().getTime();
-    let oneDay = 24 * 60 * 60 * 1000;
+    let timeNow = parseInt(new Date().getTime() / 1000);
+    let oneDay = 24 * 60 * 60;
     let totalZombiesToMint = 0;
 
     let userLandsObj = await landContract.userLands();
     let userLands = userLandsObj.map(land => {
       const lastClaimTimestamp = parseInt(land.lastZombieClaim);
+
+      console.log(timeNow, lastClaimTimestamp, oneDay);
+      console.log(timeNow - lastClaimTimestamp);
+
       if (!lastClaimTimestamp || timeNow - lastClaimTimestamp > oneDay) {
         if (land.landType === 0) {
           totalZombiesToMint += 1;
@@ -154,14 +158,20 @@ export const Zombies = ({
   useEffect(() => navigate(buildUrl()), [currentPage]);
 
   const handleMint = async (landId) => {
-    await zombieContract.safeMint(landId).then(transaction => {
+
+    const gas = await zombieContract.estimateGas.safeMint(landId);
+
+    await zombieContract.safeMint(landId, {
+      gasLimit: gas * 2
+    }).then(transaction => {
       transaction.message = "Minting Zombies";
       appendTransactionList(transaction);
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
+          fetchUserLands();
           setCurrentPage(1);
           fetchUserZombies(1);
-          fetchUserLands();
+          console.log("+++");
         } else {
           alert('Minting error');
         }
@@ -283,7 +293,7 @@ export const Zombies = ({
                     } Zombie${userClaimCount !== 1 ? "s" : ""}`}
                     size="lg"
                     noIcon
-                    disabled={userClaimCount === 0}
+                    readonly={userClaimCount === 0}
                     onClick={showMintZombiesBlock}
                   />
 

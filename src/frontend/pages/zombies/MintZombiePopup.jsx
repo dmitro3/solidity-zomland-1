@@ -43,12 +43,11 @@ export default function MintZombiePopup({
     return hours + " hours " + minutes + " min " + seconds + " sec.";
   };
 
-  const timeDiff = (timeInMs) => {
-    const timeNow = new Date().getTime();
-    const oneDay = 24 * 60 * 60 * 1000;
-    const lastClaimTime = convertFromNanoSeconds(timeInMs);
+  const timeDiff = (lastClaimTime) => {
+    const timeNow = parseInt(new Date().getTime() / 1000);
+    const oneDay = 24 * 60 * 60;
     const diff = timeNow - lastClaimTime;
-    return (oneDay - diff) / 1000;
+    return oneDay - diff;
   };
 
   return (
