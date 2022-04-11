@@ -13,9 +13,17 @@ import {
   Terms,
   Privacy,
   Token,
+  Collections,
+  OneCollection,
 } from "./pages";
 import { Sidebar } from "./components/sidebar/Sidebar";
-import { web3Handler, appendTransactionList, appendTransactionError, hideTransaction, updateUserBalance } from "./web3/api";
+import {
+  web3Handler,
+  appendTransactionList,
+  appendTransactionError,
+  hideTransaction,
+  updateUserBalance,
+} from "./web3/api";
 import { TransactionList } from "./components/TransactionList";
 
 export default function App() {
@@ -35,29 +43,37 @@ export default function App() {
 
   window.web3Login = () => {
     web3Handler()
-      .then(async ({ account, signer, landContract, zombieContract, tokenContract }) => {
-        setLandContract(landContract);
-        setZombieContract(zombieContract);
-        setFtContract(tokenContract);
+      .then(
+        async ({
+          account,
+          signer,
+          landContract,
+          zombieContract,
+          tokenContract,
+        }) => {
+          setLandContract(landContract);
+          setZombieContract(zombieContract);
+          setFtContract(tokenContract);
 
-        await updateUserBalance(tokenContract, setCurrentUser, account);
+          await updateUserBalance(tokenContract, setCurrentUser, account);
 
-        window.ethereum.on("chainChanged", (chainId) => {
-          console.log("chainChanged", chainId);
-          window.location.reload();
-        });
-
-        window.ethereum.on("accountsChanged", async function (accounts) {
-          console.log("accountsChanged", accounts);
-          const balance = await tokenContract.balanceOf(account);
-          setCurrentUser({
-            accountId: accounts[0],
-            tokenBalance: balance,
+          window.ethereum.on("chainChanged", (chainId) => {
+            console.log("chainChanged", chainId);
+            window.location.reload();
           });
-        });
 
-        setIsReady(true);
-      })
+          window.ethereum.on("accountsChanged", async function (accounts) {
+            console.log("accountsChanged", accounts);
+            const balance = await tokenContract.balanceOf(account);
+            setCurrentUser({
+              accountId: accounts[0],
+              tokenBalance: balance,
+            });
+          });
+
+          setIsReady(true);
+        }
+      )
       .catch(() => {
         let allowPathList = [
           "/",
@@ -90,7 +106,7 @@ export default function App() {
               exact
               path="/"
               element={
-                <Landing currentUser={currentUser} contract={contract}/>
+                <Landing currentUser={currentUser} contract={contract} />
               }
             />
             <Route
@@ -103,8 +119,20 @@ export default function App() {
                   landContract={landContract}
                   sellList={sellList}
                   setSellList={setSellList}
-                  appendTransactionList={(tx) => appendTransactionList(transactionList, setTransactionList, tx)}
-                  appendTransactionError={(tx) => appendTransactionError(transactionList, setTransactionList, tx)}
+                  appendTransactionList={(tx) =>
+                    appendTransactionList(
+                      transactionList,
+                      setTransactionList,
+                      tx
+                    )
+                  }
+                  appendTransactionError={(tx) =>
+                    appendTransactionError(
+                      transactionList,
+                      setTransactionList,
+                      tx
+                    )
+                  }
                 />
               }
             />
@@ -119,25 +147,45 @@ export default function App() {
                   landContract={landContract}
                   sellList={sellList}
                   setSellList={setSellList}
-                  appendTransactionList={(tx) => appendTransactionList(transactionList, setTransactionList, tx)}
-                  appendTransactionError={(tx) => appendTransactionError(transactionList, setTransactionList, tx)}
+                  appendTransactionList={(tx) =>
+                    appendTransactionList(
+                      transactionList,
+                      setTransactionList,
+                      tx
+                    )
+                  }
+                  appendTransactionError={(tx) =>
+                    appendTransactionError(
+                      transactionList,
+                      setTransactionList,
+                      tx
+                    )
+                  }
                 />
               }
             />
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/collections"*/}
-            {/*    element={*/}
-            {/*      <Collections currentUser={currentUser} contract={contract} />*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/collections/:collection_id"*/}
-            {/*    element={*/}
-            {/*      <OneCollection currentUser={currentUser} contract={contract} />*/}
-            {/*    }*/}
-            {/*  />*/}
+            <Route
+              exact
+              path="/collections"
+              element={
+                <Collections
+                  currentUser={currentUser}
+                  contract={contract}
+                  zombieContract={zombieContract}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/collections/:collection_id"
+              element={
+                <OneCollection
+                  currentUser={currentUser}
+                  contract={contract}
+                  zombieContract={zombieContract}
+                />
+              }
+            />
             {/*  <Route*/}
             {/*    exact*/}
             {/*    path="/monsters"*/}
@@ -164,25 +212,37 @@ export default function App() {
                   setCurrentUser={setCurrentUser}
                   contract={contract}
                   ftContract={ftContract}
-                  appendTransactionList={(tx) => appendTransactionList(transactionList, setTransactionList, tx)}
-                  appendTransactionError={(tx) => appendTransactionError(transactionList, setTransactionList, tx)}
+                  appendTransactionList={(tx) =>
+                    appendTransactionList(
+                      transactionList,
+                      setTransactionList,
+                      tx
+                    )
+                  }
+                  appendTransactionError={(tx) =>
+                    appendTransactionError(
+                      transactionList,
+                      setTransactionList,
+                      tx
+                    )
+                  }
                 />
               }
             />
             <Route
               exact
               path="/faq"
-              element={<Faq currentUser={currentUser} contract={contract}/>}
+              element={<Faq currentUser={currentUser} contract={contract} />}
             />
             <Route
               exact
               path="/terms-conditions"
-              element={<Terms currentUser={currentUser}/>}
+              element={<Terms currentUser={currentUser} />}
             />
             <Route
               exact
               path="/privacy-policy"
-              element={<Privacy currentUser={currentUser}/>}
+              element={<Privacy currentUser={currentUser} />}
             />
           </Routes>
 
@@ -196,7 +256,10 @@ export default function App() {
           />
           <TransactionList
             txList={transactionList}
-            hideTransaction={(index) => hideTransaction(transactionList, setTransactionList, index)}/>
+            hideTransaction={(index) =>
+              hideTransaction(transactionList, setTransactionList, index)
+            }
+          />
         </>
       )}
     </BrowserRouter>

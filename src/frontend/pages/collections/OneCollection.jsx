@@ -14,7 +14,12 @@ import { Footer } from "../../components/Footer";
 import { Popup } from "../../components/Popup";
 import { Button } from "../../components/basic/Button";
 import { PlusIcon } from "@heroicons/react/solid";
-import { convertToTera, convertToYocto, getMedia } from "../../web3/utils";
+import {
+  convertToTera,
+  convertToYocto,
+  getMedia,
+  transformZombie,
+} from "../../web3/utils";
 import { MonsterTopParams } from "../../assets/styles/collection";
 import { Card } from "../../components/card/Card";
 import { Pagination } from "../../components/Pagination";
@@ -22,14 +27,16 @@ import { Pagination } from "../../components/Pagination";
 const MonsterParam = ({ title, pct }) => (
   <div className="whitespace-nowrap text-center">
     <span className={`inline-block w-[100px] text-left`}>{title}:</span>
-    <span className="inline-block font-semibold w-[60px] text-sky-200">{pct}%</span>
+    <span className="inline-block font-semibold w-[60px] text-sky-200">
+      {pct}%
+    </span>
   </div>
 );
 
 const POPUP_PAGE_LIMIT = 40;
 const COLLECTION_ZOMBIES_COUNT = 10;
 
-export const OneCollection = ({ currentUser, contract }) => {
+export const OneCollection = ({ currentUser, contract, zombieContract }) => {
   const { collection_id } = useParams();
   const [isReady, setIsReady] = React.useState(false);
   const [collection, setCollection] = React.useState({});
@@ -48,12 +55,13 @@ export const OneCollection = ({ currentUser, contract }) => {
   };
 
   const loadZombies = async (page) => {
-    const result = await contract.user_zombies({
-      account_id: currentUser.accountId,
-      page_num: page.toString(),
-      page_limit: POPUP_PAGE_LIMIT.toString(),
-      filter_collection: Number(collection_id),
-    });
+    const zombiesObj = await zombieContract.userZombies(
+      page,
+      POPUP_PAGE_LIMIT.toString()
+    );
+    let result = zombiesObj
+      .filter((zombie) => zombie.nftType)
+      .map((zombie) => transformZombie(zombie));
     setUserCollectionZombies(result);
   };
 
@@ -111,27 +119,27 @@ export const OneCollection = ({ currentUser, contract }) => {
     return (countZombieType * oneZombiePct).toFixed(1);
   };
 
-  const mintMonster = async () => {
-    if (countZombieSelected() === COLLECTION_ZOMBIES_COUNT) {
-      const zombie_list = zombieCards
-        .filter((zombie) => zombie)
-        .map((zombie) => zombie.tokenId);
-      const GAS = convertToTera("200");
-      const DEPOSIT = convertToYocto("0.01");
-      await contract.mint_collection(
-        {
-          collection_id: Number(collection_id),
-          zombie_list: zombie_list,
-        },
-        GAS,
-        DEPOSIT
-      );
-    } else {
-      alert(
-        `You need to add ${COLLECTION_ZOMBIES_COUNT} zombies to mint the Monster`
-      );
-    }
-  };
+  // const mintMonster = async () => {
+  //   if (countZombieSelected() === COLLECTION_ZOMBIES_COUNT) {
+  //     const zombie_list = zombieCards
+  //       .filter((zombie) => zombie)
+  //       .map((zombie) => zombie.tokenId);
+  //     const GAS = convertToTera("200");
+  //     const DEPOSIT = convertToYocto("0.01");
+  //     await contract.mint_collection(
+  //       {
+  //         collection_id: Number(collection_id),
+  //         zombie_list: zombie_list,
+  //       },
+  //       GAS,
+  //       DEPOSIT
+  //     );
+  //   } else {
+  //     alert(
+  //       `You need to add ${COLLECTION_ZOMBIES_COUNT} zombies to mint the Monster`
+  //     );
+  //   }
+  // };
 
   return (
     <>
@@ -151,7 +159,9 @@ export const OneCollection = ({ currentUser, contract }) => {
                   <Link to="/monsters">
                     <div className="block font-semibold mt-10 w-1/2 mx-auto py-5 rounded-xl mint-success transition cursor-pointer">
                       <p className="mb-1">You monster successfully minted!</p>
-                      <span className="text-orange-500">Check it on Monsters Page</span>
+                      <span className="text-orange-500">
+                        Check it on Monsters Page
+                      </span>
                     </div>
                   </Link>
                 )}
@@ -199,13 +209,13 @@ export const OneCollection = ({ currentUser, contract }) => {
                       {collection.title} Monster
                     </p>
                     <div className="relative sm:w-full w-3/4 mx-auto">
-                      {
-                        collection.image && (<img
+                      {collection.image && (
+                        <img
                           src={getMedia(collection.image)}
                           alt="monster"
                           className="bg-slate-800 w-54 rounded-xl mx-auto border-4 rounded-xl border-gray-500"
-                        />)
-                      }
+                        />
+                      )}
 
                       {countZombieSelected() ? (
                         <>
@@ -241,8 +251,8 @@ export const OneCollection = ({ currentUser, contract }) => {
                           size="lg"
                           noIcon
                           title="Mint Monster"
-                          disabled={countZombieSelected() < 10}
-                          onClick={mintMonster}
+                          disabled
+                          // onClick={mintMonster}
                         />
                       </div>
 
@@ -269,7 +279,6 @@ export const OneCollection = ({ currentUser, contract }) => {
                       ) : (
                         ""
                       )}
-
                     </div>
                   </div>
                 </div>
