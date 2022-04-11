@@ -236,12 +236,9 @@ export const Zombies = ({
   };
 
   const showKillPopup = async (item) => {
-    // setKillItem(item);
-    // let tokens = await contract.zombie_kill_tokens({
-    //   token_id: item.token_id,
-    // });
-    // setKillTokens(tokens);
-    // setKillPopupVisible(true);
+    setKillItem(item);
+    setKillTokens(item.killTokens);
+    setKillPopupVisible(true);
   };
 
   const handleKill = async () => {
@@ -383,7 +380,7 @@ export const Zombies = ({
               <p className="mb-6">
                 Zombie{" "}
                 <span className="text-xl font-semibold">
-                  #{formatId(killItem.token_id)}
+                  #{formatId(killItem.tokenId)}
                 </span>{" "}
                 will be killed and you will receive{" "}
                 {killTokens && (
