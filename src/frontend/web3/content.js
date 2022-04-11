@@ -34,12 +34,12 @@ export const HomeContent = {
       </li>
       <li>
         <div class="text-lg font-semibold">Medium: 4 zombies/day.</div>
-        <p>Limited by 5,999 lands. Price: 5 ${process.env.TOKEN_NAME}</p>
+        <p>Limited by 5,999 lands. Price: 5 ${process.env.TOKEN_SYMBOL}</p>
         <p class="text-blue-400 rounded-full">Chances to mint rare zombie: +20%</p>
       </li>
       <li>
         <div class="text-lg font-semibold">Large: 8 zombies/day.</div>
-        <p>Limited by 1,999 lands. Price: 9 ${process.env.TOKEN_NAME}</p>
+        <p>Limited by 1,999 lands. Price: 9 ${process.env.TOKEN_SYMBOL}</p>
         <p class="text-purple-400  rounded-full">Chances to mint rare zombie: +50%</p>
       </li>
     </ul>

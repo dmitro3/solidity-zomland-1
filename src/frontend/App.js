@@ -12,7 +12,7 @@ import {
   Zombies,
   Terms,
   Privacy,
-  //     Token,
+  Token,
 } from "./pages";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { web3Handler, appendTransactionList, appendTransactionError, hideTransaction } from "./web3/api";
@@ -90,14 +90,14 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {isReady && (
+      { isReady && (
         <>
           <Routes>
             <Route
               exact
               path="/"
               element={
-                <Landing currentUser={currentUser} contract={contract}/>
+                <Landing currentUser={ currentUser } contract={ contract }/>
               }
             />
             <Route
@@ -105,13 +105,13 @@ export default function App() {
               path="/lands"
               element={
                 <Lands
-                  currentUser={currentUser}
-                  contract={contract}
-                  landContract={landContract}
-                  sellList={sellList}
-                  setSellList={setSellList}
-                  appendTransactionList={(tx) => appendTransactionList(transactionList, setTransactionList, tx)}
-                  appendTransactionError={(tx) => appendTransactionError(transactionList, setTransactionList, tx)}
+                  currentUser={ currentUser }
+                  contract={ contract }
+                  landContract={ landContract }
+                  sellList={ sellList }
+                  setSellList={ setSellList }
+                  appendTransactionList={ (tx) => appendTransactionList(transactionList, setTransactionList, tx) }
+                  appendTransactionError={ (tx) => appendTransactionError(transactionList, setTransactionList, tx) }
                 />
               }
             />
@@ -120,91 +120,86 @@ export default function App() {
               path="/zombies"
               element={
                 <Zombies
-                  currentUser={currentUser}
-                  contract={contract}
-                  zombieContract={zombieContract}
-                  sellList={sellList}
-                  setSellList={setSellList}
+                  currentUser={ currentUser }
+                  contract={ contract }
+                  zombieContract={ zombieContract }
+                  sellList={ sellList }
+                  setSellList={ setSellList }
                 />
               }
             />
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/collections"*/}
-            {/*    element={*/}
-            {/*      <Collections currentUser={currentUser} contract={contract} />*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/collections/:collection_id"*/}
-            {/*    element={*/}
-            {/*      <OneCollection currentUser={currentUser} contract={contract} />*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/monsters"*/}
-            {/*    element={*/}
-            {/*      <Monsters*/}
-            {/*        currentUser={currentUser}*/}
-            {/*        contract={contract}*/}
-            {/*        sellList={sellList}*/}
-            {/*        setSellList={setSellList}*/}
-            {/*      />*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/market"*/}
-            {/*    element={<Market currentUser={currentUser} contract={contract} />}*/}
-            {/*  />*/}
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/token"*/}
-            {/*    element={*/}
-            {/*      <Token*/}
-            {/*        currentUser={currentUser}*/}
-            {/*        contract={contract}*/}
-            {/*        ftContract={ftContract}*/}
-            {/*      />*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/contact-us"*/}
-            {/*    element={<ContactUs currentUser={currentUser} />}*/}
-            {/*  />*/}
+            {/*  <Route*/ }
+            {/*    exact*/ }
+            {/*    path="/collections"*/ }
+            {/*    element={*/ }
+            {/*      <Collections currentUser={currentUser} contract={contract} />*/ }
+            {/*    }*/ }
+            {/*  />*/ }
+            {/*  <Route*/ }
+            {/*    exact*/ }
+            {/*    path="/collections/:collection_id"*/ }
+            {/*    element={*/ }
+            {/*      <OneCollection currentUser={currentUser} contract={contract} />*/ }
+            {/*    }*/ }
+            {/*  />*/ }
+            {/*  <Route*/ }
+            {/*    exact*/ }
+            {/*    path="/monsters"*/ }
+            {/*    element={*/ }
+            {/*      <Monsters*/ }
+            {/*        currentUser={currentUser}*/ }
+            {/*        contract={contract}*/ }
+            {/*        sellList={sellList}*/ }
+            {/*        setSellList={setSellList}*/ }
+            {/*      />*/ }
+            {/*    }*/ }
+            {/*  />*/ }
+            {/*  <Route*/ }
+            {/*    exact*/ }
+            {/*    path="/market"*/ }
+            {/*    element={<Market currentUser={currentUser} contract={contract} />}*/ }
+            {/*  />*/ }
+            <Route
+              exact
+              path="/token"
+              element={
+                <Token
+                  currentUser={ currentUser }
+                  contract={ contract }
+                  ftContract={ ftContract }
+                />
+              }
+            />
             <Route
               exact
               path="/faq"
-              element={<Faq currentUser={currentUser} contract={contract}/>}
+              element={ <Faq currentUser={ currentUser } contract={ contract }/> }
             />
             <Route
               exact
               path="/terms-conditions"
-              element={<Terms currentUser={currentUser}/>}
+              element={ <Terms currentUser={ currentUser }/> }
             />
             <Route
               exact
               path="/privacy-policy"
-              element={<Privacy currentUser={currentUser}/>}
+              element={ <Privacy currentUser={ currentUser }/> }
             />
           </Routes>
 
           <Sidebar
-            currentUser={currentUser}
-            contract={contract}
-            sellList={sellList}
-            setSellList={setSellList}
-            isOpen={sidebarIsOpen}
-            setIsOpen={setSidebarIsOpen}
+            currentUser={ currentUser }
+            contract={ contract }
+            sellList={ sellList }
+            setSellList={ setSellList }
+            isOpen={ sidebarIsOpen }
+            setIsOpen={ setSidebarIsOpen }
           />
           <TransactionList
-            txList={transactionList}
-            hideTransaction={(index) => hideTransaction(transactionList, setTransactionList, index)}/>
+            txList={ transactionList }
+            hideTransaction={ (index) => hideTransaction(transactionList, setTransactionList, index) }/>
         </>
-      )}
+      ) }
     </BrowserRouter>
   );
 }
