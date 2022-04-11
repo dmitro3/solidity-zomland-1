@@ -18,6 +18,7 @@ import {
   convertToTera,
   convertToYocto,
   getMedia,
+  transformCollections,
   transformZombie,
 } from "../../web3/utils";
 import { MonsterTopParams } from "../../assets/styles/collection";
@@ -48,10 +49,13 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const loadCollection = async () => {
-    const result = await contract.get_one_collection({
-      collection_id: Number(collection_id),
-    });
-    setCollection(result);
+    async function fetchCollections() {
+      let collectionsObj = await zombieContract.collections(0);
+      let collection = transformCollections(collectionsObj, 0);
+      setCollection(collection);
+    }
+
+    fetchCollections();
   };
 
   const loadZombies = async (page) => {
@@ -62,6 +66,7 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
     let result = zombiesObj
       .filter((zombie) => zombie.nftType)
       .map((zombie) => transformZombie(zombie));
+    console.log(result);
     setUserCollectionZombies(result);
   };
 
@@ -295,9 +300,9 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
             setPopupVisible={setZombiesPopupVisible}
           >
             <div className="sm:mt-2 sm:px-6">
-              {userCollectionZombies[0] > 0 ? (
+              {userCollectionZombies.length > 0 ? (
                 <div className="flex flex-row gap-4 flex-wrap">
-                  {userCollectionZombies[1]
+                  {userCollectionZombies
                     .filter((zombie) => {
                       let exists = false;
                       zombieCards.map((innerZombie) => {
@@ -324,10 +329,10 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
                 <p>You don't have zombies from this Collection</p>
               )}
 
-              {userCollectionZombies[0] > 1 && (
+              {userCollectionZombies.length > 1 && (
                 <div className="text-center">
                   <Pagination
-                    total={parseInt(userCollectionZombies[0])}
+                    total={parseInt(userCollectionZombies.length)}
                     limit={parseInt(POPUP_PAGE_LIMIT)}
                     selectedPage={currentPage}
                     onPageChanged={onPageChanged}
