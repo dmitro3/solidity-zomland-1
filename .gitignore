@@ -8,6 +8,8 @@
 
 .cache
 .idea
+.env.production
+.env.development
 
 /dist
 

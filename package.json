@@ -2,6 +2,16 @@
   "name": "zomland-solidity",
   "version": "0.0.1",
   "private": false,
+  "license": "",
+  "scripts": {
+    "deploy": "npx hardhat run src/backend/scripts/deploy.js --network localhost",
+    "start": "NODE_ENV=local parcel src/index.html --open",
+    "console": "npx hardhat console --network localhost",
+    "local": "npx hardhat node",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@headlessui/react": "^1.5.0",
     "@heroicons/react": "^1.0.5",
@@ -34,15 +44,6 @@
     "sass-loader": "^12.6.0",
     "style-loader": "^3.3.1",
     "styled-components": "^5.3.3"
-  },
-  "scripts": {
-    "deploy": "npx hardhat run src/backend/scripts/deploy.js --network localhost",
-    "start": "NODE_ENV=local parcel src/index.html --open",
-    "console": "npx hardhat console --network localhost",
-    "local": "npx hardhat node",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
