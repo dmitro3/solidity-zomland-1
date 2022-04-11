@@ -23,7 +23,9 @@ contract TokenFT is ERC20 {
     contractMain = _contractMain;
 
     uint allTokenSupply = 1000000000 * 10 ** decimals();
-    _mint(msg.sender, allTokenSupply);
+    uint stakingSupply = 80000000 * 10 ** decimals();
+    _mint(msg.sender, allTokenSupply - stakingSupply);
+    _mint(address(this), stakingSupply);
   }
 
   function rewardPerToken() public view returns (uint) {
@@ -78,6 +80,10 @@ contract TokenFT is ERC20 {
       return yearSeconds * 1e18 * yearSeconds / stakingTotalSupply;
     }
     return 0;
+  }
+
+  function transferOnKill(address account, uint amount) external {
+    IERC20(address(this)).transfer(account, amount);
   }
   //  function isStakeMonster() external {}
   //  function getStakeMonsterPct() external {}

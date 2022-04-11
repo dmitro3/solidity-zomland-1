@@ -8,14 +8,14 @@ async function main() {
   const Main = await ethers.getContractFactory("Main");
   const main = await Main.deploy();
 
+  const TokenFT = await ethers.getContractFactory("TokenFT");
+  const tokenFT = await TokenFT.deploy(main.address);
+
   const LandNFT = await ethers.getContractFactory("LandNFT");
   const landNFT = await LandNFT.deploy(main.address);
 
   const ZombieNFT = await ethers.getContractFactory("ZombieNFT");
-  const zombieNFT = await ZombieNFT.deploy(main.address, landNFT.address);
-
-  const TokenFT = await ethers.getContractFactory("TokenFT");
-  const tokenFT = await TokenFT.deploy(main.address);
+  const zombieNFT = await ZombieNFT.deploy(main.address, landNFT.address, tokenFT.address);
 
   const MainContract = await ethers.getContractAt("Main", main.address);
   await MainContract.updateContractAddress(

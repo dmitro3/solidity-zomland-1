@@ -20,11 +20,16 @@ interface ILandNFT is IERC721 {
   function landSetMintTimestamp(uint) external;
 }
 
+interface ITokenFT is IERC20 {
+  function transferOnKill(address account, uint amount) external;
+}
+
 contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   address contractMain;
   address contractLands;
+  address contractTokenFT;
 
   enum CardRarity {
     Common,
@@ -60,9 +65,10 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
   uint public collectionCount;
   mapping(uint256 => string) public cardRarity;
 
-  constructor(address _contractMain, address _contractLands) ERC721("ZomLand", "ZMLZ") {
+  constructor(address _contractMain, address _contractLands, address _contractTokenFT) ERC721("ZomLand", "ZMLZ") {
     contractMain = _contractMain;
     contractLands = _contractLands;
+    contractTokenFT = _contractTokenFT;
 
     cardRarity[0] = "Common";
     cardRarity[1] = "Uncommon";
@@ -184,6 +190,6 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
       revert ZombiesKillError({message : "You can't kill this Zombie"});
     }
     _burn(tokenId);
-//    IERC20(address(this)).transfer(msg.sender, zombie.killTokens);
+    ITokenFT(contractTokenFT).transferOnKill(msg.sender, zombie.killTokens);
   }
 }
