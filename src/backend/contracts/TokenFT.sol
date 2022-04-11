@@ -21,7 +21,9 @@ contract TokenFT is ERC20 {
 
   constructor(address _contractMain) ERC20("Zomland", "ZML") {
     contractMain = _contractMain;
-    _mint(msg.sender, 1000000000 * 10 ** decimals());
+
+    uint allTokenSupply = 1000000000 * 10 ** decimals();
+    _mint(msg.sender, allTokenSupply);
   }
 
   function rewardPerToken() public view returns (uint) {
