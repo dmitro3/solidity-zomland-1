@@ -7,7 +7,8 @@ export default function MintZombiePopup({
   mintPopupVisible,
   setMintPopupVisible,
   userLands,
-  handleMint
+  handleMint,
+  mintInProgressList
 }) {
   const funRef = useRef(null);
   const [currentDate, setCurrentDate] = useState(Date.now());
@@ -43,12 +44,11 @@ export default function MintZombiePopup({
     return hours + " hours " + minutes + " min " + seconds + " sec.";
   };
 
-  const timeDiff = (timeInMs) => {
-    const timeNow = new Date().getTime();
-    const oneDay = 24 * 60 * 60 * 1000;
-    const lastClaimTime = convertFromNanoSeconds(timeInMs);
+  const timeDiff = (lastClaimTime) => {
+    const timeNow = parseInt(new Date().getTime() / 1000);
+    const oneDay = 24 * 60 * 60;
     const diff = timeNow - lastClaimTime;
-    return (oneDay - diff) / 1000;
+    return oneDay - diff;
   };
 
   return (
@@ -76,6 +76,7 @@ export default function MintZombiePopup({
                     title="Mint Zombies"
                     size="sm"
                     secondary
+                    disabled={mintInProgressList.indexOf(land.tokenId) !== -1}
                     onClick={() => handleMint(land.tokenId)}
                   />
                 </div>

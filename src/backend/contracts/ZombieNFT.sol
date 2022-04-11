@@ -103,7 +103,7 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
   }
 
   function zombieRandomParam(uint8 num, uint8 max) internal view returns (uint8) {
-    return uint8(uint(keccak256(abi.encodePacked(num, block.difficulty, block.timestamp, uint(1)))) % max);
+    return uint8(uint(keccak256(abi.encodePacked(num, block.difficulty, block.timestamp, uint(1)))) % max) + 1;
   }
 
   function zombieKillTokens(CardRarity _rarity, uint8 health, uint8 attack, uint8 brain, uint8 speed) internal pure returns (uint) {
@@ -126,8 +126,6 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
     }
     uint8 _zombiesMintCount = ILandNFT(contractLands).getLandMintZombiesCount(landId);
 
-    console.log("Can mint", _zombiesMintCount);
-
     if (_zombiesMintCount > 0) {
       for (uint8 _i = 0; _i < _zombiesMintCount; _i++) {
         CardRarity _rarity = randomRarity(_i);
@@ -135,10 +133,10 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
         string memory _uri = randomZombieMedia(_i + 10, _collectionIndex);
 
         uint _tokenId = _tokenIdCounter.current();
-        uint8 _health = zombieRandomParam(_i + 15, 50);
-        uint8 _attack = zombieRandomParam(_i + 20, 25);
-        uint8 _brain = zombieRandomParam(_i + 25, 25);
-        uint8 _speed = zombieRandomParam(_i + 30, 20);
+        uint8 _health = zombieRandomParam(_i + 15, 49);
+        uint8 _attack = zombieRandomParam(_i + 20, 24);
+        uint8 _brain = zombieRandomParam(_i + 25, 24);
+        uint8 _speed = zombieRandomParam(_i + 30, 19);
         uint _killTokens = zombieKillTokens(_rarity, _health, _attack, _brain, _speed);
 
         _tokenIdCounter.increment();
@@ -146,9 +144,6 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
         _setTokenURI(_tokenId, _uri);
         zombies[_tokenId] = Zombie(_tokenId, _rarity, _collectionIndex, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, _speed, "Zombie", msg.sender);
       }
-
-      console.log("landSetMintTimestamp...");
-
       ILandNFT(contractLands).landSetMintTimestamp(landId);
     } else {
       revert ZombiesMintError({message : "You can't mint from this Land"});
