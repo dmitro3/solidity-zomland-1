@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { CollectionContent } from '../../near/content';
-import { getMedia } from '../../near/utils';
+import { CollectionContent } from '../../web3/content';
+import { getMedia } from '../../web3/utils';
 import { Col, Container, InnerPageWrapper, Link, Wrapper } from "../../assets/styles/common.style";
 import { InnerPageHead } from '../../components/InnerPageHead';
 import { Header } from "../../components/Header";

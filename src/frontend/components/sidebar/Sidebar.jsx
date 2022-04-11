@@ -1,6 +1,6 @@
 import React from "react";
 import {ChevronDoubleRightIcon} from "@heroicons/react/outline";
-import {convertToYocto, defaultGas} from "../../near/utils";
+import {convertToYocto, defaultGas} from "../../web3/utils";
 import {Button} from "../basic/Button";
 import {SellItem} from "./SellItem";
 

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import logo from "../assets/images/logo.png";
 import {Container, Link, Row} from "../assets/styles/common.style";
-import {convertFromYocto} from "../near/utils";
+import {convertFromYocto} from "../web3/utils";
 import {Button} from "./basic/Button";
 import {SocialLinks} from "./SocialLinks";
 import {NavLinks} from "./header/NavLinks";

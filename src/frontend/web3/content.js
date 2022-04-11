@@ -5,11 +5,11 @@ export const HomeContent = {
   },
   how_to_play: {
     title: "How To Play",
-    desc: `You need <a href="https://wallet.near.org/" target="_blank">NEAR Wallet</a> and some NEAR tokens balance to play the game to cover blockchain transaction commissions, storage and in-game purchases.`,
+    desc: `You need <a href="${process.env.WALLET_URL}" target="_blank">${process.env.TOKEN_NAME} Wallet</a> and some ${process.env.TOKEN_NAME} tokens balance to play the game to cover blockchain transaction commissions, storage and in-game purchases.`,
   },
   login_using_near: {
-    title: "Login using NEAR",
-    desc: `Create a new <a href="https://wallet.near.org/" target="_blank">NEAR Wallet</a> and following step-by-step guide. Once you've done, you can log into ZomLand using this account.`,
+    title: `Login using ${process.env.TOKEN_NAME}`,
+    desc: `Create a new <a href="${process.env.WALLET_URL}" target="_blank">${process.env.TOKEN_NAME} Wallet</a> and following step-by-step guide. Once you've done, you can log into ZomLand using this account.`,
   },
   mint_or_buy: {
     title: "Mint or buy Land",
@@ -30,16 +30,16 @@ export const HomeContent = {
     <ul class="sm:ml-4 mb-5 list-disc flex flex-col gap-3">
       <li>
         <div class="text-lg font-semibold">Small: 1 zombie/day.</div>
-        <p>Limited by 59,999 lands and one for account. Price: 0.01 NEAR</p>
+        <p>Limited by 59,999 lands and one for account. Price: for free!</p>
       </li>
       <li>
         <div class="text-lg font-semibold">Medium: 4 zombies/day.</div>
-        <p>Limited by 5,999 lands. Price: 5 NEAR</p>
+        <p>Limited by 5,999 lands. Price: 5 ${process.env.TOKEN_NAME}</p>
         <p class="text-blue-400 rounded-full">Chances to mint rare zombie: +20%</p>
       </li>
       <li>
         <div class="text-lg font-semibold">Large: 8 zombies/day.</div>
-        <p>Limited by 1,999 lands. Price: 9 NEAR</p>
+        <p>Limited by 1,999 lands. Price: 9 ${process.env.TOKEN_NAME}</p>
         <p class="text-purple-400  rounded-full">Chances to mint rare zombie: +50%</p>
       </li>
     </ul>
@@ -148,7 +148,7 @@ export const LandContent = {
     <a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
   no_lands: "You don't have Lands",
   no_lands_details:
-    "But you can mint Small Land for free or buy Medium and Large lands",
+      "But you can mint Small Land for free or buy Medium and Large lands",
 };
 
 export const ZombieContent = {
@@ -158,7 +158,7 @@ export const ZombieContent = {
   mint_zombie_from_land: "Select land you want to mint zombies for:",
   no_zombies: "You have no Zombies",
   no_lands_details:
-    "To mint and view zombies you need some Lands. Mint new one in Lands page and return to get zombies from this land.",
+      "To mint and view zombies you need some Lands. Mint new one in Lands page and return to get zombies from this land.",
 };
 
 export const MonsterContent = {
@@ -176,7 +176,7 @@ export const CollectionContent = {
 
 export const MarketContent = {
   title: "Market",
-  description: `You can buy/sell Lands, Zombies and Monsters in the Market. Market using NEAR token and have 0,5% fee.`,
+  description: `You can buy/sell Lands, Zombies and Monsters in the Market. Market using ${process.env.TOKEN_NAME} token and have 0,5% fee.`,
 };
 
 export const ContactUsContent = {
@@ -203,7 +203,7 @@ export const TermsContent = {
   description: `
   <div class="flex flex-col gap-4 px-4">
     <p class="mt-1">
-        The site ZomLand.com is a web browser application that provides users with the opportunity to collect and showcase digital blockchain collectibles containing content solely for entertainment purposes from “ZomLand” web & blockchain application based on NEAR Blockchain. 
+        The site ZomLand.com is a web browser application that provides users with the opportunity to collect and showcase digital blockchain collectibles containing content solely for entertainment purposes from “ZomLand” web & blockchain application based on ${process.env.TOKEN_NAME} Blockchain. 
         ZomLand team making the App available to you. Before you use the App, however, you will need to agree to these Terms of Use and any terms and conditions incorporated herein by reference (collectively, these “Terms").
     </p>
     <p class="mt-1">
@@ -232,17 +232,17 @@ export const TermsContent = {
     1. USE OF THE APP; ACCOUNT SET-UP AND SECURITY
     </p>
     <ul>
-      <li>1.1 Account and Wallet Set-Up. To most easily use the App, you should first install a web browser (such as the Google Chrome web browser). You will also need register to establish an account affiliated with an electronic wallet, which will enable you to purchase and store collectibles that you collect or purchase via the App. Each collectible is a Non-Fungible Token (an “NFT”) on the NEAR blockchain network.</li>
-      <li class="mt-5">1.2 Account Registration. You Account will be register automatically after login using your NEAR Wallet.</li>
+      <li>1.1 Account and Wallet Set-Up. To most easily use the App, you should first install a web browser (such as the Google Chrome web browser). You will also need register to establish an account affiliated with an electronic wallet, which will enable you to purchase and store collectibles that you collect or purchase via the App. Each collectible is a Non-Fungible Token (an “NFT”) on the ${process.env.TOKEN_NAME} blockchain network.</li>
+      <li class="mt-5">1.2 Account Registration. You Account will be register automatically after login using your ${process.env.TOKEN_NAME} Wallet.</li>
       <li class="mt-5">1.3 Account Security. You are responsible for the security of your account for the App and for your electronic wallets. If you become aware of any unauthorized use of your password or of your account with us, you agree to notify us immediately at insert email address.</li>
-      <li class="mt-5">1.4 Account Transactions. You can use your electronic wallet to purchase, store, and engage in transactions using your one or more cryptocurrencies that we may elect to accept from time to time. Transactions that take place on the App are managed and confirmed via the NEAR Network. You understand that your NEAR public address will be made publicly visible whenever you engage in a transaction on the App.</li>
+      <li class="mt-5">1.4 Account Transactions. You can use your electronic wallet to purchase, store, and engage in transactions using your one or more cryptocurrencies that we may elect to accept from time to time. Transactions that take place on the App are managed and confirmed via the ${process.env.TOKEN_NAME} Network. You understand that your ${process.env.TOKEN_NAME} public address will be made publicly visible whenever you engage in a transaction on the App.</li>
     </ul>
     
     <p class="mt-5 text-xl font-semibold">
     2. PURCHASING AND EARNING YOUR COLLECTIBLES
     </p>
     <ul>
-      <li>2.1 Acquiring Collectibles. The App allows you to collect and showcase digital blockchain collectibles (each, a “Collectible”) from the ZomLand. Each Collectible is an NFT on the NEAR Network.</li>
+      <li>2.1 Acquiring Collectibles. The App allows you to collect and showcase digital blockchain collectibles (each, a “Collectible”) from the ZomLand. Each Collectible is an NFT on the ${process.env.TOKEN_NAME} Network.</li>
       <li class="mt-5">2.2 Characteristics of Collectibles. Collectibles are comprised of Art (as defined below) created by the in-house graphics design team of the ZomLand and intended to replicate and pay tribute to a tangible piece of ZomLand memorabilia. Each Collectible has a defined set of attributes – including scarcity – that may impact the value of the Collectible.</li>
       <li class="mt-5">2.3 Subjectivity of Collectibles. The value of each Collectible is inherently subjective in the same way the value of other collectibles is inherently subjective. Each Collectible has no inherent or intrinsic value. Some collectors might prefer to have a Collectible featuring a certain ZomLand item, while another might prefer an equivalent Collectible featuring a different ZomLand item.</li>
     </ul>
@@ -251,8 +251,8 @@ export const TermsContent = {
     3. PAYMENT, GAS FEES AND TAXES
     </p>
     <ul>
-    <li>3.1 Financial Transactions on App. Any payments or financial transactions that you engage in via the App will be conducted solely through the NEAR Network. We have no control over these payments or transactions, nor do we have the ability to reverse any payments or transactions. We have no liability to you or to any third party for any claims or damages that may arise as a result of any payments or transactions that you engage in via the App, or any other payment or transactions that you conduct via the NEAR Network. We do not provide refunds for any purchases that you might make on or through the App – whether for Collectibles, Packs, or anything else.</li>
-    <li class="mt-5">3.2 Gas Fees. Every transaction on the NEAR Network requires the payment of a transaction fee (each, a “Gas Fee”). The Gas Fees fund the network of computers that run the decentralized NEAR Network. This means that you will need to pay a Gas Fee for each transaction that you instigate via the App. Except as otherwise expressly set forth in these Terms, you will be solely responsible to pay any Gas Fee for any transaction that you instigate via the App. If enabled in the future, transactions in Collectibles on the NEAR Network may be subject to additional fees, including fees payable to some or all of the Collectible Parties, which amounts will be deducted from transaction proceeds before payment to the selling party.</li>
+    <li>3.1 Financial Transactions on App. Any payments or financial transactions that you engage in via the App will be conducted solely through the ${process.env.TOKEN_NAME} Network. We have no control over these payments or transactions, nor do we have the ability to reverse any payments or transactions. We have no liability to you or to any third party for any claims or damages that may arise as a result of any payments or transactions that you engage in via the App, or any other payment or transactions that you conduct via the ${process.env.TOKEN_NAME} Network. We do not provide refunds for any purchases that you might make on or through the App – whether for Collectibles, Packs, or anything else.</li>
+    <li class="mt-5">3.2 Gas Fees. Every transaction on the ${process.env.TOKEN_NAME} Network requires the payment of a transaction fee (each, a “Gas Fee”). The Gas Fees fund the network of computers that run the decentralized ${process.env.TOKEN_NAME} Network. This means that you will need to pay a Gas Fee for each transaction that you instigate via the App. Except as otherwise expressly set forth in these Terms, you will be solely responsible to pay any Gas Fee for any transaction that you instigate via the App. If enabled in the future, transactions in Collectibles on the ${process.env.TOKEN_NAME} Network may be subject to additional fees, including fees payable to some or all of the Collectible Parties, which amounts will be deducted from transaction proceeds before payment to the selling party.</li>
     <li class="mt-5">3.3 Responsibility for Taxes. You will be solely responsible to pay any and all sales, use, value-added and other taxes, duties, and assessments (except taxes on our net income) now or hereafter claimed or imposed by any governmental authority (collectively, the “Taxes”) associated with your use of the App. Except for income taxes levied on us, you: (a) will pay or reimburse us for all national, federal, state, local or other taxes and assessments of any jurisdiction, including value added taxes and taxes as required by international tax treaties, customs or other import or export taxes, and amounts levied in lieu thereof based on charges set, services performed or payments made hereunder, as are now or hereafter may be imposed under the authority of any national, state, local or any other taxing jurisdiction; and (b) will not be entitled to deduct the amount of any such taxes, duties or assessments from payments (including Gas Fees) made to us pursuant to these Terms. To allow us to determine our tax obligations, unless you otherwise notify us in writing, you confirm that you are not a resident in Canada nor are you registered for Goods and services tax / Harmonized sales tax (GST / HST) or Provincial sales taxes (PST) in Canada, and will inform us if your status changes in the future.</li>
     </ul>
     
@@ -269,14 +269,14 @@ export const TermsContent = {
         “Art” means any art, design, and drawings (in any form or media, including, without limitation, video or photographs) that may be associated with a Collectible that you Own.
     </p>
     <p>
-        “Own” means, with respect to a Collectible, a Collectible that you have purchased or otherwise rightfully acquired from a legitimate source (and not through any of the Category B Prohibited Activities (as defined below)), where proof of such purchase is recorded on the NEAR Network.
+        “Own” means, with respect to a Collectible, a Collectible that you have purchased or otherwise rightfully acquired from a legitimate source (and not through any of the Category B Prohibited Activities (as defined below)), where proof of such purchase is recorded on the ${process.env.TOKEN_NAME} Network.
     </p>
     <p>
         “Purchased Collectible” means a Collectible that you Own. “Third Party IP” means any third party patent rights (including, without limitation, patent applications and disclosures), copyrights, trade secrets, trademarks, know-how or any other intellectual property rights recognized in any country or jurisdiction in the world.
     </p>
     <ul>
-      <li>4.1 Ownership of Collectible. You acknowledge and agree that ZomLand (or as applicable, its licensors) owns all legal right, title and interest in and to the Art and all intellectual property rights therein. Any rights you have in and to the Purchased Collectible are limited to those expressly stated herein. ZomLand and its licensors reserve all rights and ownership in and to the NFT and Art not specifically granted to you in this Agreement. Subject to your continued compliance with these Terms, ZomLand grants you non-exclusive, non-transferable, royalty-free license to use and display the Art for your Purchased Collectibles, solely for your own personal, non-commercial use. Because each Collectible is an NFT on the NEAR Network, when you purchase a Collectible in accordance with these Terms (and not through any of the Category B Prohibited Activities), you own the underlying NFT subject to the terms hereof.</li>
-      <li class="mt-5">4.2 This means that you have the right to swap your Purchased Collectible, sell it, or give it away after any required hold period. Ownership of the Purchased Collectible is mediated entirely by the NEAR Network. Transfers of a Purchased Collectible will be governed by and subject to the terms of any blockchain network on which the transfer is made, including any transfer fees.</li>
+      <li>4.1 Ownership of Collectible. You acknowledge and agree that ZomLand (or as applicable, its licensors) owns all legal right, title and interest in and to the Art and all intellectual property rights therein. Any rights you have in and to the Purchased Collectible are limited to those expressly stated herein. ZomLand and its licensors reserve all rights and ownership in and to the NFT and Art not specifically granted to you in this Agreement. Subject to your continued compliance with these Terms, ZomLand grants you non-exclusive, non-transferable, royalty-free license to use and display the Art for your Purchased Collectibles, solely for your own personal, non-commercial use. Because each Collectible is an NFT on the ${process.env.TOKEN_NAME} Network, when you purchase a Collectible in accordance with these Terms (and not through any of the Category B Prohibited Activities), you own the underlying NFT subject to the terms hereof.</li>
+      <li class="mt-5">4.2 This means that you have the right to swap your Purchased Collectible, sell it, or give it away after any required hold period. Ownership of the Purchased Collectible is mediated entirely by the ${process.env.TOKEN_NAME} Network. Transfers of a Purchased Collectible will be governed by and subject to the terms of any blockchain network on which the transfer is made, including any transfer fees.</li>
       <li class="mt-5">4.3 We Own the App. You acknowledge and agree that we (or, as applicable, our licensors) owns all legal right, title and interest in and to all other elements of the App, and all intellectual property rights therein (including, without limitation, all Art, designs, systems, methods, information, computer code, software, services, “look and feel”, organization, compilation of the content, code, data, and all other elements of the App (collectively, the “App Materials”)). You acknowledge that the App Materials are protected by copyright, trade dress, patent, and trademark laws, international conventions, other relevant intellectual property and proprietary rights, and applicable laws. All App Materials are the copyrighted property of us or our licensors, and all trademarks, service marks, and trade names associated with the App or otherwise contained in the App Materials are proprietary to us or our licensors.</li>
       <li class="mt-5">4.4 No User License or Ownership of App Materials. Except as expressly set forth herein, your use of the App does not grant you ownership of or any other rights with respect to any content, code, data, or other App Materials that you may access on or through the App. We reserve all rights in and to the App Materials that are not expressly granted to you in these Terms.</li>
       <li class="mt-5">4.5 Further User Ownership Acknowledgements. For the sake of clarity, you understand and agree: (a) that your purchase of a Collectible, whether via the App or otherwise, does not give you any rights or licenses in or to the App Materials (including, without limitation, our copyright in and to the associated Art) other than those expressly contained in these Terms; (b) that you do not have the right, except as otherwise set forth in these Terms, to reproduce, distribute, or otherwise commercialize any elements of the App Materials (including, without limitation, any Art) without our prior written consent in each case, which consent we may withhold in our sole and absolute discretion; and (c) that you will not apply for, register, or otherwise use or attempt to use any of our trademarks or service marks, or any confusingly similar marks, anywhere in the world without our prior written consent in each case, which consent we may withhold at our sole and absolute discretion.</li>
@@ -337,13 +337,13 @@ export const TermsContent = {
         YOU ACCEPT THE INHERENT SECURITY RISKS OF PROVIDING INFORMATION AND DEALING ONLINE OVER THE INTERNET AND AGREE THAT THE COLLECTIBLE PARTIES HAVE NO LIABILITY OR RESPONSIBILITY FOR ANY BREACH OF SECURITY UNLESS IT IS DUE TO THEIR GROSS NEGLIGENCE.
     </p>
     <p class="mt-1">
-        THE COLLECTIBLE PARTIES WILL NOT BE RESPONSIBLE OR LIABLE TO YOU FOR ANY LOSSES YOU INCUR AS THE RESULT OF YOUR USE OF THE NEAR NETWORK, OR YOUR ELECTRONIC WALLET, INCLUDING BUT NOT LIMITED TO ANY LOSSES, DAMAGES OR CLAIMS ARISING FROM: (I) USER ERROR, SUCH AS FORGOTTEN PASSWORDS OR INCORRECTLY CONSTRUED SMART CONTRACTS OR OTHER TRANSACTIONS; (II) SERVER FAILURE OR DATA LOSS; (III) CORRUPTED WALLET FILES; (IV) UNAUTHORIZED ACCESS OR ACTIVITIES BY THIRD PARTIES, INCLUDING, BUT NOT LIMITED TO, THE USE OF VIRUSES, PHISHING, BRUTE-FORCING OR OTHER MEANS OF ATTACK AGAINST THE APP, THE NEAR NETWORK, OR ANY ELECTRONIC WALLET OR (V) INCOMPLETE, SLOWED OR DISRUPTED TRANSACTIONS INVOLVING COLLECTIBLES.
+        THE COLLECTIBLE PARTIES WILL NOT BE RESPONSIBLE OR LIABLE TO YOU FOR ANY LOSSES YOU INCUR AS THE RESULT OF YOUR USE OF THE ${process.env.TOKEN_NAME.toUpperCase()} NETWORK, OR YOUR ELECTRONIC WALLET, INCLUDING BUT NOT LIMITED TO ANY LOSSES, DAMAGES OR CLAIMS ARISING FROM: (I) USER ERROR, SUCH AS FORGOTTEN PASSWORDS OR INCORRECTLY CONSTRUED SMART CONTRACTS OR OTHER TRANSACTIONS; (II) SERVER FAILURE OR DATA LOSS; (III) CORRUPTED WALLET FILES; (IV) UNAUTHORIZED ACCESS OR ACTIVITIES BY THIRD PARTIES, INCLUDING, BUT NOT LIMITED TO, THE USE OF VIRUSES, PHISHING, BRUTE-FORCING OR OTHER MEANS OF ATTACK AGAINST THE APP, THE ${process.env.TOKEN_NAME.toUpperCase()} NETWORK, OR ANY ELECTRONIC WALLET OR (V) INCOMPLETE, SLOWED OR DISRUPTED TRANSACTIONS INVOLVING COLLECTIBLES.
     </p>
     <p class="mt-1">
-        COLLECTIBLES ARE INTANGIBLE DIGITAL ASSETS THAT EXIST ONLY BY VIRTUE OF THE OWNERSHIP RECORD MAINTAINED IN THE NEAR NETWORK. ALL SMART CONTRACTS ARE CONDUCTED AND OCCUR ON THE DECENTRALIZED LEDGER WITHIN THE NEAR NETWORK. THE COLLECTIBLE PARTIES HAVE NO CONTROL OVER AND MAKE NO GUARANTEES OR PROMISES WITH RESPECT TO SMART CONTRACTS.
+        COLLECTIBLES ARE INTANGIBLE DIGITAL ASSETS THAT EXIST ONLY BY VIRTUE OF THE OWNERSHIP RECORD MAINTAINED IN THE ${process.env.TOKEN_NAME.toUpperCase()} NETWORK. ALL SMART CONTRACTS ARE CONDUCTED AND OCCUR ON THE DECENTRALIZED LEDGER WITHIN THE ${process.env.TOKEN_NAME.toUpperCase()} NETWORK. THE COLLECTIBLE PARTIES HAVE NO CONTROL OVER AND MAKE NO GUARANTEES OR PROMISES WITH RESPECT TO SMART CONTRACTS.
     </p>
     <p class="mt-1">
-        THE COLLECTIBLE PARTIES ARE NOT RESPONSIBLE FOR LOSSES DUE TO BLOCKCHAINS OR ANY OTHER FEATURES OF THE NEAR NETWORK, OR ANY ELECTRONIC WALLET, INCLUDING BUT NOT LIMITED TO LATE REPORT BY DEVELOPERS OR REPRESENTATIVES (OR NO REPORT AT ALL) OF ANY ISSUES WITH THE BLOCKCHAIN SUPPORTING THE NEAR NETWORK, INCLUDING FORKS, TECHNICAL NODE ISSUES, OR ANY OTHER ISSUES HAVING FUND LOSSES AS A RESULT.
+        THE COLLECTIBLE PARTIES ARE NOT RESPONSIBLE FOR LOSSES DUE TO BLOCKCHAINS OR ANY OTHER FEATURES OF THE ${process.env.TOKEN_NAME.toUpperCase()} NETWORK, OR ANY ELECTRONIC WALLET, INCLUDING BUT NOT LIMITED TO LATE REPORT BY DEVELOPERS OR REPRESENTATIVES (OR NO REPORT AT ALL) OF ANY ISSUES WITH THE BLOCKCHAIN SUPPORTING THE ${process.env.TOKEN_NAME.toUpperCase()} NETWORK, INCLUDING FORKS, TECHNICAL NODE ISSUES, OR ANY OTHER ISSUES HAVING FUND LOSSES AS A RESULT.
     </p>
     
     <p class="mt-5 text-xl font-semibold">
@@ -366,10 +366,10 @@ export const TermsContent = {
     <ul>
       <li>8.1 Value and Volatility. The rights provided to you are for entertainment purposes only. Without limiting the foregoing, the prices of collectible blockchain assets are extremely volatile and subjective and collectible blockchain assets have no inherent or intrinsic value. Fluctuations in the price of other digital assets could materially and adversely affect the value of your Collectibles, which may also be subject to significant price volatility. Each Collectible has no inherent or intrinsic value. We cannot (and do not) guarantee that any Collectibles purchased will retain their original value, as the value of collectibles is inherently subjective and, among other things, factors occurring outside of the ZomLand NFT ecosystem may materially impact the value and desirability of any particular Collectible.</li>
       <li class="mt-5">8.2 Tax Calculations. You are solely responsible for determining what, if any, taxes apply to your Collectible-related transactions. We are not responsible for determining the taxes that apply to your transactions on the App.</li>
-      <li class="mt-5">8.3 Use of Blockchain. The App does not store, send, or receive Collectibles. This is because Collectibles exist only by virtue of the ownership record maintained on the App’s supporting blockchain in the NEAR network. Any transfer of Collectibles occurs within the supporting blockchain in the NEAR network, and not on the App.</li>
-      <li class="mt-5">8.4 Inherent Risks with Internet Currency. There are risks associated with using an Internet-based currency, including, but not limited to, the risk of hardware, software and Internet connections, the risk of malicious software introduction, and the risk that third parties may obtain unauthorized access to information stored within your electronic wallet. You accept and acknowledge that we will not be responsible for any communication failures, disruptions, errors, distortions or delays you may experience when using the NEAR Network, however caused.</li>
+      <li class="mt-5">8.3 Use of Blockchain. The App does not store, send, or receive Collectibles. This is because Collectibles exist only by virtue of the ownership record maintained on the App’s supporting blockchain in the ${process.env.TOKEN_NAME} network. Any transfer of Collectibles occurs within the supporting blockchain in the ${process.env.TOKEN_NAME} network, and not on the App.</li>
+      <li class="mt-5">8.4 Inherent Risks with Internet Currency. There are risks associated with using an Internet-based currency, including, but not limited to, the risk of hardware, software and Internet connections, the risk of malicious software introduction, and the risk that third parties may obtain unauthorized access to information stored within your electronic wallet. You accept and acknowledge that we will not be responsible for any communication failures, disruptions, errors, distortions or delays you may experience when using the ${process.env.TOKEN_NAME} Network, however caused.</li>
       <li class="mt-5">8.5 Regulatory Uncertainty. The regulatory regime governing blockchain technologies, cryptocurrencies and tokens is uncertain, and new regulations or policies may materially adversely affect the development of the Hornets NFT ecosystem, and therefore the potential utility or value of your Collectibles.</li>
-      <li class="mt-5">8.6 Software Risks. Upgrades to the NEAR Network, a hard fork in the NEAR Network, or a change in how transactions are confirmed on the NEAR Network may have unintended, adverse effects on all blockchains using the NEAR Network’s NFT standard, including the ZomLand NFT ecosystem.</li>
+      <li class="mt-5">8.6 Software Risks. Upgrades to the ${process.env.TOKEN_NAME} Network, a hard fork in the ${process.env.TOKEN_NAME} Network, or a change in how transactions are confirmed on the ${process.env.TOKEN_NAME} Network may have unintended, adverse effects on all blockchains using the ${process.env.TOKEN_NAME} Network’s NFT standard, including the ZomLand NFT ecosystem.</li>
     </ul>
     
     <p class="mt-5 text-xl font-semibold">
@@ -456,7 +456,7 @@ export const PrivacyContent = {
     2.1 Information you provide directly to us, including:
   </p>
   <ul>
-    <li>- When you create a User Account, NEAR digital wallet address and NEAR user name;</li>
+    <li>- When you create a User Account, ${process.env.TOKEN_NAME} digital wallet address and ${process.env.TOKEN_NAME} user name;</li>
     <li>- Your purchase history and other information relating to transactions made through the Website;</li>
     <li>- Information contained in your correspondence with us, for example, when you send us an email;</li>
   </ul>
@@ -561,7 +561,7 @@ export const PrivacyContent = {
     Unfortunately, no data transmission over the Internet can be guaranteed as totally secure. We will take reasonable steps to keep your personal 
     information safe from loss, unauthorised activity or other misuse. We implement appropriate technical and organisational measures to ensure a 
     level of security appropriate to the risks inherent in processing personal information. You can play an important role in keeping your personal 
-    data secure by maintaining the confidentiality of NEAR wallet seed phrases and accounts used in relation to the Website, Materials and Services.
+    data secure by maintaining the confidentiality of ${process.env.TOKEN_NAME} wallet seed phrases and accounts used in relation to the Website, Materials and Services.
   </p>
   <p class="mt-1">
     Please notify us immediately if there is any unauthorised use of your account or any other breach of security. While we take reasonable steps to 

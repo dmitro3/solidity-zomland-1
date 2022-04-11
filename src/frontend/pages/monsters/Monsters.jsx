@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { MonsterContent } from "../../near/content";
+import { MonsterContent } from "../../web3/content";
 import {
   convertFromYocto,
   convertToTera,
   formatId,
   rmFromMarket,
-} from "../../near/utils";
+} from "../../web3/utils";
 import {
   Container,
   InnerPageWrapper,

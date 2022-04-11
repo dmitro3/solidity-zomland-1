@@ -36,7 +36,7 @@ export const TransactionList = ({
                 </div>
 
                 {tx.hash && (
-                    <a href={`https://etherscan.io/tx/${tx.hash}`} target="_blank">
+                    <a href={`${process.env.EXPLORER_URL}/tx/${tx.hash}`} target="_blank">
                       Transaction: {tx.hash.slice(0, 7) + '...' + tx.hash.slice(32, 42)}
                     </a>
                 )}

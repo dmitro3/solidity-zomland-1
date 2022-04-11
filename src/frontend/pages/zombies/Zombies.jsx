@@ -7,7 +7,7 @@ import {
   convertToYocto,
   formatId,
   rmFromMarket,
-} from "../../near/utils";
+} from "../../web3/utils";
 import {
   Container,
   InnerPageWrapper,
@@ -15,7 +15,7 @@ import {
 } from "../../assets/styles/common.style";
 import { List } from "../../assets/styles/common.style";
 import { ListWrapper } from "../../assets/styles/common.style";
-import { LandContent, ZombieContent } from "../../near/content";
+import { LandContent, ZombieContent } from "../../web3/content";
 import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
 import { InnerPageHead } from "../../components/InnerPageHead";

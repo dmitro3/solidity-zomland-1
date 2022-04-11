@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { CollectionContent } from "../../near/content";
+import { CollectionContent } from "../../web3/content";
 import {
   Container,
   InnerPageWrapper,
@@ -14,7 +14,7 @@ import { Footer } from "../../components/Footer";
 import { Popup } from "../../components/Popup";
 import { Button } from "../../components/basic/Button";
 import { PlusIcon } from "@heroicons/react/solid";
-import { convertToTera, convertToYocto, getMedia } from "../../near/utils";
+import { convertToTera, convertToYocto, getMedia } from "../../web3/utils";
 import { MonsterTopParams } from "../../assets/styles/collection";
 import { Card } from "../../components/card/Card";
 import { Pagination } from "../../components/Pagination";

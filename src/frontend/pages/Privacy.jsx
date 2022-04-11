@@ -1,5 +1,5 @@
 import React from "react";
-import { PrivacyContent } from "../near/content";
+import { PrivacyContent } from "../web3/content";
 import {
   Container,
   InnerPageWrapper,

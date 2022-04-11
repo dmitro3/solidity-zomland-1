@@ -4,7 +4,7 @@ import {
   convertToTera,
   convertToYocto,
   rmFromMarket,
-} from "../../near/utils";
+} from "../../web3/utils";
 import {
   Container,
   InnerPageWrapper,
@@ -12,7 +12,7 @@ import {
 } from "../../assets/styles/common.style";
 import { List } from "../../assets/styles/common.style";
 import { ListWrapper } from "../../assets/styles/common.style";
-import { MarketContent } from "../../near/content";
+import { MarketContent } from "../../web3/content";
 import { InnerPageHead } from "../../components/InnerPageHead";
 import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";

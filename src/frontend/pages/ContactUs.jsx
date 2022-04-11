@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, InnerPageWrapper, Wrapper } from '../assets/styles/common.style';
-import { ContactUsContent } from '../near/content';
+import { ContactUsContent } from '../web3/content';
 import { Header } from "../components/Header";
 import { Footer } from '../components/Footer';
 import { InnerPageHead } from '../components/InnerPageHead';

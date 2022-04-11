@@ -3,8 +3,8 @@ import {
   convertFromYocto,
   convertToTera,
   rmFromMarket,
-} from "../../near/utils";
-import { LandContent } from "../../near/content";
+} from "../../web3/utils";
+import { LandContent } from "../../web3/content";
 import {
   Container,
   InnerPageWrapper,

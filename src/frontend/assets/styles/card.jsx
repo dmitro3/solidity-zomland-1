@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { statusColorBorderMap, statusColorTextMap } from "../../near/utils";
+import { statusColorBorderMap, statusColorTextMap } from "../../web3/utils";
 
 export const CardInner = styled.div.attrs(() => ({
   className: `relative h-full w-full text-center`,

@@ -1,5 +1,5 @@
 import React from "react";
-import { getMedia, formatId } from "../../near/utils";
+import { getMedia, formatId } from "../../web3/utils";
 import { CardFront, Rarity } from "../../assets/styles/card";
 import { Price } from "../Price";
 import { CardDropdown } from "./CardDropdown";

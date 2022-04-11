@@ -1,5 +1,5 @@
 import React from "react";
-import { TermsContent } from "../near/content";
+import { TermsContent } from "../web3/content";
 import {
   Container,
   InnerPageWrapper,

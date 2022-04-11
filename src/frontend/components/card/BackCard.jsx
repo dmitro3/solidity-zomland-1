@@ -2,7 +2,7 @@ import React from "react";
 import { CardBack } from "../../assets/styles/card";
 import near_logo from "../../assets/images/near-logo.png";
 import land_back from "../../assets/images/land_back.png";
-import { formatId } from "../../near/utils";
+import { formatId } from "../../web3/utils";
 import { Button } from "../basic/Button";
 import { ShoppingCartIcon } from "@heroicons/react/outline";
 

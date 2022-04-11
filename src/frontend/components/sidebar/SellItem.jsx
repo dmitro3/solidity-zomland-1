@@ -1,6 +1,6 @@
 import React from "react";
 import { XIcon } from "@heroicons/react/outline";
-import { getMedia, formatId, statusColorBorderMap } from "../../near/utils";
+import { getMedia, formatId, statusColorBorderMap } from "../../web3/utils";
 
 export const SellItem = ({ item_type, nft, cancelSell, setItemPrice, id }) => {
   const [priceInput, setPriceInput] = React.useState();
