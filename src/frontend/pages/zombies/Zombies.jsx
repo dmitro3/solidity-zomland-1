@@ -167,6 +167,7 @@ export const Zombies = ({
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           fetchUserLands();
+          fetchCountUserZombies();
           setCurrentPage(1);
           fetchUserZombies(1);
         } else {
@@ -262,6 +263,21 @@ export const Zombies = ({
   };
 
   const handleKill = async () => {
+    if (killItem) {
+      await zombieContract.killZombie(killItem.tokenId).then(transaction => {
+        transaction.message = "Kill Zombie to get ZML tokens";
+        appendTransactionList(transaction);
+        transaction.wait().then(receipt => {
+          if (receipt.status === 1) {
+            fetchUserZombies(currentPage);
+          } else {
+            alert('Minting error');
+          }
+        });
+      }).catch(err => {
+        appendTransactionError(err.message);
+      });
+    }
     // let gas = convertToTera("90");
     // await contract.kill_zombie(
     //   {

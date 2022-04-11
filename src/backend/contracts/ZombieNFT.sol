@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
@@ -11,6 +12,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
   error ZombiesMintError(string message);
+  error ZombiesKillError(string message);
 
 interface ILandNFT is IERC721 {
   function getLandMintZombiesCount(uint) external view returns (uint8);
@@ -174,5 +176,14 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
   function addCollection(string memory title, string memory image, string[] memory zombieImages) public onlyOwner {
     collections[collectionCount] = Collection(title, image, zombieImages);
     collectionCount += 1;
+  }
+
+  function killZombie(uint tokenId) public {
+    Zombie storage zombie = zombies[tokenId];
+    if (zombie.ownerId != msg.sender) {
+      revert ZombiesKillError({message : "You can't kill this Zombie"});
+    }
+    _burn(tokenId);
+//    IERC20(address(this)).transfer(msg.sender, zombie.killTokens);
   }
 }
