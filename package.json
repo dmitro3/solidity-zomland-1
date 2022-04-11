@@ -2,7 +2,7 @@
   "name": "zomland-solidity",
   "version": "0.0.1",
   "private": false,
-  "license": "",
+  "license": "MIT",
   "scripts": {
     "deploy": "npx hardhat run src/backend/scripts/deploy.js --network localhost",
     "start": "NODE_ENV=local parcel src/index.html --open",

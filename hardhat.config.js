@@ -23,7 +23,12 @@ module.exports = {
     tests: "./src/backend/test"
   },
   networks: {
-    hardhat: {},
+    hardhat: {
+      mining: {
+        auto: false,
+        interval: 1000
+      }
+    },
     // meter_testnet: {
     //   url: "https://rpctest.meter.io",
     //   accounts: [`${process.env.METER_TESTNET_PRIVATE_KEY}`]

@@ -76,9 +76,25 @@ export const appendTransactionError = (transactionList, setTransactionList, mess
     status: "error"
   });
   setTransactionList([...transactionList]);
+
+  setTimeout(() => {
+    const index = transactionList.findIndex(oneTx => oneTx.message === message);
+    if (index !== -1) {
+      transactionList.splice(index, 1);
+      setTransactionList([...transactionList]);
+    }
+  }, 10000);
 };
 
 export const hideTransaction = (transactionList, setTransactionList, index) => {
   transactionList.splice(index, 1);
   setTransactionList([...transactionList]);
+}
+
+export const updateUserBalance = async (tokenContract, setCurrentUser, account) => {
+  const balance = await tokenContract.balanceOf(account);
+  setCurrentUser({
+    accountId: account,
+    tokenBalance: balance,
+  });
 }
