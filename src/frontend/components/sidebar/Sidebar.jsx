@@ -1,6 +1,6 @@
 import React from "react";
 import {ChevronDoubleRightIcon} from "@heroicons/react/outline";
-import {convertToYocto, defaultGas} from "../../web3/utils";
+import {convertToYocto} from "../../web3/utils";
 import {Button} from "../basic/Button";
 import {SellItem} from "./SellItem";
 
@@ -68,36 +68,36 @@ export const Sidebar = ({
   };
 
   const sellZombieItems = async (sellObject) => {
-    await contract.publish_zombies_on_market(
-        {
-          token_price_list: sellObject,
-          account_id: currentUser.accountId,
-        },
-        defaultGas,
-        1
-    );
+    // await contract.publish_zombies_on_market(
+    //     {
+    //       token_price_list: sellObject,
+    //       account_id: currentUser.accountId,
+    //     },
+    //     defaultGas,
+    //     1
+    // );
   };
 
   const sellLandItems = async (sellObject) => {
-    await contract.publish_lands_on_market(
-        {
-          token_price_list: sellObject,
-          account_id: currentUser.accountId,
-        },
-        defaultGas,
-        1
-    );
+    // await contract.publish_lands_on_market(
+    //     {
+    //       token_price_list: sellObject,
+    //       account_id: currentUser.accountId,
+    //     },
+    //     defaultGas,
+    //     1
+    // );
   };
 
   const sellMonsterItems = async (sellObject) => {
-    await contract.publish_monsters_on_market(
-        {
-          token_price_list: sellObject,
-          account_id: currentUser.accountId,
-        },
-        defaultGas,
-        1
-    );
+    // await contract.publish_monsters_on_market(
+    //     {
+    //       token_price_list: sellObject,
+    //       account_id: currentUser.accountId,
+    //     },
+    //     defaultGas,
+    //     1
+    // );
   };
 
   const sellBtnText = () => {

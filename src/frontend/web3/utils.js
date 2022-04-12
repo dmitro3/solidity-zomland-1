@@ -1,4 +1,4 @@
-import Big from "big.js";
+import { ethers } from 'ethers';
 
 export const landTypeMap = {
   0: "Small",
@@ -13,37 +13,17 @@ export const rarityMap = {
   3: "Epic",
 };
 
-export const defaultGas = Big(60)
-  .times(10 ** 12)
-  .toFixed();
-
-export const getMedia = (media) =>
-  `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
+export const getMedia = (media) => `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
 
 export const convertFromYocto = (amount, digits = 1) => {
-  return Big(amount)
-    .div(10 ** 18)
-    .toFixed(digits);
-};
-
-export const convertFromNanoSeconds = (timestamp) => {
-  return parseInt(Big(timestamp).div(1000000).toFixed());
+  return (+ethers.utils.formatEther(amount.toString())).toFixed(digits);
 };
 
 export const convertToYocto = (amount) => {
-  return Big(amount)
-    .times(10 ** 18)
-    .toFixed();
-};
-export const convertToTera = (amount) => {
-  return Big(amount)
-    .times(10 ** 12)
-    .toFixed();
+  return ethers.utils.parseEther(amount.toString());
 };
 
-export const formatId = (tokenId) => {
-  return tokenId;
-};
+export const formatId = (tokenId) => tokenId;
 
 export const statusColorTextMap = (status) => {
   let result = "text-gray-500";

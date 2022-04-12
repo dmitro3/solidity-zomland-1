@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { MonsterContent } from "../../web3/content";
 import {
   convertFromYocto,
-  convertToTera,
   formatId,
   rmFromMarket,
 } from "../../web3/utils";

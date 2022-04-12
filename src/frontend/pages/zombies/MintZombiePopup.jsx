@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { convertFromNanoSeconds, getMedia, formatId } from "../../web3/utils";
+import { getMedia, formatId } from "../../web3/utils";
 import { Button } from "../../components/basic/Button";
 import { Popup } from "../../components/Popup";
 

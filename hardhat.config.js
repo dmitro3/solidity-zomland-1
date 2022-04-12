@@ -31,7 +31,7 @@ module.exports = {
     },
     // meter_testnet: {
     //   url: "https://rpctest.meter.io",
-    //   accounts: [`${ process.env.METER_TESTNET_PRIVATE_KEY }`]
+    //   accounts: [`${process.env.METER_TESTNET_PRIVATE_KEY}`]
     // },
     // meter_mainnet: {
     //   url: "https://rpc.meter.io",

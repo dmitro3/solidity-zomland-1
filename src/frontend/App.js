@@ -103,7 +103,7 @@ export default function App() {
               exact
               path="/"
               element={
-                <Landing currentUser={currentUser} contract={contract} />
+                <Landing currentUser={currentUser} contract={contract}/>
               }
             />
             <Route
@@ -139,9 +139,11 @@ export default function App() {
               element={
                 <Zombies
                   currentUser={currentUser}
+                  setCurrentUser={setCurrentUser}
                   contract={contract}
                   zombieContract={zombieContract}
                   landContract={landContract}
+                  tokenContract={ftContract}
                   sellList={sellList}
                   setSellList={setSellList}
                   appendTransactionList={(tx) =>
@@ -229,17 +231,17 @@ export default function App() {
             <Route
               exact
               path="/faq"
-              element={<Faq currentUser={currentUser} contract={contract} />}
+              element={<Faq currentUser={currentUser} contract={contract}/>}
             />
             <Route
               exact
               path="/terms-conditions"
-              element={<Terms currentUser={currentUser} />}
+              element={<Terms currentUser={currentUser}/>}
             />
             <Route
               exact
               path="/privacy-policy"
-              element={<Privacy currentUser={currentUser} />}
+              element={<Privacy currentUser={currentUser}/>}
             />
           </Routes>
 

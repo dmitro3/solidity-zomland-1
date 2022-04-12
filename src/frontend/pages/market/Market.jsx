@@ -50,19 +50,19 @@ export const Market = ({ currentUser, contract }) => {
 
   const handleBuy = async (item) => {
     setIsReady(false);
-    let GAS = convertToTera("100");
-    let DEPOSIT = convertToYocto(item.salePrice);
-
-    await contract
-      .transfer_nft_on_market(
-        {
-          nftType: item.nftType,
-          tokenId: item.tokenId,
-        },
-        GAS,
-        DEPOSIT
-      )
-      .catch((err) => console.log(err));
+    // let GAS = convertToTera("100");
+    // let DEPOSIT = convertToYocto(item.salePrice);
+    //
+    // await contract
+    //   .transfer_nft_on_market(
+    //     {
+    //       nftType: item.nftType,
+    //       tokenId: item.tokenId,
+    //     },
+    //     GAS,
+    //     DEPOSIT
+    //   )
+    //   .catch((err) => console.log(err));
 
     setIsReady(true);
   };
