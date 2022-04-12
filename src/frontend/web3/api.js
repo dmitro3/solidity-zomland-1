@@ -68,7 +68,7 @@ export const appendTransactionList = (transactionList, setTransactionList, tx) =
           transactionList.splice(index, 1);
           setTransactionList([...transactionList]);
         }
-      }, 5000);
+      }, 2000);
     }
   })
 }
@@ -86,7 +86,7 @@ export const appendTransactionError = (transactionList, setTransactionList, mess
       transactionList.splice(index, 1);
       setTransactionList([...transactionList]);
     }
-  }, 8000);
+  }, 5000);
 };
 
 export const hideTransaction = (transactionList, setTransactionList, index) => {

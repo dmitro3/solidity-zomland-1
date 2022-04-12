@@ -31,11 +31,13 @@ const PAGE_LIMIT = "20";
 
 export const Zombies = ({
   currentUser,
+  setCurrentUser,
   contract,
+  landContract,
+  tokenContract,
   sellList,
   setSellList,
   zombieContract,
-  landContract,
   appendTransactionList,
   appendTransactionError
 }) => {
@@ -267,9 +269,17 @@ export const Zombies = ({
       await zombieContract.killZombie(killItem.tokenId).then(transaction => {
         transaction.message = "Kill Zombie to get ZML tokens";
         appendTransactionList(transaction);
-        transaction.wait().then(receipt => {
+        transaction.wait().then(async receipt => {
           if (receipt.status === 1) {
             fetchUserZombies(currentPage);
+            setKillPopupVisible(false);
+
+            // Update balance
+            const balance = await tokenContract.balanceOf(currentUser.accountId);
+            setCurrentUser({
+              accountId: currentUser.accountId,
+              tokenBalance: balance,
+            });
           } else {
             alert('Minting error');
           }

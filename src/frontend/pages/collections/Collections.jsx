@@ -21,9 +21,11 @@ export const Collections = ({ currentUser, contract, zombieContract }) => {
 
   useEffect(() => {
     async function fetchCollections() {
-      let collectionsObj = await zombieContract.collections(0);
-      let collection = transformCollections(collectionsObj, 0);
-      setAllCollections([collection]);
+      let collectionsObj1 = await zombieContract.collections(0);
+      let collectionsObj2 = await zombieContract.collections(1);
+      let collection1 = transformCollections(collectionsObj1, 0);
+      let collection2 = transformCollections(collectionsObj2, 1);
+      setAllCollections([collection1, collection2]);
       setIsReady(true);
     }
 
@@ -33,7 +35,7 @@ export const Collections = ({ currentUser, contract, zombieContract }) => {
   return (
     <>
       <InnerPageWrapper>
-        <Header currentUser={currentUser} />
+        <Header currentUser={currentUser}/>
 
         <Wrapper>
           <Container className="text-white text-center mt-6">
@@ -75,19 +77,19 @@ export const Collections = ({ currentUser, contract, zombieContract }) => {
                         </span>
                       </div>
                       <Link to={`/collections/${collection.id}`}>
-                        <Button title="Open Collection" size="sm" />
+                        <Button title="Open Collection" size="sm"/>
                       </Link>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <Loader />
+              <Loader/>
             )}
           </Container>
         </Wrapper>
 
-        <Footer />
+        <Footer/>
       </InnerPageWrapper>
     </>
   );
