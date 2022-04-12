@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
-import { convertFromYocto, convertToTera, convertToYocto } from "../web3/utils";
+import { convertFromYocto, convertToYocto } from "../web3/utils";
 import { TokenContent } from "../web3/content";
-import Big from "big.js";
 import {
   Container,
   InnerPageWrapper,
@@ -17,6 +16,7 @@ import { Card } from "../components/card/Card";
 import { FlipCard } from "../assets/styles/card";
 import { FrontCard } from "../components/card/FrontCard";
 import { updateUserBalance } from '../web3/api';
+import { BigNumber } from 'ethers';
 
 export const Token = ({ currentUser, setCurrentUser, contract, ftContract, appendTransactionList, appendTransactionError }) => {
   const [depositInput, setDepositInput] = React.useState();
@@ -98,8 +98,8 @@ export const Token = ({ currentUser, setCurrentUser, contract, ftContract, appen
   const handleDepositApprove = async () => {
     let depositAmount = convertToYocto(depositInput.toString());
     if (
-      parseInt(Big(currentUser.tokenBalance).toFixed()) <
-      parseInt(Big(depositAmount).toFixed())
+      BigNumber.from(currentUser.tokenBalance) <
+      BigNumber.from(depositAmount)
     ) {
       depositAmount = currentUser.tokenBalance;
     }
@@ -148,8 +148,8 @@ export const Token = ({ currentUser, setCurrentUser, contract, ftContract, appen
   };
 
   const handleUnstakeMonster = async () => {
-    let gas = convertToTera("100");
-    await contract.unstake_monster({}, gas, 1);
+    // let gas = convertToTera("100");
+    // await contract.unstake_monster({}, gas, 1);
   };
 
   const handleWithdraw = async () => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { convertFromYocto, convertToYocto, defaultGas } from "../../web3/utils";
+import { convertFromYocto, convertToYocto } from "../../web3/utils";
 import { Row } from "../../assets/styles/common.style";
 import { Button } from "../../components/basic/Button";
 import { Card } from "../../components/card/Card";

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { MonsterContent } from "../../web3/content";
 import {
   convertFromYocto,
-  convertToTera,
   formatId,
   rmFromMarket,
 } from "../../web3/utils";
@@ -97,15 +96,15 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
   };
 
   const handleTransfer = async (monster, transferAddress) => {
-    let gas = convertToTera("60");
-    await contract.transfer_monster(
-      {
-        tokenId: monster.tokenId,
-        recipient_id: transferAddress,
-      },
-      gas,
-      1
-    );
+    // let gas = convertToTera("60");
+    // await contract.transfer_monster(
+    //   {
+    //     tokenId: monster.tokenId,
+    //     recipient_id: transferAddress,
+    //   },
+    //   gas,
+    //   1
+    // );
   };
 
   const showKillPopup = (item) => {
@@ -114,14 +113,14 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
   };
 
   const handleKill = async () => {
-    let gas = convertToTera("90");
-    await contract.kill_monster(
-      {
-        monster_id: killItem.tokenId,
-      },
-      gas,
-      1
-    );
+    // let gas = convertToTera("90");
+    // await contract.kill_monster(
+    //   {
+    //     monster_id: killItem.tokenId,
+    //   },
+    //   gas,
+    //   1
+    // );
   };
 
   const appendToSellList = (monster) => {

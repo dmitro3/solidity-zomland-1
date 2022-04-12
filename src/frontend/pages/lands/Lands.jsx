@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  convertFromYocto,
-  convertToTera, landTypeMap,
+  landTypeMap,
   rmFromMarket, transformLand,
 } from "../../web3/utils";
 import { LandContent } from "../../web3/content";

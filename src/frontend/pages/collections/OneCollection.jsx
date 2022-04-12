@@ -15,8 +15,6 @@ import { Popup } from "../../components/Popup";
 import { Button } from "../../components/basic/Button";
 import { PlusIcon } from "@heroicons/react/solid";
 import {
-  convertToTera,
-  convertToYocto,
   getMedia,
   transformCollections,
   transformZombie,
@@ -50,8 +48,8 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
 
   const loadCollection = async () => {
     async function fetchCollections() {
-      let collectionsObj = await zombieContract.collections(0);
-      let collection = transformCollections(collectionsObj, 0);
+      let collectionsObj = await zombieContract.collections(collection_id);
+      let collection = transformCollections(collectionsObj, collection_id);
       setCollection(collection);
     }
 
@@ -149,7 +147,7 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
   return (
     <>
       <InnerPageWrapper>
-        <Header currentUser={currentUser} />
+        <Header currentUser={currentUser}/>
 
         <Wrapper>
           <Container className="text-white text-center mt-6">
@@ -187,10 +185,10 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
                           onClick={() => showSelectZombiesPopup(index)}
                         >
                           {zombie ? (
-                            <Card noMenu nft={zombie} size="sm" />
+                            <Card noMenu nft={zombie} size="sm"/>
                           ) : (
                             <div>
-                              <PlusIcon className="w-8 h-8 mx-auto mt-20" />
+                              <PlusIcon className="w-8 h-8 mx-auto mt-20"/>
                               <div className="text-center text-sm mt-12">
                                 Select Zombie
                               </div>
@@ -289,7 +287,7 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
                 </div>
               </>
             ) : (
-              <Loader />
+              <Loader/>
             )}
           </Container>
 
@@ -321,7 +319,7 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
                         key={zombie.tokenId}
                         onClick={() => selectZombie(zombie)}
                       >
-                        <Card nft={zombie} size="sm" noMenu />
+                        <Card nft={zombie} size="sm" noMenu/>
                       </div>
                     ))}
                 </div>
@@ -343,7 +341,7 @@ export const OneCollection = ({ currentUser, contract, zombieContract }) => {
           </Popup>
         </Wrapper>
 
-        <Footer />
+        <Footer/>
       </InnerPageWrapper>
     </>
   );

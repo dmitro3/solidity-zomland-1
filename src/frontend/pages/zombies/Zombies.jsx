@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  convertFromNanoSeconds,
   convertFromYocto,
-  convertToTera,
-  convertToYocto,
   formatId,
   rmFromMarket, transformLand, transformZombie,
 } from "../../web3/utils";
