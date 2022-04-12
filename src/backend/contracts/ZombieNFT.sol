@@ -192,4 +192,12 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
     _burn(tokenId);
     ITokenFT(contractTokenFT).transferOnKill(msg.sender, zombie.killTokens);
   }
+
+  function getAllCollections() public view returns (Collection[] memory) {
+    Collection[] memory _resultCollections = new Collection[](collectionCount);
+    for (uint _i = 0; _i < collectionCount; _i++) {
+      _resultCollections[_i] = collections[_i];
+    }
+    return _resultCollections;
+  }
 }

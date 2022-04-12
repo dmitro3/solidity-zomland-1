@@ -30,17 +30,16 @@ export const Market = ({ currentUser, contract }) => {
 
   const showMarket = async (name, contract_method) => {
     setIsReady(false);
-    let items = await contract_method({
-      start: START,
-      limit: LIMIT,
-    }).catch((err) => console.log(err));
-
-    items = items?.map((item) => {
-      item.salePrice = convertFromYocto(item.salePrice);
-      return item;
-    });
-
-    setItems(items ?? []);
+    // let items = await contract_method({
+    //   start: START,
+    //   limit: LIMIT,
+    // }).catch((err) => console.log(err));
+    //
+    // items = items?.map((item) => {
+    //   item.salePrice = convertFromYocto(item.salePrice);
+    //   return item;
+    // });
+    // setItems(items ?? []);
     setIsReady(true);
     setActive(name);
   };

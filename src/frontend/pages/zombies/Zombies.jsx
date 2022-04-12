@@ -270,6 +270,7 @@ export const Zombies = ({
         transaction.wait().then(receipt => {
           if (receipt.status === 1) {
             fetchUserZombies(currentPage);
+            setKillPopupVisible(false);
           } else {
             alert('Minting error');
           }

@@ -34,25 +34,25 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
   const [killPopupVisible, setKillPopupVisible] = useState(false);
 
   async function fetchUserMonsters(currentPage) {
-    let requestParams = {
-      account_id: currentUser.accountId,
-      page_num: currentPage.toString(),
-      page_limit: PAGE_LIMIT,
-    };
-    if (filterRarity) {
-      requestParams["filter_rarity"] = filterRarity;
-    }
-    let monsters = await contract.user_monsters(requestParams);
+    // let requestParams = {
+    //   account_id: currentUser.accountId,
+    //   page_num: currentPage.toString(),
+    //   page_limit: PAGE_LIMIT,
+    // };
+    // if (filterRarity) {
+    //   requestParams["filter_rarity"] = filterRarity;
+    // }
+    // let monsters = await contract.user_monsters(requestParams);
 
     // Convert price from Yocto NEAR
-    monsters[1] = monsters[1].map((mn) => {
-      if (mn.salePrice) {
-        mn.salePrice = convertFromYocto(mn.salePrice);
-      }
-      return mn;
-    });
+    // monsters[1] = monsters[1].map((mn) => {
+    //   if (mn.salePrice) {
+    //     mn.salePrice = convertFromYocto(mn.salePrice);
+    //   }
+    //   return mn;
+    // });
 
-    setUserMonsters(monsters);
+    // setUserMonsters(monsters);
     setIsReady(true);
   }
 
@@ -97,15 +97,15 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
   };
 
   const handleTransfer = async (monster, transferAddress) => {
-    let gas = convertToTera("60");
-    await contract.transfer_monster(
-      {
-        tokenId: monster.tokenId,
-        recipient_id: transferAddress,
-      },
-      gas,
-      1
-    );
+    // let gas = convertToTera("60");
+    // await contract.transfer_monster(
+    //   {
+    //     tokenId: monster.tokenId,
+    //     recipient_id: transferAddress,
+    //   },
+    //   gas,
+    //   1
+    // );
   };
 
   const showKillPopup = (item) => {
@@ -114,14 +114,14 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
   };
 
   const handleKill = async () => {
-    let gas = convertToTera("90");
-    await contract.kill_monster(
-      {
-        monster_id: killItem.tokenId,
-      },
-      gas,
-      1
-    );
+    // let gas = convertToTera("90");
+    // await contract.kill_monster(
+    //   {
+    //     monster_id: killItem.tokenId,
+    //   },
+    //   gas,
+    //   1
+    // );
   };
 
   const appendToSellList = (monster) => {

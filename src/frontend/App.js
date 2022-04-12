@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
-  //     Collections,
-  //     ContactUs,
-  //     Market,
-  //     Monsters,
-  //     OneCollection,
+  Market,
+  Monsters,
   Faq,
   Landing,
   Lands,
@@ -186,23 +183,23 @@ export default function App() {
                 />
               }
             />
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/monsters"*/}
-            {/*    element={*/}
-            {/*      <Monsters*/}
-            {/*        currentUser={currentUser}*/}
-            {/*        contract={contract}*/}
-            {/*        sellList={sellList}*/}
-            {/*        setSellList={setSellList}*/}
-            {/*      />*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*  <Route*/}
-            {/*    exact*/}
-            {/*    path="/market"*/}
-            {/*    element={<Market currentUser={currentUser} contract={contract} />}*/}
-            {/*  />*/}
+            <Route
+              exact
+              path="/monsters"
+              element={
+                <Monsters
+                  currentUser={currentUser}
+                  contract={contract}
+                  sellList={sellList}
+                  setSellList={setSellList}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/market"
+              element={<Market currentUser={currentUser} contract={contract} />}
+            />
             <Route
               exact
               path="/token"
