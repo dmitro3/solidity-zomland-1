@@ -13,6 +13,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
   error ZombiesMintError(string message);
   error ZombiesKillError(string message);
+  error MonsterMintError(string message);
+  error MonsterMintCountError(string message, uint8 required);
 
 interface ILandNFT is IERC721 {
   function getLandMintZombiesCount(uint) external view returns (uint8);
@@ -63,17 +65,11 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
   mapping(uint => Zombie) zombies;
   mapping(uint => Collection) public collections;
   uint public collectionCount;
-  mapping(uint256 => string) public cardRarity;
 
   constructor(address _contractMain, address _contractLands, address _contractTokenFT) ERC721("ZomLand", "ZMLZ") {
     contractMain = _contractMain;
     contractLands = _contractLands;
     contractTokenFT = _contractTokenFT;
-
-    cardRarity[0] = "Common";
-    cardRarity[1] = "Uncommon";
-    cardRarity[2] = "Rare";
-    cardRarity[3] = "Epic";
   }
 
   function _baseURI() internal pure override returns (string memory) {
@@ -193,6 +189,8 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
     ITokenFT(contractTokenFT).transferOnKill(msg.sender, zombie.killTokens);
   }
 
+  // ---------------- Collections ----------------
+
   function getAllCollections() public view returns (Collection[] memory) {
     Collection[] memory _resultCollections = new Collection[](collectionCount);
     for (uint _i = 0; _i < collectionCount; _i++) {
@@ -200,4 +198,24 @@ contract ZombieNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable
     }
     return _resultCollections;
   }
+
+  //function mintMonster(uint[] memory zombiesList) public returns (uint) {
+  //    uint8 _collectionSize = 10;
+  //    if (zombiesList.length != _collectionSize) {
+  //      revert MonsterMintCountError({message : "You need to send more zombies for mint Monster", required : _collectionSize});
+  //    }
+  //    for (uint _i = 0; _i < _collectionSize; _i++) {
+  //      Zombie storage _zombie = zombies[zombiesList[_i]];
+  //      if (_zombie.ownerId != msg.sender) {
+  //        revert MonsterMintError({message : "You don't own this zombie"});
+  //      } else {
+  //        _burn(_zombie.tokenId);
+  //      }
+  //    }
+  //
+  //    // Call monster contract...
+  //
+  //    return 0;
+  //  }
+
 }

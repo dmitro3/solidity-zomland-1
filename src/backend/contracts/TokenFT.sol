@@ -82,9 +82,11 @@ contract TokenFT is ERC20 {
     return 0;
   }
 
+  // TODO: Allow only Zombie or Monster Contract
   function transferOnKill(address account, uint amount) external {
     IERC20(address(this)).transfer(account, amount);
   }
+
   //  function isStakeMonster() external {}
   //  function getStakeMonsterPct() external {}
 }
