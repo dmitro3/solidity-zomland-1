@@ -10,15 +10,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./Main.sol";
+import "../interfaces/interface.sol";
 
-interface ITokenFT is IERC20 {
-  function transferOnKill(address account, uint amount) external;
-}
-
-contract MonsterNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
+contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
+  address internal mainContract;
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
+  mapping(uint => Monster) monsters;
 
   enum CardRarity {
     Common,
@@ -42,9 +40,8 @@ contract MonsterNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URI
     address ownerId;
   }
 
-  mapping(uint => Monster) monsters;
-
-  constructor() ERC721("ZomLand", "ZMLM") {
+  constructor(address _mainContract) ERC721("ZomLand", "ZMLM") {
+    mainContract = _mainContract;
   }
 
   function _baseURI() internal pure override returns (string memory) {

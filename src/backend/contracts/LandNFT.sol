@@ -8,12 +8,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./Main.sol";
+import "../interfaces/interface.sol";
 
   error LandsLimitError(string message, uint limit);
   error LandsSmallLimitError(string message);
 
-contract LandNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
+contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
+  address internal mainContract;
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
@@ -52,7 +53,9 @@ contract LandNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URISto
   //        _;
   //    }
 
-  constructor() ERC721("ZomLand", "ZMLL") {
+  constructor(address _mainContract) ERC721("ZomLand", "ZMLL") {
+    mainContract = _mainContract;
+
     landTypeIndex[0] = LandType.Small;
     landTypeIndex[1] = LandType.Medium;
     landTypeIndex[2] = LandType.Large;
@@ -120,25 +123,25 @@ contract LandNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URISto
   // ---------------- Public methods ---------------
 
   function getAllLands() public view returns (LandTypeData[] memory) {
-    LandTypeData[] memory result = new LandTypeData[](3);
+    LandTypeData[] memory _lands = new LandTypeData[](3);
     for (uint8 i = 0; i < 3; ++i) {
-      result[i] = landTypeData[landTypeIndex[i]];
+      _lands[i] = landTypeData[landTypeIndex[i]];
     }
-    return result;
+    return _lands;
   }
 
-  function getLandMintZombiesCount(uint landId) external view returns (uint8) {
-    uint oneDaySeconds = 60 * 60 * 24;
-    if (block.timestamp - lands[landId].lastZombieClaim >= oneDaySeconds) {
-      LandType landType = lands[landId].landType;
-      return landTypeData[landType].zombiesPerDay;
+  function getLandMintZombiesCount(uint _landId) external view returns (uint8) {
+    uint _oneDaySeconds = 60 * 60 * 24;
+    if (block.timestamp - lands[_landId].lastZombieClaim >= _oneDaySeconds) {
+      LandType _landType = lands[_landId].landType;
+      return landTypeData[_landType].zombiesPerDay;
     }
     return 0;
   }
 
-  function landSetMintTimestamp(uint landId) external {
+  function landSetMintTimestamp(uint _landId) external {
     // TODO: allow just for Zombies contract.
-    lands[landId].lastZombieClaim = block.timestamp;
+    lands[_landId].lastZombieClaim = block.timestamp;
   }
 
   function safeMint() public payable returns (uint) {
@@ -152,22 +155,24 @@ contract LandNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URISto
     _safeMint(msg.sender, _tokenId);
     _setTokenURI(_tokenId, _uri);
 
-    landTypeCount[_landType]++;
-    accountsWithSmallLand[msg.sender] = true;
     lands[_tokenId] = Land(_tokenId, _landType, 0, 0, landTypeData[_landType].media, "Land", 0, msg.sender);
+    landTypeCount[_landType]++;
+    if (_landType == LandType.Small) {
+      accountsWithSmallLand[msg.sender] = true;
+    }
 
     return _tokenId;
   }
 
   function userLands() public view returns (Land[] memory) {
     uint _userLandsCount = super.balanceOf(msg.sender);
-    Land[] memory _resultLands = new Land[](_userLandsCount);
+    Land[] memory _userLands = new Land[](_userLandsCount);
 
     for (uint _i = 0; _i < _userLandsCount; ++_i) {
       uint _landId = super.tokenOfOwnerByIndex(msg.sender, _i);
-      _resultLands[_i] = lands[_landId];
+      _userLands[_i] = lands[_landId];
     }
-    return _resultLands;
+    return _userLands;
   }
 
   function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){

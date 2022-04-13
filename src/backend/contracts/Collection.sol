@@ -2,9 +2,10 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Main.sol";
+import "../interfaces/interface.sol";
 
-contract CollectionContract is MainContract {
+contract CollectionContract is Ownable {
+  address internal mainContract;
   mapping(uint => Collection) public collections;
   uint public collectionCount;
 
@@ -14,20 +15,24 @@ contract CollectionContract is MainContract {
     string[] zombieImages;
   }
 
-  function addCollection(string memory title, string memory image, string[] memory zombieImages) public onlyOwner {
-    collections[collectionCount] = Collection(title, image, zombieImages);
+  constructor(address _mainContract) {
+    mainContract = _mainContract;
+  }
+
+  function addCollection(string memory _title, string memory _image, string[] memory _zombieImages) public onlyOwner {
+    collections[collectionCount] = Collection(_title, _image, _zombieImages);
     collectionCount += 1;
   }
 
-  function randomNumber(uint max, uint shift) internal view returns (uint) {
-    return uint(keccak256(abi.encodePacked(shift, block.difficulty, block.timestamp, uint(1)))) % max;
+  function randomNumber(uint _max, uint _shift) internal view returns (uint) {
+    return uint(keccak256(abi.encodePacked(_shift, block.difficulty, block.timestamp, uint(1)))) % _max;
   }
 
-  function getCollectionAndZombie() external view returns (uint, string memory){
-    uint _collectionIndex = randomNumber(collectionCount, 0);
+  function getCollectionAndZombie(uint8 _shift) external view returns (uint, string memory){
+    uint _collectionIndex = randomNumber(collectionCount, _shift);
 
     Collection storage _collection = collections[_collectionIndex];
-    uint _index = randomNumber(_collection.zombieImages.length, 1);
+    uint _index = randomNumber(_collection.zombieImages.length, _shift + 10);
     return (_collectionIndex, _collection.zombieImages[_index]);
   }
 

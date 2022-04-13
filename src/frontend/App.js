@@ -19,7 +19,7 @@ import {
   appendTransactionList,
   appendTransactionError,
   hideTransaction,
-  updateUserBalance,
+  updateUserBalance, isMetamaskInstalled,
 } from "./web3/api";
 import { TransactionList } from "./components/TransactionList";
 
@@ -77,6 +77,10 @@ export default function App() {
         }
       )
       .catch(() => {
+        if (!isMetamaskInstalled()) {
+          appendTransactionError(transactionList, setTransactionList, "Please install Metamask.");
+        }
+
         let allowPathList = [
           "/",
           "/terms-conditions",

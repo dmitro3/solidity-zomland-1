@@ -3,10 +3,10 @@ pragma solidity ^0.8.4;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./Main.sol";
+import "../interfaces/interface.sol";
 
-contract TokenFTContract is MainContract, ERC20 {
+contract TokenFTContract is ERC20 {
+  address internal mainContract;
   uint public rewardRate = 1000000000000000;
   uint public lastUpdateTime;
   uint public rewardPerTokenStored;
@@ -17,8 +17,9 @@ contract TokenFTContract is MainContract, ERC20 {
   uint public stakingTotalSupply;
   mapping(address => uint) private _balances;
 
+  constructor(address _mainContract) ERC20("Zomland", "ZML") {
+    mainContract = _mainContract;
 
-  constructor() ERC20("Zomland", "ZML") {
     uint allTokenSupply = 1000000000 * 10 ** decimals();
     uint stakingSupply = 80000000 * 10 ** decimals();
     _mint(msg.sender, allTokenSupply - stakingSupply);
@@ -34,18 +35,18 @@ contract TokenFTContract is MainContract, ERC20 {
     (((block.timestamp - lastUpdateTime) * rewardRate * 1e18) / stakingTotalSupply);
   }
 
-  function earned(address account) public view returns (uint) {
-    return ((_balances[account] *
-    (rewardPerToken() - userRewardPerTokenPaid[account])) / 1e18) +
-    rewards[account];
+  function earned(address _account) public view returns (uint) {
+    return ((_balances[_account] *
+    (rewardPerToken() - userRewardPerTokenPaid[_account])) / 1e18) +
+    rewards[_account];
   }
 
-  modifier updateReward(address account) {
+  modifier updateReward(address _account) {
     rewardPerTokenStored = rewardPerToken();
     lastUpdateTime = block.timestamp;
 
-    rewards[account] = earned(account);
-    userRewardPerTokenPaid[account] = rewardPerTokenStored;
+    rewards[_account] = earned(_account);
+    userRewardPerTokenPaid[_account] = rewardPerTokenStored;
     _;
   }
 
@@ -62,9 +63,9 @@ contract TokenFTContract is MainContract, ERC20 {
   }
 
   function getReward() external updateReward(msg.sender) {
-    uint reward = rewards[msg.sender];
+    uint _reward = rewards[msg.sender];
     rewards[msg.sender] = 0;
-    IERC20(address(this)).transfer(msg.sender, reward);
+    IERC20(address(this)).transfer(msg.sender, _reward);
   }
 
   function myBalance() external view returns (uint) {
@@ -73,15 +74,15 @@ contract TokenFTContract is MainContract, ERC20 {
 
   function getAPR() external view returns (uint) {
     if (stakingTotalSupply > 0) {
-      uint yearSeconds = 60 * 60 * 24 * 365;
-      return yearSeconds * 1e18 * yearSeconds / stakingTotalSupply;
+      uint _yearSeconds = 60 * 60 * 24 * 365;
+      return _yearSeconds * 1e18 * _yearSeconds / stakingTotalSupply;
     }
     return 0;
   }
 
   // TODO: Allow only Zombie or Monster Contract
-  function transferOnKill(address account, uint amount) external {
-    IERC20(address(this)).transfer(account, amount);
+  function transferOnKill(address _account, uint _amount) external {
+    IERC20(address(this)).transfer(_account, _amount);
   }
 
   //  function isStakeMonster() external {}
