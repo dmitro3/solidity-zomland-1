@@ -7,12 +7,12 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract MainContract is ReentrancyGuard, Ownable {
-  address public contractMain;
-  address public contractLandNFT;
-  address public contractZombieNFT;
-  address public contractMonsterNFT;
-  address public contractTokenFT;
-  address public contractCollection;
+  address internal contractMain;
+  address internal contractLandNFT;
+  address internal contractZombieNFT;
+  address internal contractMonsterNFT;
+  address internal contractTokenFT;
+  address internal contractCollection;
 
   function updateContractAddress(
     address _landNFT,
