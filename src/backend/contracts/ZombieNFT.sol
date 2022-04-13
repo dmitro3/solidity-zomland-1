@@ -92,7 +92,7 @@ contract ZombieNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIS
   }
 
   function randomCollectionMedia() internal view returns (uint, string memory) {
-    return ICollection(super.contractCollection).getCollectionAndZombie();
+    return ICollection(MainContract.contractCollection).getCollectionAndZombie();
   }
 
   function zombieKillTokens(CardRarity _rarity, uint8 health, uint8 attack, uint8 brain, uint8 speed) internal pure returns (uint) {
@@ -110,12 +110,12 @@ contract ZombieNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIS
   // ---------------- Public methods ---------------
 
   function safeMint(uint landId) public {
-    console.log("Start mint...", super.contractLandNFT);
-    if (ILandNFT(super.contractLandNFT).ownerOf(landId) != msg.sender) {
+    console.log("Start mint...", MainContract.contractLandNFT);
+    if (ILandNFT(MainContract.contractLandNFT).ownerOf(landId) != msg.sender) {
       revert ZombiesMintError({message : "You don't have this Land"});
     }
     console.log("1...");
-    uint8 _zombiesMintCount = ILandNFT(super.contractLandNFT).getLandMintZombiesCount(landId);
+    uint8 _zombiesMintCount = ILandNFT(MainContract.contractLandNFT).getLandMintZombiesCount(landId);
 
     console.log("2...");
     if (_zombiesMintCount > 0) {
@@ -139,7 +139,7 @@ contract ZombieNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIS
         _setTokenURI(_tokenId, _uri);
         zombies[_tokenId] = Zombie(_tokenId, _rarity, _collectionIndex, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, _speed, "Zombie", msg.sender);
       }
-      ILandNFT(super.contractLandNFT).landSetMintTimestamp(landId);
+      ILandNFT(MainContract.contractLandNFT).landSetMintTimestamp(landId);
     } else {
       revert ZombiesMintError({message : "You can't mint from this Land"});
     }
@@ -172,7 +172,7 @@ contract ZombieNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIS
       revert ZombiesKillError({message : "You can't kill this Zombie"});
     }
     _burn(tokenId);
-    ITokenFT(super.contractTokenFT).transferOnKill(msg.sender, zombie.killTokens);
+    ITokenFT(MainContract.contractTokenFT).transferOnKill(msg.sender, zombie.killTokens);
   }
 
   function mintMonster(uint[] memory zombiesList) public returns (uint) {

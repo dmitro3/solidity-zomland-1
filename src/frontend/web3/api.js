@@ -12,7 +12,7 @@ import CollectionAbi from "../contractsData/CollectionContract.json";
 
 export const web3Handler = () => {
   return new Promise(async (resolve, reject) => {
-    if (typeof window.ethereum !== "undefined") {
+    if (isMetamaskInstalled()) {
       try {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
@@ -62,6 +62,10 @@ export const web3Handler = () => {
       reject("Metamask not installed");
     }
   });
+};
+
+export const isMetamaskInstalled = () => {
+  return typeof window.ethereum !== "undefined";
 };
 
 export const appendTransactionList = (transactionList, setTransactionList, tx) => {

@@ -10,7 +10,7 @@ export const Footer = () => (
         <div className="w-1/4">
           <Row>
             <Col>
-              <img src={logo} alt="logo" width="50" className="opacity-70" />
+              <img src={logo} alt="logo" width="50" className="opacity-70"/>
             </Col>
             <Col className="ml-3">
               <span className="zombie-font text-3xl font-normal hover:text-indigo-50 opacity-70">
@@ -76,7 +76,7 @@ export const Footer = () => (
               <a
                 size="sm"
                 className="block text-sm font-bold leading-7 uppercase"
-                href="/contact-us"
+                href="/#contact-us"
               >
                 Contact US
               </a>
@@ -110,7 +110,7 @@ export const Footer = () => (
         </div>
 
         <div className="sm:w-1/4 hidden sm:block text-right">
-          <SocialLinks size="md" />
+          <SocialLinks size="md"/>
         </div>
       </Row>
     </Container>

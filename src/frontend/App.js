@@ -101,33 +101,35 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      { isReady && (
-        <>
-          <Routes>
-            <Route
-              exact
-              path="/"
-              element={
-                <Landing currentUser={ currentUser }/>
-              }
-            />
+
+      <Routes>
+        <Route
+          exact
+          path="/"
+          element={
+            <Landing currentUser={currentUser}/>
+          }
+        />
+
+        {isReady && (
+          <>
             <Route
               exact
               path="/lands"
               element={
                 <Lands
-                  currentUser={ currentUser }
-                  landContract={ landContract }
-                  sellList={ sellList }
-                  setSellList={ setSellList }
-                  appendTransactionList={ (tx) =>
+                  currentUser={currentUser}
+                  landContract={landContract}
+                  sellList={sellList}
+                  setSellList={setSellList}
+                  appendTransactionList={(tx) =>
                     appendTransactionList(
                       transactionList,
                       setTransactionList,
                       tx
                     )
                   }
-                  appendTransactionError={ (tx) =>
+                  appendTransactionError={(tx) =>
                     appendTransactionError(
                       transactionList,
                       setTransactionList,
@@ -142,21 +144,21 @@ export default function App() {
               path="/zombies"
               element={
                 <Zombies
-                  currentUser={ currentUser }
-                  setCurrentUser={ setCurrentUser }
-                  zombieContract={ zombieContract }
-                  landContract={ landContract }
-                  tokenContract={ ftContract }
-                  sellList={ sellList }
-                  setSellList={ setSellList }
-                  appendTransactionList={ (tx) =>
+                  currentUser={currentUser}
+                  setCurrentUser={setCurrentUser}
+                  zombieContract={zombieContract}
+                  landContract={landContract}
+                  tokenContract={ftContract}
+                  sellList={sellList}
+                  setSellList={setSellList}
+                  appendTransactionList={(tx) =>
                     appendTransactionList(
                       transactionList,
                       setTransactionList,
                       tx
                     )
                   }
-                  appendTransactionError={ (tx) =>
+                  appendTransactionError={(tx) =>
                     appendTransactionError(
                       transactionList,
                       setTransactionList,
@@ -171,8 +173,8 @@ export default function App() {
               path="/collections"
               element={
                 <Collections
-                  currentUser={ currentUser }
-                  collectionContract={ collectionContract }
+                  currentUser={currentUser}
+                  collectionContract={collectionContract}
                 />
               }
             />
@@ -181,9 +183,9 @@ export default function App() {
               path="/collections/:collection_id"
               element={
                 <OneCollection
-                  currentUser={ currentUser }
-                  collectionContract={ collectionContract }
-                  zombieContract={ zombieContract }
+                  currentUser={currentUser}
+                  collectionContract={collectionContract}
+                  zombieContract={zombieContract}
                 />
               }
             />
@@ -192,34 +194,34 @@ export default function App() {
               path="/monsters"
               element={
                 <Monsters
-                  currentUser={ currentUser }
-                  monsterContract={ monsterContract }
-                  sellList={ sellList }
-                  setSellList={ setSellList }
+                  currentUser={currentUser}
+                  monsterContract={monsterContract}
+                  sellList={sellList}
+                  setSellList={setSellList}
                 />
               }
             />
             <Route
               exact
               path="/market"
-              element={ <Market currentUser={ currentUser }/> }
+              element={<Market currentUser={currentUser}/>}
             />
             <Route
               exact
               path="/token"
               element={
                 <Token
-                  currentUser={ currentUser }
-                  setCurrentUser={ setCurrentUser }
-                  ftContract={ ftContract }
-                  appendTransactionList={ (tx) =>
+                  currentUser={currentUser}
+                  setCurrentUser={setCurrentUser}
+                  ftContract={ftContract}
+                  appendTransactionList={(tx) =>
                     appendTransactionList(
                       transactionList,
                       setTransactionList,
                       tx
                     )
                   }
-                  appendTransactionError={ (tx) =>
+                  appendTransactionError={(tx) =>
                     appendTransactionError(
                       transactionList,
                       setTransactionList,
@@ -229,38 +231,39 @@ export default function App() {
                 />
               }
             />
-            <Route
-              exact
-              path="/faq"
-              element={ <Faq currentUser={ currentUser }/> }
-            />
-            <Route
-              exact
-              path="/terms-conditions"
-              element={ <Terms currentUser={ currentUser }/> }
-            />
-            <Route
-              exact
-              path="/privacy-policy"
-              element={ <Privacy currentUser={ currentUser }/> }
-            />
-          </Routes>
+          </>
+        )}
 
-          <Sidebar
-            currentUser={ currentUser }
-            sellList={ sellList }
-            setSellList={ setSellList }
-            isOpen={ sidebarIsOpen }
-            setIsOpen={ setSidebarIsOpen }
-          />
-          <TransactionList
-            txList={ transactionList }
-            hideTransaction={ (index) =>
-              hideTransaction(transactionList, setTransactionList, index)
-            }
-          />
-        </>
-      ) }
+        <Route
+          exact
+          path="/faq"
+          element={<Faq currentUser={currentUser}/>}
+        />
+        <Route
+          exact
+          path="/terms-conditions"
+          element={<Terms currentUser={currentUser}/>}
+        />
+        <Route
+          exact
+          path="/privacy-policy"
+          element={<Privacy currentUser={currentUser}/>}
+        />
+      </Routes>
+
+      <Sidebar
+        currentUser={currentUser}
+        sellList={sellList}
+        setSellList={setSellList}
+        isOpen={sidebarIsOpen}
+        setIsOpen={setSidebarIsOpen}
+      />
+      <TransactionList
+        txList={transactionList}
+        hideTransaction={(index) =>
+          hideTransaction(transactionList, setTransactionList, index)
+        }
+      />
     </BrowserRouter>
   );
 }
