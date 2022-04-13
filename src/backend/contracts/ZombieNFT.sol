@@ -110,30 +110,22 @@ contract ZombieNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIS
   // ---------------- Public methods ---------------
 
   function safeMint(uint landId) public {
-    console.log("Start mint...", MainContract.contractLandNFT);
     if (ILandNFT(MainContract.contractLandNFT).ownerOf(landId) != msg.sender) {
       revert ZombiesMintError({message : "You don't have this Land"});
     }
-    console.log("1...");
     uint8 _zombiesMintCount = ILandNFT(MainContract.contractLandNFT).getLandMintZombiesCount(landId);
 
-    console.log("2...");
     if (_zombiesMintCount > 0) {
-      console.log("3...");
       for (uint8 _i = 0; _i < _zombiesMintCount; ++_i) {
         CardRarity _rarity = randomRarity(_i);
-        console.log("x4");
         (uint _collectionIndex, string memory _uri) = randomCollectionMedia();
-        console.log("x5");
         uint _tokenId = _tokenIdCounter.current();
-        console.log("x6");
         uint8 _health = uint8(randomNumber(49, _i + 15) + 1);
         uint8 _attack = uint8(randomNumber(24, _i + 20) + 1);
         uint8 _brain = uint8(randomNumber(24, _i + 25) + 1);
         uint8 _speed = uint8(randomNumber(19, _i + 30) + 1);
         uint _killTokens = zombieKillTokens(_rarity, _health, _attack, _brain, _speed);
 
-        console.log("x7");
         _tokenIdCounter.increment();
         _safeMint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, _uri);
