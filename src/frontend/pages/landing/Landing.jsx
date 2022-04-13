@@ -11,7 +11,6 @@ import mint_land from "../../assets/images/mint_land.png";
 import mint_zombie from "../../assets/images/mint_zombie.png";
 import mint_monster from "../../assets/images/mint_monster.png";
 import pie from "../../assets/images/pie.png";
-// import { login } from "../../web3/api";
 import {Header} from "../../components/Header";
 import {Circle} from "../../assets/styles/home.style";
 import {ChevronDoubleRightIcon} from "@heroicons/react/solid";

@@ -24,7 +24,7 @@ import { Popup } from "../../components/Popup";
 
 const PAGE_LIMIT = "10";
 
-export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
+export const Monsters = ({ currentUser, monsterContract, sellList, setSellList }) => {
   const [isReady, setIsReady] = useState(false);
   const [userMonsters, setUserMonsters] = useState([0, []]); // [<count>, [<arrayOfMonsters>]]
   const [currentPage, setCurrentPage] = useState(1);
@@ -186,7 +186,7 @@ export const Monsters = ({ currentUser, contract, sellList, setSellList }) => {
                         setSellItems={() => appendToSellList(monster)}
                         rmFromMarket={async () => {
                           setIsReady(false);
-                          await rmFromMarket(contract, monster);
+                          await rmFromMarket(monsterContract, monster);
                           setIsReady(true);
                         }}
                         handleTransfer={(transferAddress) =>

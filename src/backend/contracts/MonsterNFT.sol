@@ -10,16 +10,15 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./Main.sol";
 
 interface ITokenFT is IERC20 {
   function transferOnKill(address account, uint amount) external;
 }
 
-contract MonsterNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
+contract MonsterNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
-  address contractMain;
-  address contractTokenFT;
 
   enum CardRarity {
     Common,
@@ -45,9 +44,7 @@ contract MonsterNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnabl
 
   mapping(uint => Monster) monsters;
 
-  constructor(address _contractMain, address _contractTokenFT) ERC721("ZomLand", "ZMLM") {
-    contractMain = _contractMain;
-    contractTokenFT = _contractTokenFT;
+  constructor() ERC721("ZomLand", "ZMLM") {
   }
 
   function _baseURI() internal pure override returns (string memory) {
@@ -65,10 +62,24 @@ contract MonsterNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnabl
 
   // ---------------- Public methods ---------------
 
-  function safeMint() public {
+  function safeMint(uint[] memory zombiesList) public {
     //    _tokenIdCounter.increment();
     //    _safeMint(msg.sender, _tokenId);
     //    _setTokenURI(_tokenId, _uri);
+    //    uint8 _collectionSize = 10;
+    //    if (zombiesList.length != _collectionSize) {
+    //      revert MonsterMintCountError({message : "You need to send more zombies for mint Monster", required : _collectionSize});
+    //    }
+    //    for (uint _i = 0; _i < _collectionSize; ++_i) {
+    //      Zombie storage _zombie = zombies[zombiesList[_i]];
+    //      if (_zombie.ownerId != msg.sender) {
+    //        revert MonsterMintError({message : "You don't own this zombie"});
+    //      } else {
+    //        _burn(_zombie.tokenId);
+    //      }
+    //    }
+
+    //    return 0;
   }
 
   function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){

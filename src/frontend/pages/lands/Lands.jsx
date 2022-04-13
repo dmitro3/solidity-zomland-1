@@ -20,7 +20,7 @@ import { Popup } from "../../components/Popup";
 import { MintLandSection } from "./MintLandSection";
 import { Card } from "../../components/card/Card";
 
-export const Lands = ({ currentUser, contract, landContract, sellList, setSellList, appendTransactionList, appendTransactionError }) => {
+export const Lands = ({ currentUser, landContract, sellList, setSellList, appendTransactionList, appendTransactionError }) => {
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
   const [userTotalLands, setUserTotalLands] = useState();
@@ -148,13 +148,12 @@ export const Lands = ({ currentUser, contract, landContract, sellList, setSellLi
                     <Card
                       nft={land}
                       key={index}
-                      contract={contract}
                       currentUser={currentUser}
                       sellItems={sellList["lands"]}
                       setSellItems={() => appendToSellList(land)}
                       rmFromMarket={async () => {
                         setIsReady(false);
-                        await rmFromMarket(contract, land);
+                        await rmFromMarket(landContract, land);
                         setIsReady(true);
                       }}
                       handleTransfer={(transferAddress) =>

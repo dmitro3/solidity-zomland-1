@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { CollectionContent } from "../../web3/content";
 import { getMedia, transformCollections } from "../../web3/utils";
 import {
-  Col,
   Container,
   InnerPageWrapper,
   Link,
@@ -14,14 +13,14 @@ import { Loader } from "../../components/basic/Loader";
 import { Footer } from "../../components/Footer";
 import { Button } from "../../components/basic/Button";
 
-export const Collections = ({ currentUser, contract, zombieContract }) => {
+export const Collections = ({ currentUser, collectionContract }) => {
   const [allCollections, setAllCollections] = useState([]);
   // const [userCollectionCount, setUserCollectionCount] = useState({});
   const [isReady, setIsReady] = React.useState(false);
 
   useEffect(() => {
     async function fetchCollections() {
-      let collectionsObj = await zombieContract.getAllCollections();
+      let collectionsObj = await collectionContract.getAllCollections();
       let collections = collectionsObj.map((collection, index) => transformCollections(collection, index))
       setAllCollections(collections);
       setIsReady(true);

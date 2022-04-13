@@ -9,7 +9,7 @@ export const RoadmapSection = ({ date, title, desc, index, type }) => (
         : "flex-row-reverse left-timeline sm:text-right"
     }`}
   >
-    <div className="order-1 sm:w-1/2"></div>
+    <div className="order-1 sm:w-1/2">&nbsp;</div>
     <div
       className={`z-20 flex items-center relative order-1 ${
         type === "past"
@@ -19,7 +19,7 @@ export const RoadmapSection = ({ date, title, desc, index, type }) => (
           : "bg-gray-500"
       } shadow-xl w-6 h-6 rounded-full hidden sm:block`}
     >
-      {type === "past" && (<img width="16" src={checkIcon} className="absolute top-1.5 left-1" />)}
+      {type === "past" && (<img width="16" src={checkIcon} className="absolute top-1.5 left-1" alt="checked" />)}
     </div>
     <div
       className={`sm:flex order-1 ${

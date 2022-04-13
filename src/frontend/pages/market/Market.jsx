@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   convertFromYocto,
-  convertToTera,
   convertToYocto,
   rmFromMarket,
 } from "../../web3/utils";
@@ -45,7 +44,7 @@ export const Market = ({ currentUser, contract }) => {
   };
 
   useEffect(() => {
-    showMarket("Lands", contract.get_lands_from_market);
+    showMarket("Lands", "contract.get_lands_from_market");
   }, []);
 
   const handleBuy = async (item) => {
@@ -83,19 +82,19 @@ export const Market = ({ currentUser, contract }) => {
                 {
                   title: "Lands",
                   onClick: () =>
-                    showMarket("Lands", contract.get_lands_from_market),
+                    showMarket("Lands", "contract.get_lands_from_market"),
                   active: active === "Lands",
                 },
                 {
                   title: "Zombies",
                   onClick: () =>
-                    showMarket("Zombies", contract.get_zombies_from_market),
+                    showMarket("Zombies", "contract.get_zombies_from_market"),
                   active: active === "Zombies",
                 },
                 {
                   title: "Monsters",
                   onClick: () =>
-                    showMarket("Monsters", contract.get_monsters_from_market),
+                    showMarket("Monsters", "contract.get_monsters_from_market"),
                   active: active === "Monsters",
                 },
               ]}
@@ -112,7 +111,6 @@ export const Market = ({ currentUser, contract }) => {
                             <Card
                               nft={item}
                               key={index}
-                              contract={contract}
                               currentUser={currentUser}
                               noMenu
                               rmFromMarket={async () => {
@@ -125,7 +123,6 @@ export const Market = ({ currentUser, contract }) => {
                             <Card
                               nft={item}
                               key={index}
-                              contract={contract}
                               currentUser={currentUser}
                               noMenu
                               handleBuy={() => handleBuy(item)}

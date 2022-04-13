@@ -8,11 +8,12 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./Main.sol";
 
   error LandsLimitError(string message, uint limit);
   error LandsSmallLimitError(string message);
 
-contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
+contract LandNFTContract is MainContract, ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
@@ -40,7 +41,6 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
     string media;
   }
 
-  address contractMain;
   mapping(uint8 => LandType) public landTypeIndex;
   mapping(LandType => uint) public landTypeCount;
   mapping(LandType => LandTypeData) public landTypeData;
@@ -52,9 +52,7 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
   //        _;
   //    }
 
-  constructor(address _contractMain) ERC721("ZomLand", "ZMLL") {
-    contractMain = _contractMain;
-
+  constructor() ERC721("ZomLand", "ZMLL") {
     landTypeIndex[0] = LandType.Small;
     landTypeIndex[1] = LandType.Medium;
     landTypeIndex[2] = LandType.Large;
@@ -123,7 +121,7 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
 
   function getAllLands() public view returns (LandTypeData[] memory) {
     LandTypeData[] memory result = new LandTypeData[](3);
-    for (uint8 i = 0; i < 3; i++) {
+    for (uint8 i = 0; i < 3; ++i) {
       result[i] = landTypeData[landTypeIndex[i]];
     }
     return result;
@@ -165,7 +163,7 @@ contract LandNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, 
     uint _userLandsCount = super.balanceOf(msg.sender);
     Land[] memory _resultLands = new Land[](_userLandsCount);
 
-    for (uint _i = 0; _i < _userLandsCount; _i++) {
+    for (uint _i = 0; _i < _userLandsCount; ++_i) {
       uint _landId = super.tokenOfOwnerByIndex(msg.sender, _i);
       _resultLands[_i] = lands[_landId];
     }

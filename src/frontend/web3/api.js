@@ -1,10 +1,14 @@
 import { ethers } from "ethers";
-import LandNFTAddress from "../contractsData/LandNFT-address.json";
-import LandNFTAbi from "../contractsData/LandNFT.json";
-import ZombieNFTAddress from "../contractsData/ZombieNFT-address.json";
-import ZombieNFTAbi from "../contractsData/ZombieNFT.json";
-import TokenFTAddress from "../contractsData/TokenFT-address.json";
-import TokenFTAbi from "../contractsData/TokenFT.json";
+import LandNFTAddress from "../contractsData/LandNFTContract-address.json";
+import LandNFTAbi from "../contractsData/LandNFTContract.json";
+import ZombieNFTAddress from "../contractsData/ZombieNFTContract-address.json";
+import ZombieNFTAbi from "../contractsData/ZombieNFTContract.json";
+import MonsterNFTAddress from "../contractsData/MonsterNFTContract-address.json";
+import MonsterNFTAbi from "../contractsData/MonsterNFTContract.json";
+import TokenFTAddress from "../contractsData/TokenFTContract-address.json";
+import TokenFTAbi from "../contractsData/TokenFTContract.json";
+import CollectionAddress from "../contractsData/CollectionContract-address.json";
+import CollectionAbi from "../contractsData/CollectionContract.json";
 
 export const web3Handler = () => {
   return new Promise(async (resolve, reject) => {
@@ -26,9 +30,19 @@ export const web3Handler = () => {
           ZombieNFTAbi.abi,
           signer
         );
+        const monsterContract = new ethers.Contract(
+          MonsterNFTAddress.address,
+          MonsterNFTAbi.abi,
+          signer
+        );
         const tokenContract = new ethers.Contract(
           TokenFTAddress.address,
           TokenFTAbi.abi,
+          signer
+        );
+        const collectionContract = new ethers.Contract(
+          CollectionAddress.address,
+          CollectionAbi.abi,
           signer
         );
 
@@ -37,7 +51,9 @@ export const web3Handler = () => {
           signer,
           landContract,
           zombieContract,
-          tokenContract
+          monsterContract,
+          tokenContract,
+          collectionContract
         });
       } catch (err) {
         reject("Metamask connection error");

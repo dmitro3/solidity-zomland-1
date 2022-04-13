@@ -4,10 +4,9 @@ pragma solidity ^0.8.4;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./Main.sol";
 
-contract TokenFT is ERC20 {
-  address contractMain;
-
+contract TokenFTContract is MainContract, ERC20 {
   uint public rewardRate = 1000000000000000;
   uint public lastUpdateTime;
   uint public rewardPerTokenStored;
@@ -19,9 +18,7 @@ contract TokenFT is ERC20 {
   mapping(address => uint) private _balances;
 
 
-  constructor(address _contractMain) ERC20("Zomland", "ZML") {
-    contractMain = _contractMain;
-
+  constructor() ERC20("Zomland", "ZML") {
     uint allTokenSupply = 1000000000 * 10 ** decimals();
     uint stakingSupply = 80000000 * 10 ** decimals();
     _mint(msg.sender, allTokenSupply - stakingSupply);
