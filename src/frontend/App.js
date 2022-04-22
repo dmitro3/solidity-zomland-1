@@ -16,61 +16,75 @@ import {
 import { Sidebar } from "./components/sidebar/Sidebar";
 import {
   web3Handler,
-  appendTransactionList,
-  appendTransactionError,
-  hideTransaction,
-  updateUserBalance, isMetamaskInstalled,
+  isMetamaskInstalled, updateUserBalance,
 } from "./web3/api";
 import { TransactionList } from "./components/TransactionList";
+import { useDispatch, useSelector } from "react-redux";
+import { addTransactionError } from './store/transactionSlice';
+import { setUserAccountId } from './store/userSlice';
+import { updateContract } from './store/contractSlice';
 
 export default function App() {
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [ftContract, setFtContract] = React.useState(false);
-  const [landContract, setLandContract] = React.useState(false);
-  const [zombieContract, setZombieContract] = React.useState(false);
-  const [monsterContract, setMonsterContract] = React.useState(false);
-  const [collectionContract, setCollectionContract] = React.useState(false);
+  const dispatch = useDispatch();
+  const contracts = useSelector(state => state.contracts.contracts);
+
   const [isReady, setIsReady] = React.useState(false);
-  const [transactionList, setTransactionList] = React.useState([]);
   const [sellList, setSellList] = React.useState({
     lands: [],
     zombies: [],
     monsters: [],
   });
+
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
 
   window.web3Login = () => {
     web3Handler()
       .then(
-        async ({
+        ({
           account,
-          signer,
           landContract,
           zombieContract,
           monsterContract,
           tokenContract,
-          collectionContract,
+          collectionContract
         }) => {
-          setLandContract(landContract);
-          setZombieContract(zombieContract);
-          setMonsterContract(monsterContract);
-          setFtContract(tokenContract);
-          setCollectionContract(collectionContract);
 
-          await updateUserBalance(tokenContract, setCurrentUser, account);
+          updateContract({
+            name: "landContract",
+            contract: landContract
+          });
+          updateContract({
+            name: "zombieContract",
+            contract: zombieContract
+          });
+          updateContract({
+            name: "monsterContract",
+            contract: monsterContract
+          });
+          updateContract({
+            name: "tokenContract",
+            contract: tokenContract
+          });
+          updateContract({
+            name: "collectionContract",
+            contract: collectionContract
+          });
+
+
+          console.log('contracts.tokenContract', contracts.tokenContract);
+          dispatch(setUserAccountId({ account }));
+          updateUserBalance(contracts.tokenContract, account);
 
           window.ethereum.on("chainChanged", (chainId) => {
             console.log("chainChanged", chainId);
             window.location.reload();
           });
 
-          window.ethereum.on("accountsChanged", async function (accounts) {
+          window.ethereum.on("accountsChanged", (accounts) => { // async?
             console.log("accountsChanged", accounts);
-            const balance = await tokenContract.balanceOf(account);
-            setCurrentUser({
-              accountId: accounts[0],
-              tokenBalance: balance,
-            });
+            const account = accounts[0];
+            dispatch(setUserAccountId({ account }));
+            updateUserBalance(contracts.tokenContract, account);
           });
 
           setIsReady(true);
@@ -78,7 +92,10 @@ export default function App() {
       )
       .catch(() => {
         if (!isMetamaskInstalled()) {
-          appendTransactionError(transactionList, setTransactionList, "Please install Metamask.");
+          dispatch(addTransactionError({
+            id: new Date().toISOString(),
+            message: "Please install Metamask."
+          }))
         }
 
         let allowPathList = [
@@ -111,7 +128,7 @@ export default function App() {
           exact
           path="/"
           element={
-            <Landing currentUser={currentUser}/>
+            <Landing/>
           }
         />
 
@@ -122,24 +139,8 @@ export default function App() {
               path="/lands"
               element={
                 <Lands
-                  currentUser={currentUser}
-                  landContract={landContract}
                   sellList={sellList}
                   setSellList={setSellList}
-                  appendTransactionList={(tx) =>
-                    appendTransactionList(
-                      transactionList,
-                      setTransactionList,
-                      tx
-                    )
-                  }
-                  appendTransactionError={(tx) =>
-                    appendTransactionError(
-                      transactionList,
-                      setTransactionList,
-                      tx
-                    )
-                  }
                 />
               }
             />
@@ -148,27 +149,8 @@ export default function App() {
               path="/zombies"
               element={
                 <Zombies
-                  currentUser={currentUser}
-                  setCurrentUser={setCurrentUser}
-                  zombieContract={zombieContract}
-                  landContract={landContract}
-                  tokenContract={ftContract}
                   sellList={sellList}
                   setSellList={setSellList}
-                  appendTransactionList={(tx) =>
-                    appendTransactionList(
-                      transactionList,
-                      setTransactionList,
-                      tx
-                    )
-                  }
-                  appendTransactionError={(tx) =>
-                    appendTransactionError(
-                      transactionList,
-                      setTransactionList,
-                      tx
-                    )
-                  }
                 />
               }
             />
@@ -176,21 +158,14 @@ export default function App() {
               exact
               path="/collections"
               element={
-                <Collections
-                  currentUser={currentUser}
-                  collectionContract={collectionContract}
-                />
+                <Collections/>
               }
             />
             <Route
               exact
               path="/collections/:collection_id"
               element={
-                <OneCollection
-                  currentUser={currentUser}
-                  collectionContract={collectionContract}
-                  zombieContract={zombieContract}
-                />
+                <OneCollection/>
               }
             />
             <Route
@@ -198,8 +173,6 @@ export default function App() {
               path="/monsters"
               element={
                 <Monsters
-                  currentUser={currentUser}
-                  monsterContract={monsterContract}
                   sellList={sellList}
                   setSellList={setSellList}
                 />
@@ -208,31 +181,13 @@ export default function App() {
             <Route
               exact
               path="/market"
-              element={<Market currentUser={currentUser}/>}
+              element={<Market/>}
             />
             <Route
               exact
               path="/token"
               element={
-                <Token
-                  currentUser={currentUser}
-                  setCurrentUser={setCurrentUser}
-                  ftContract={ftContract}
-                  appendTransactionList={(tx) =>
-                    appendTransactionList(
-                      transactionList,
-                      setTransactionList,
-                      tx
-                    )
-                  }
-                  appendTransactionError={(tx) =>
-                    appendTransactionError(
-                      transactionList,
-                      setTransactionList,
-                      tx
-                    )
-                  }
-                />
+                <Token/>
               }
             />
           </>
@@ -241,33 +196,27 @@ export default function App() {
         <Route
           exact
           path="/faq"
-          element={<Faq currentUser={currentUser}/>}
+          element={<Faq/>}
         />
         <Route
           exact
           path="/terms-conditions"
-          element={<Terms currentUser={currentUser}/>}
+          element={<Terms/>}
         />
         <Route
           exact
           path="/privacy-policy"
-          element={<Privacy currentUser={currentUser}/>}
+          element={<Privacy/>}
         />
       </Routes>
 
       <Sidebar
-        currentUser={currentUser}
         sellList={sellList}
         setSellList={setSellList}
         isOpen={sidebarIsOpen}
         setIsOpen={setSidebarIsOpen}
       />
-      <TransactionList
-        txList={transactionList}
-        hideTransaction={(index) =>
-          hideTransaction(transactionList, setTransactionList, index)
-        }
-      />
+      <TransactionList/>
     </BrowserRouter>
   );
 }

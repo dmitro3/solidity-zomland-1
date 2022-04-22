@@ -5,10 +5,10 @@ import { Header } from "../components/Header";
 import { Footer } from '../components/Footer';
 import { InnerPageHead } from '../components/InnerPageHead';
 
-export const ContactUs = ({ currentUser }) => (
+export const ContactUs = () => (
   <>
     <InnerPageWrapper>
-      <Header currentUser={currentUser} />
+      <Header  />
       <Wrapper>
         <Container className="text-white text-center mt-6">
           <InnerPageHead title={ContactUsContent.title} description={ContactUsContent.description} />

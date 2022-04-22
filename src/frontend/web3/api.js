@@ -9,6 +9,7 @@ import TokenFTAddress from "../contractsData/TokenFTContract-address.json";
 import TokenFTAbi from "../contractsData/TokenFTContract.json";
 import CollectionAddress from "../contractsData/CollectionContract-address.json";
 import CollectionAbi from "../contractsData/CollectionContract.json";
+import { setUserBalance } from '../store/userSlice';
 
 export const web3Handler = () => {
   return new Promise(async (resolve, reject) => {
@@ -48,7 +49,6 @@ export const web3Handler = () => {
 
         resolve({
           account: accounts[0],
-          signer,
           landContract,
           zombieContract,
           monsterContract,
@@ -68,56 +68,55 @@ export const isMetamaskInstalled = () => {
   return typeof window.ethereum !== "undefined";
 };
 
-export const appendTransactionList = (transactionList, setTransactionList, tx) => {
-  transactionList.push({
-    hash: tx.hash,
-    message: tx.message || null,
-    status: "pending"
-  });
-  setTransactionList([...transactionList]);
+// export const appendTransactionList = (transactionList, setTransactionList, tx) => {
+//   transactionList.push({
+//     hash: tx.hash,
+//     message: tx.message || null,
+//     status: "pending"
+//   });
+//   setTransactionList([...transactionList]);
+//
+//   tx.wait().then(receipt => {
+//     const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
+//     if (index !== -1) {
+//       transactionList[index].status = (receipt.status === 1) ? "success" : "error";
+//       setTransactionList([...transactionList]);
+//
+//       setTimeout(() => {
+//         const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
+//         if (index !== -1) {
+//           transactionList.splice(index, 1);
+//           setTransactionList([...transactionList]);
+//         }
+//       }, 2000);
+//     }
+//   })
+// }
 
-  tx.wait().then(receipt => {
-    const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
-    if (index !== -1) {
-      transactionList[index].status = (receipt.status === 1) ? "success" : "error";
-      setTransactionList([...transactionList]);
+// export const appendTransactionError = (transactionList, setTransactionList, message) => {
+//   transactionList.push({
+//     message,
+//     status: "error"
+//   });
+//   setTransactionList([...transactionList]);
+//
+//   setTimeout(() => {
+//     const index = transactionList.findIndex(oneTx => oneTx.message === message);
+//     if (index !== -1) {
+//       transactionList.splice(index, 1);
+//       setTransactionList([...transactionList]);
+//     }
+//   }, 5000);
+// };
 
-      setTimeout(() => {
-        const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
-        if (index !== -1) {
-          transactionList.splice(index, 1);
-          setTransactionList([...transactionList]);
-        }
-      }, 2000);
-    }
-  })
-}
+// export const hideTransaction = (transactionList, setTransactionList, index) => {
+// transactionList.splice(index, 1);
+// setTransactionList([...transactionList]);
+// }
 
-export const appendTransactionError = (transactionList, setTransactionList, message) => {
-  transactionList.push({
-    message,
-    status: "error"
-  });
-  setTransactionList([...transactionList]);
-
-  setTimeout(() => {
-    const index = transactionList.findIndex(oneTx => oneTx.message === message);
-    if (index !== -1) {
-      transactionList.splice(index, 1);
-      setTransactionList([...transactionList]);
-    }
-  }, 5000);
-};
-
-export const hideTransaction = (transactionList, setTransactionList, index) => {
-  transactionList.splice(index, 1);
-  setTransactionList([...transactionList]);
-}
-
-export const updateUserBalance = async (tokenContract, setCurrentUser, account) => {
-  const balance = await tokenContract.balanceOf(account);
-  setCurrentUser({
-    accountId: account,
-    tokenBalance: balance,
+export const updateUserBalance = async (tokenContract, accountId) => {
+  const balance = await tokenContract.balanceOf(accountId);
+  setUserBalance({
+    balance: parseInt(balance)
   });
 }

@@ -1,16 +1,20 @@
-## 1. Start local node:
+# ZomLand
+
+Play-To-Earn NFT Collectible Game.
+
+### 1. Start local node:
 
 ```
 yarn local
 ```
 
-## 2. Deploy:
+### 2. Deploy:
 
 ```
 yarn deploy
 ```
 
-## 3. Run frontend:
+### 3. Run frontend:
 
 ```
 yarn start
@@ -22,7 +26,7 @@ yarn start
 npx hardhat test
 ```
 
-## Debug on local console:
+### Debug on local console:
 
 ```
 yarn console

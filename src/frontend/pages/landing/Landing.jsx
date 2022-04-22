@@ -21,6 +21,7 @@ import {RoadmapSection} from "./RoadmapSection";
 import {Section} from "./Section";
 import {Footer} from "../../components/Footer";
 import {SocialLinks} from "../../components/SocialLinks";
+import { useSelector } from "react-redux";
 
 const CircleSection = ({number, title, desc}) => (
     <Col className="lg:mx-10 mx-4 text-center items-center leading-normal mb-10 sm:mb-0">
@@ -34,8 +35,9 @@ const CircleSection = ({number, title, desc}) => (
     </Col>
 );
 
-export const Landing = ({currentUser}) => {
+export const Landing = () => {
   let navigate = useNavigate();
+  const currentUser = useSelector(state => state.user.user);
 
   const handleClick = () => (currentUser ? navigate("/zombies") : window.web3Login());
 

@@ -4,15 +4,17 @@ import { Row } from "../../assets/styles/common.style";
 import { Button } from "../../components/basic/Button";
 import { Card } from "../../components/card/Card";
 import { ethers } from 'ethers';
+import { useDispatch, useSelector } from "react-redux";
+import { addTransactionError } from '../../store/transactionSlice';
 
 export const MintLandSection = ({
-  currentUser,
-  landContract,
   userLands,
   allLands,
-  appendTransactionList,
-  appendTransactionError
+  watchMintTransaction,
 }) => {
+  const dispatch = useDispatch();
+  const contracts = useSelector(state => state.contracts.contracts);
+
   const MintCard = ({ type, handleMint }) => (
     <div className="sm:flex sm:flex-col">
       <Card noFlip nft={allLands[type]}/>
@@ -37,13 +39,16 @@ export const MintLandSection = ({
   };
 
   const handleMint = async (depositAmount) => {
-    landContract.safeMint({
+    contracts.landContract.safeMint({
       value: ethers.utils.parseEther(depositAmount)
     }).then(transaction => {
       transaction.message = "Minting Land NFT";
-      appendTransactionList(transaction);
+      watchMintTransaction(transaction);
     }).catch(err => {
-      appendTransactionError(err.message);
+      dispatch(addTransactionError({
+        id: new Date().toISOString(),
+        message: err.message
+      }))
       console.log(`ERR:`, err.message);
     });
   };

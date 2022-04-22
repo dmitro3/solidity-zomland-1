@@ -29,10 +29,10 @@ module.exports = {
       //   interval: 1000
       // }
     },
-    meter_testnet: {
-      url: "https://rpctest.meter.io",
-      accounts: [`${process.env.METER_TESTNET_PRIVATE_KEY}`]
-    },
+    // meter_testnet: {
+    //   url: "https://rpctest.meter.io",
+    //   accounts: [`${process.env.METER_TESTNET_PRIVATE_KEY}`]
+    // },
     // meter_mainnet: {
     //   url: "https://rpc.meter.io",
     //   accounts: [`${process.env.METER_MAINNET_PRIVATE_KEY}`]

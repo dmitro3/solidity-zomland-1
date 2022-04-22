@@ -35,7 +35,7 @@ const MonsterParam = ({ title, pct }) => (
 const POPUP_PAGE_LIMIT = 40;
 const COLLECTION_ZOMBIES_COUNT = 10;
 
-export const OneCollection = ({ currentUser, zombieContract, collectionContract }) => {
+export const OneCollection = ({ zombieContract, collectionContract }) => {
   const { collection_id } = useParams();
   const [isReady, setIsReady] = React.useState(false);
   const [collection, setCollection] = React.useState({});
@@ -147,7 +147,7 @@ export const OneCollection = ({ currentUser, zombieContract, collectionContract 
   return (
     <>
       <InnerPageWrapper>
-        <Header currentUser={currentUser}/>
+        <Header/>
 
         <Wrapper>
           <Container className="text-white text-center mt-6">

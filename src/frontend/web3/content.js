@@ -83,51 +83,27 @@ export const HomeContent = {
      how to make ZomLand the best NFT game ever.`,
     sections: [
       {
-        date: "Jan 10, 2022",
+        date: "Q1, 2022",
         title: "ZomLand Idea",
-        desc: "Prepare codebase, game logic and tokenomics. Create website landing.",
+        desc: "Prepare codebase, game logic and roadmap. Create website landing. Start social media promotions. Start working with strategic partners and advisors",
         type: "past",
       },
       {
-        date: "Apr 4, 2022",
-        title: "Start Ambassador program",
-        desc: "Join our ambassador program: participate in beta-testing, social sharing and earn rewards.",
+        date: "Q2, 2022",
+        title: "ZomLand V1",
+        desc: "Start Ambassador program and Testnet. Launch ZomLand V1. Support NEAR and Eth-compatible networks.",
         type: "soon",
       },
       {
-        date: "May 1, 2022",
-        title: "ZomLand release (v1)",
-        desc: "Ability to mint Lands, Zombies, Monsters, stake ZML tokens and use internal Market.",
+        date: "Q3, 2022",
+        title: "ZomLand V2",
+        desc: "Interactive gaming: Battle Arena & Land Discovery.",
         type: "incomming",
       },
       {
-        date: "July 1, 2022",
-        title: "Battle Arena & Land Discovery",
-        desc: "Implement interactive Monster Arena battles and Lands discovery.",
-        type: "incomming",
-      },
-      {
-        date: "September 1, 2022",
-        title: "Ambassador program End",
-        desc: "We'll appreciate everyone who contributed to ZomLand and will send for everyone something special.",
-        type: "incomming",
-      },
-      {
-        date: "October 20, 2022",
-        title: "Private Sale",
-        desc: "We'll announce Private Sale round for ambassadors and early investors.",
-        type: "incomming",
-      },
-      {
-        date: "November 1, 2022",
-        title: "Public Sale",
-        desc: "We'll announce Public Sale round for everyone.",
-        type: "incomming",
-      },
-      {
-        date: "November 20, 2022",
-        title: "Listing ZML",
-        desc: "We have plan to list ZML in one of popular exchanges.",
+        date: "Q4, 2022",
+        title: "Sales & Listing",
+        desc: "We'll announce Private Sale round for ambassadors and early investors and Public Sale round for everyone. Listing ZML on exchanges ",
         type: "incomming",
       },
     ],
@@ -148,7 +124,7 @@ export const LandContent = {
     <a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
   no_lands: "You don't have Lands",
   no_lands_details:
-      "But you can mint Small Land for free or buy Medium and Large lands",
+    "But you can mint Small Land for free or buy Medium and Large lands",
 };
 
 export const ZombieContent = {
@@ -158,7 +134,7 @@ export const ZombieContent = {
   mint_zombie_from_land: "Select land you want to mint zombies for:",
   no_zombies: "You have no Zombies",
   no_lands_details:
-      "To mint and view zombies you need some Lands. Mint new one in Lands page and return to get zombies from this land.",
+    "To mint and view zombies you need some Lands. Mint new one in Lands page and return to get zombies from this land.",
 };
 
 export const MonsterContent = {

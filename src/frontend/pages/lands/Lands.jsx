@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-  landTypeMap,
-  rmFromMarket, transformLand,
-} from "../../web3/utils";
+import { landTypeMap, rmFromMarket, transformLand, } from "../../web3/utils";
 import { LandContent } from "../../web3/content";
-import {
-  Container,
-  InnerPageWrapper,
-  Wrapper,
-} from "../../assets/styles/common.style";
+import { Container, InnerPageWrapper, Wrapper, } from "../../assets/styles/common.style";
 import { List } from "../../assets/styles/common.style";
 import { ListWrapper } from "../../assets/styles/common.style";
 import { Header } from "../../components/Header";
@@ -19,8 +12,14 @@ import { Loader } from "../../components/basic/Loader";
 import { Popup } from "../../components/Popup";
 import { MintLandSection } from "./MintLandSection";
 import { Card } from "../../components/card/Card";
+import { useDispatch, useSelector } from "react-redux";
+import { addTransaction, updateTransaction } from '../../store/transactionSlice';
 
-export const Lands = ({ currentUser, landContract, sellList, setSellList, appendTransactionList, appendTransactionError }) => {
+export const Lands = ({ sellList, setSellList }) => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.user.user);
+  const contracts = useSelector(state => state.contracts.contracts);
+
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
   const [userTotalLands, setUserTotalLands] = useState();
@@ -29,7 +28,7 @@ export const Lands = ({ currentUser, landContract, sellList, setSellList, append
 
   const loadAllLands = async () => {
     const allLands = {};
-    const allLandsObj = await landContract.getAllLands();
+    const allLandsObj = await contracts.landContract.getAllLands();
 
     allLandsObj.map((land, index) => {
       allLands[landTypeMap[index]] = {
@@ -51,7 +50,7 @@ export const Lands = ({ currentUser, landContract, sellList, setSellList, append
   useEffect(() => {
     const userLandsPromise = new Promise(async (resolve, reject) => {
       try {
-        const landsObj = await landContract.userLands();
+        const landsObj = await contracts.landContract.userLands();
         const lands = landsObj.map(land => transformLand(land));
         resolve(lands || []);
       } catch (e) {
@@ -61,7 +60,7 @@ export const Lands = ({ currentUser, landContract, sellList, setSellList, append
 
     const userTotalLandsPromise = new Promise(async (resolve, reject) => {
       try {
-        const userTotalCount = await landContract.balanceOf(currentUser.accountId);
+        const userTotalCount = await contracts.landContract.balanceOf(currentUser.accountId);
         resolve(parseInt(userTotalCount));
       } catch (e) {
         reject(e);
@@ -91,9 +90,19 @@ export const Lands = ({ currentUser, landContract, sellList, setSellList, append
   };
 
   const watchMintTransaction = (tx) => {
-    appendTransactionList(tx);
+    dispatch(addTransaction({
+      id: new Date().toISOString(),
+      hash: tx.hash,
+      message: tx.message,
+    }));
+
     tx.wait().then(receipt => {
       if (receipt.status === 1) {
+        dispatch(updateTransaction({
+          hash: tx.hash,
+          status: "success",
+        }));
+
         loadAllLands();
       }
     });
@@ -116,7 +125,7 @@ export const Lands = ({ currentUser, landContract, sellList, setSellList, append
 
   return (
     <InnerPageWrapper>
-      <Header currentUser={currentUser}/>
+      <Header/>
 
       <Wrapper>
         <Container className="text-white text-center mt-6">
@@ -148,12 +157,11 @@ export const Lands = ({ currentUser, landContract, sellList, setSellList, append
                     <Card
                       nft={land}
                       key={index}
-                      currentUser={currentUser}
                       sellItems={sellList["lands"]}
                       setSellItems={() => appendToSellList(land)}
                       rmFromMarket={async () => {
                         setIsReady(false);
-                        await rmFromMarket(landContract, land);
+                        await rmFromMarket(contracts.landContract, land);
                         setIsReady(true);
                       }}
                       handleTransfer={(transferAddress) =>
@@ -170,12 +178,10 @@ export const Lands = ({ currentUser, landContract, sellList, setSellList, append
                       </p>
                     </div>
                     <MintLandSection
-                      currentUser={currentUser}
-                      landContract={landContract}
                       allLands={allLands}
                       userLands={userLands}
-                      appendTransactionError={(tx) => appendTransactionError(tx)}
-                      appendTransactionList={(tx) => watchMintTransaction(tx)}
+                      // appendTransactionError={(tx) => appendTransactionError(tx)}
+                      watchMintTransaction={(tx) => watchMintTransaction(tx)}
                     />
                   </div>
                 )}
@@ -194,12 +200,10 @@ export const Lands = ({ currentUser, landContract, sellList, setSellList, append
         >
           <div className="mt-2">
             <MintLandSection
-              currentUser={currentUser}
-              landContract={landContract}
               allLands={allLands}
               userLands={userLands}
-              appendTransactionError={(tx) => appendTransactionError(tx)}
-              appendTransactionList={(tx) => {
+              // appendTransactionError={(tx) => appendTransactionError(tx)}
+              watchMintTransaction={(tx) => {
                 watchMintTransaction(tx);
                 setMintPopupVisible(false);
               }}

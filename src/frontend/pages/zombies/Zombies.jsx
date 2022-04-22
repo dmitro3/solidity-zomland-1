@@ -23,21 +23,24 @@ import { Loader } from "../../components/basic/Loader";
 import Dropdown from "../../components/basic/Dropdown";
 import { Pagination } from "../../components/Pagination";
 import { Popup } from "../../components/Popup";
+import { useDispatch, useSelector } from "react-redux";
+import { addTransaction, addTransactionError } from '../../store/transactionSlice';
+import { setUserBalance } from '../../store/userSlice';
+import { updateUserBalance } from '../../web3/api';
 
 const PAGE_LIMIT = "20";
 
 export const Zombies = ({
-  currentUser,
-  setCurrentUser,
   contract,
   landContract,
   tokenContract,
   sellList,
   setSellList,
   zombieContract,
-  appendTransactionList,
-  appendTransactionError
 }) => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.user.user);
+
   const [isReady, setIsReady] = useState(false);
   const [userZombies, setUserZombies] = useState([]);
   const [userZombiesCount, setUserZombiesCount] = useState(0);
@@ -55,6 +58,7 @@ export const Zombies = ({
 
   const navigate = useNavigate();
   const location = useLocation();
+
 
   async function fetchUserZombies(currentPage) {
     // if (filterCollection) {
@@ -161,8 +165,11 @@ export const Zombies = ({
     await zombieContract.safeMint(landId, {
       gasLimit: gas * 2
     }).then(transaction => {
-      transaction.message = "Minting Zombies";
-      appendTransactionList(transaction);
+      dispatch(addTransaction({
+        hash: transaction.hash,
+        message: "Minting Zombies",
+      }));
+
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           fetchUserLands();
@@ -178,7 +185,10 @@ export const Zombies = ({
         }, 2000);
       });
     }).catch(err => {
-      appendTransactionError(err.message);
+      dispatch(addTransactionError({
+        id: new Date().toISOString(),
+        message: err.message
+      }))
       removeMintInProgressList(landId);
     });
   };
@@ -264,25 +274,28 @@ export const Zombies = ({
   const handleKill = async () => {
     if (killItem) {
       await zombieContract.killZombie(killItem.tokenId).then(transaction => {
-        transaction.message = "Kill Zombie to get ZML tokens";
-        appendTransactionList(transaction);
+        dispatch(addTransaction({
+          id: new Date().toISOString(),
+          hash: transaction.hash,
+          message: "Kill Zombie to get ZML tokens",
+        }));
+
         transaction.wait().then(async receipt => {
           if (receipt.status === 1) {
             fetchUserZombies(currentPage);
             setKillPopupVisible(false);
 
-            // Update balance
-            const balance = await tokenContract.balanceOf(currentUser.accountId);
-            setCurrentUser({
-              accountId: currentUser.accountId,
-              tokenBalance: balance,
-            });
+            // Update user balance
+            await updateUserBalance(tokenContract, currentUser.accountId);
           } else {
             alert('Minting error');
           }
         });
       }).catch(err => {
-        appendTransactionError(err.message);
+        dispatch(addTransactionError({
+          id: new Date().toISOString(),
+          message: err.message
+        }))
       });
     }
     // let gas = convertToTera("90");
@@ -300,7 +313,7 @@ export const Zombies = ({
 
   return (
     <InnerPageWrapper>
-      <Header currentUser={currentUser}/>
+      <Header/>
 
       <Wrapper>
         <Container className="text-white text-center mt-6">

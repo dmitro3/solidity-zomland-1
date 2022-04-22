@@ -22,7 +22,7 @@ import { Card } from "../../components/card/Card";
 const START = 0;
 const LIMIT = 10;
 
-export const Market = ({ currentUser, contract }) => {
+export const Market = ({ contract }) => {
   const [isReady, setIsReady] = useState(false);
   const [items, setItems] = useState([]);
   const [active, setActive] = useState("Lands");
@@ -68,7 +68,7 @@ export const Market = ({ currentUser, contract }) => {
 
   return (
     <InnerPageWrapper>
-      <Header currentUser={currentUser} />
+      <Header />
 
       <Wrapper>
         <Container className="text-white text-center mt-6">

@@ -40,13 +40,13 @@ const FaqQuestion = ({title, children, index, openedIndex, changeOpened}) => (
     </Row>
 );
 
-export const Faq = ({currentUser}) => {
+export const Faq = () => {
   const [openedIndex, setOpenedIndex] = useState(1);
 
   return (
       <>
         <InnerPageWrapper>
-          <Header currentUser={currentUser}/>
+          <Header/>
 
           <Wrapper>
             <Container className="text-white text-center mt-6">

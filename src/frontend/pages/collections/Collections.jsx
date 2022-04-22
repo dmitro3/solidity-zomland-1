@@ -13,7 +13,7 @@ import { Loader } from "../../components/basic/Loader";
 import { Footer } from "../../components/Footer";
 import { Button } from "../../components/basic/Button";
 
-export const Collections = ({ currentUser, collectionContract }) => {
+export const Collections = ({ collectionContract }) => {
   const [allCollections, setAllCollections] = useState([]);
   // const [userCollectionCount, setUserCollectionCount] = useState({});
   const [isReady, setIsReady] = React.useState(false);
@@ -32,7 +32,7 @@ export const Collections = ({ currentUser, collectionContract }) => {
   return (
     <>
       <InnerPageWrapper>
-        <Header currentUser={ currentUser }/>
+        <Header/>
 
         <Wrapper>
           <Container className="text-white text-center mt-6">

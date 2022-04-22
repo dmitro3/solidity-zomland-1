@@ -13,12 +13,15 @@ import { InnerPageHead } from "../components/InnerPageHead";
 import { Button } from "../components/basic/Button";
 import { Popup } from "../components/Popup";
 import { Card } from "../components/card/Card";
-import { FlipCard } from "../assets/styles/card";
-import { FrontCard } from "../components/card/FrontCard";
-import { updateUserBalance } from '../web3/api';
 import { BigNumber } from 'ethers';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTransaction, addTransactionError } from '../store/transactionSlice';
+import { updateUserBalance } from '../web3/api';
 
-export const Token = ({ currentUser, setCurrentUser, contract, ftContract, appendTransactionList, appendTransactionError }) => {
+export const Token = ({ contract, ftContract }) => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.user.user);
+
   const [depositInput, setDepositInput] = React.useState();
   const [userMonsters, setUserMonsters] = useState([0, []]);
   const [depositedBalance, setDepositedBalance] = React.useState(0);
@@ -132,18 +135,29 @@ export const Token = ({ currentUser, setCurrentUser, contract, ftContract, appen
 
   const handleDeposit = async (depositAmount) => {
     await ftContract.stake(depositAmount).then(transaction => {
-      transaction.message = "Deposit ZML to staking";
-      appendTransactionList(transaction);
+      dispatch(addTransaction({
+        id: new Date().toISOString(),
+        hash: transaction.hash,
+        message: "Deposit ZML to staking",
+      }));
+
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
+          dispatch(updateTransaction({
+            hash: transaction.hash,
+            status: "success"
+          }))
           updateDepositedAmount();
           updateTotalDeposit();
-          updateUserBalance(ftContract, setCurrentUser, currentUser.accountId);
+          updateUserBalance(ftContract, currentUser.accountId);
           setDepositInput(0);
         }
       });
     }).catch(err => {
-      appendTransactionError(err.message);
+      dispatch(addTransactionError({
+        id: new Date().toISOString(),
+        message: err.message
+      }));
     });
   };
 
@@ -156,33 +170,47 @@ export const Token = ({ currentUser, setCurrentUser, contract, ftContract, appen
     let withdrawAmount = convertToYocto(withdrawInput.toString());
     console.log(withdrawAmount);
     await ftContract.withdraw(withdrawAmount).then(transaction => {
-      transaction.message = "Withdraw ZML tokens";
-      appendTransactionList(transaction);
+      dispatch(addTransaction({
+        id: new Date().toISOString(),
+        hash: transaction.hash,
+        message: "Withdraw ZML tokens",
+      }));
+
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           updateDepositedAmount();
           updateTotalDeposit();
-          updateUserBalance(ftContract, setCurrentUser, currentUser.accountId);
+          updateUserBalance(ftContract, currentUser.accountId);
           setWithdrawInput(0);
         }
       });
     }).catch(err => {
-      appendTransactionError(err.message);
+      dispatch(addTransactionError({
+        id: new Date().toISOString(),
+        message: err.message
+      }));
     });
   };
 
   const handleWithdrawRewards = async () => {
     await ftContract.getReward().then(transaction => {
-      transaction.message = "Claim ZML Rewards";
-      appendTransactionList(transaction);
+      dispatch(addTransaction({
+        id: new Date().toISOString(),
+        hash: transaction.hash,
+        message: "Claim ZML Rewards",
+      }));
+
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           updateEarnedRewards();
-          updateUserBalance(ftContract, setCurrentUser, currentUser.accountId);
+          updateUserBalance(ftContract, currentUser.accountId);
         }
       });
     }).catch(err => {
-      appendTransactionError(err.message);
+      dispatch(addTransactionError({
+        id: new Date().toISOString(),
+        message: err.message
+      }));
     });
   };
 

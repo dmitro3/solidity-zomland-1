@@ -7,8 +7,11 @@ import {SocialLinks} from "./SocialLinks";
 import {NavLinks} from "./header/NavLinks";
 import {MobileNavLinks} from "./header/MobileNavLinks";
 import {MenuIcon, XIcon} from "@heroicons/react/outline";
+import { useSelector } from "react-redux";
 
-export const Header = ({currentUser}) => {
+export const Header = () => {
+  const currentUser = useSelector(state => state.user.user);
+
   const [scroll, setScroll] = useState(false);
   const [userTokenBalance, setUserTokenBalance] = useState(0);
   const [isMobileOpened, setIsMobileOpened] = useState(false);
@@ -32,7 +35,6 @@ export const Header = ({currentUser}) => {
             id="mobile-menu"
         >
           <MobileNavLinks
-              currentUser={currentUser}
               setIsMobileOpened={setIsMobileOpened}
               onClickOutside={() => setIsMobileOpened(false)}
           />

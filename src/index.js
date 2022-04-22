@@ -2,17 +2,21 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from './frontend/App';
 import * as serviceWorker from './serviceWorker';
+import { Provider } from "react-redux";
+import store from "./frontend/store";
 
 if (process.env.NODE_ENV !== "production") {
-    const parcelSocket = new WebSocket("ws://localhost:1234/");
-    parcelSocket.onmessage = () => {
-        window.location.reload();
-    };
+  const parcelSocket = new WebSocket("ws://localhost:1234/");
+  parcelSocket.onmessage = () => {
+    window.location.reload();
+  };
 }
 
 ReactDOM.render(
-    <App/>,
-    document.querySelector('#root')
+  <Provider store={store}>
+    <App/>
+  </Provider>,
+  document.querySelector('#root')
 )
 
 
