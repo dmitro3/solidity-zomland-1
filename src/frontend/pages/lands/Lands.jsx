@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { landTypeMap, rmFromMarket, transformLand, } from "../../web3/utils";
+import { addNewTransaction, landTypeMap, rmFromMarket, transformLand, } from "../../web3/utils";
 import { LandContent } from "../../web3/content";
 import { Container, InnerPageWrapper, Wrapper, } from "../../assets/styles/common.style";
 import { List } from "../../assets/styles/common.style";
@@ -18,7 +18,6 @@ import { addTransaction, updateTransaction } from '../../store/transactionSlice'
 export const Lands = ({ sellList, setSellList }) => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
-  const contracts = useSelector(state => state.contracts.contracts);
 
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
@@ -28,7 +27,7 @@ export const Lands = ({ sellList, setSellList }) => {
 
   const loadAllLands = async () => {
     const allLands = {};
-    const allLandsObj = await contracts.landContract.getAllLands();
+    const allLandsObj = await window.contracts['land'].getAllLands();
 
     allLandsObj.map((land, index) => {
       allLands[landTypeMap[index]] = {
@@ -50,7 +49,7 @@ export const Lands = ({ sellList, setSellList }) => {
   useEffect(() => {
     const userLandsPromise = new Promise(async (resolve, reject) => {
       try {
-        const landsObj = await contracts.landContract.userLands();
+        const landsObj = await window.contracts['land'].userLands();
         const lands = landsObj.map(land => transformLand(land));
         resolve(lands || []);
       } catch (e) {
@@ -60,7 +59,7 @@ export const Lands = ({ sellList, setSellList }) => {
 
     const userTotalLandsPromise = new Promise(async (resolve, reject) => {
       try {
-        const userTotalCount = await contracts.landContract.balanceOf(currentUser.accountId);
+        const userTotalCount = await window.contracts['land'].balanceOf(currentUser.accountId);
         resolve(parseInt(userTotalCount));
       } catch (e) {
         reject(e);
@@ -90,19 +89,10 @@ export const Lands = ({ sellList, setSellList }) => {
   };
 
   const watchMintTransaction = (tx) => {
-    dispatch(addTransaction({
-      id: new Date().toISOString(),
-      hash: tx.hash,
-      message: tx.message,
-    }));
+    addNewTransaction(dispatch, tx, tx.message);
 
     tx.wait().then(receipt => {
       if (receipt.status === 1) {
-        dispatch(updateTransaction({
-          hash: tx.hash,
-          status: "success",
-        }));
-
         loadAllLands();
       }
     });
@@ -148,7 +138,6 @@ export const Lands = ({ sellList, setSellList }) => {
             </>
           )}
 
-
           <ListWrapper>
             {isReady ? (
               <List>
@@ -161,7 +150,7 @@ export const Lands = ({ sellList, setSellList }) => {
                       setSellItems={() => appendToSellList(land)}
                       rmFromMarket={async () => {
                         setIsReady(false);
-                        await rmFromMarket(contracts.landContract, land);
+                        await rmFromMarket(window.contracts['land'], land);
                         setIsReady(true);
                       }}
                       handleTransfer={(transferAddress) =>
@@ -180,7 +169,6 @@ export const Lands = ({ sellList, setSellList }) => {
                     <MintLandSection
                       allLands={allLands}
                       userLands={userLands}
-                      // appendTransactionError={(tx) => appendTransactionError(tx)}
                       watchMintTransaction={(tx) => watchMintTransaction(tx)}
                     />
                   </div>
@@ -202,7 +190,6 @@ export const Lands = ({ sellList, setSellList }) => {
             <MintLandSection
               allLands={allLands}
               userLands={userLands}
-              // appendTransactionError={(tx) => appendTransactionError(tx)}
               watchMintTransaction={(tx) => {
                 watchMintTransaction(tx);
                 setMintPopupVisible(false);

@@ -13,14 +13,14 @@ import { Loader } from "../../components/basic/Loader";
 import { Footer } from "../../components/Footer";
 import { Button } from "../../components/basic/Button";
 
-export const Collections = ({ collectionContract }) => {
+export const Collections = () => {
   const [allCollections, setAllCollections] = useState([]);
   // const [userCollectionCount, setUserCollectionCount] = useState({});
   const [isReady, setIsReady] = React.useState(false);
 
   useEffect(() => {
     async function fetchCollections() {
-      let collectionsObj = await collectionContract.getAllCollections();
+      let collectionsObj = await window.contracts['collection'].getAllCollections();
       let collections = collectionsObj.map((collection, index) => transformCollections(collection, index))
       setAllCollections(collections);
       setIsReady(true);

@@ -13,7 +13,6 @@ export const MintLandSection = ({
   watchMintTransaction,
 }) => {
   const dispatch = useDispatch();
-  const contracts = useSelector(state => state.contracts.contracts);
 
   const MintCard = ({ type, handleMint }) => (
     <div className="sm:flex sm:flex-col">
@@ -39,7 +38,7 @@ export const MintLandSection = ({
   };
 
   const handleMint = async (depositAmount) => {
-    contracts.landContract.safeMint({
+    window.contracts['land'].safeMint({
       value: ethers.utils.parseEther(depositAmount)
     }).then(transaction => {
       transaction.message = "Minting Land NFT";

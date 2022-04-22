@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { addTransaction, removeTransaction, updateTransaction } from '../store/transactionSlice';
 
 export const landTypeMap = {
   0: "Small",
@@ -13,7 +14,7 @@ export const rarityMap = {
   3: "Epic",
 };
 
-export const getMedia = (media) => `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
+export const getMedia = (media) => `https://zomland.fra1.digitaloceanspaces.com/${ media }.png`;
 
 export const convertFromYocto = (amount, digits = 1) => {
   return (+ethers.utils.formatEther(amount.toString())).toFixed(digits);
@@ -108,3 +109,32 @@ export const transformCollections = (coll, index) => {
     image: coll.image,
   };
 };
+
+export const addNewTransaction = (dispatch, transaction, message) => {
+  const txId = new Date().toISOString();
+  dispatch(addTransaction({
+    id: txId,
+    hash: transaction.hash,
+    message,
+  }));
+
+  transaction.wait().then((receipt) => {
+    if (receipt.status === 1) {
+      dispatch(updateTransaction({
+        id: txId,
+        status: "success",
+      }));
+    } else {
+      dispatch(updateTransaction({
+        id: txId,
+        status: "error",
+      }));
+    }
+
+    setTimeout(() => {
+      dispatch(removeTransaction({
+        id: txId,
+      }));
+    }, 5000);
+  });
+}

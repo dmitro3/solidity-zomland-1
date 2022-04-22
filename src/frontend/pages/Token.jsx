@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { convertFromYocto, convertToYocto } from "../web3/utils";
+import { addNewTransaction, convertFromYocto, convertToYocto } from "../web3/utils";
 import { TokenContent } from "../web3/content";
 import {
   Container,
@@ -135,21 +135,13 @@ export const Token = ({ contract, ftContract }) => {
 
   const handleDeposit = async (depositAmount) => {
     await ftContract.stake(depositAmount).then(transaction => {
-      dispatch(addTransaction({
-        id: new Date().toISOString(),
-        hash: transaction.hash,
-        message: "Deposit ZML to staking",
-      }));
+      addNewTransaction(dispatch, transaction, "Deposit ZML to staking");
 
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
-          dispatch(updateTransaction({
-            hash: transaction.hash,
-            status: "success"
-          }))
           updateDepositedAmount();
           updateTotalDeposit();
-          updateUserBalance(ftContract, currentUser.accountId);
+          updateUserBalance(currentUser.accountId);
           setDepositInput(0);
         }
       });
@@ -170,17 +162,13 @@ export const Token = ({ contract, ftContract }) => {
     let withdrawAmount = convertToYocto(withdrawInput.toString());
     console.log(withdrawAmount);
     await ftContract.withdraw(withdrawAmount).then(transaction => {
-      dispatch(addTransaction({
-        id: new Date().toISOString(),
-        hash: transaction.hash,
-        message: "Withdraw ZML tokens",
-      }));
+      addNewTransaction(dispatch, transaction, "Withdraw ZML tokens");
 
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           updateDepositedAmount();
           updateTotalDeposit();
-          updateUserBalance(ftContract, currentUser.accountId);
+          updateUserBalance(currentUser.accountId);
           setWithdrawInput(0);
         }
       });
@@ -194,16 +182,12 @@ export const Token = ({ contract, ftContract }) => {
 
   const handleWithdrawRewards = async () => {
     await ftContract.getReward().then(transaction => {
-      dispatch(addTransaction({
-        id: new Date().toISOString(),
-        hash: transaction.hash,
-        message: "Claim ZML Rewards",
-      }));
+      addNewTransaction(dispatch, transaction, "Claim ZML Rewards");
 
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           updateEarnedRewards();
-          updateUserBalance(ftContract, currentUser.accountId);
+          updateUserBalance(currentUser.accountId);
         }
       });
     }).catch(err => {

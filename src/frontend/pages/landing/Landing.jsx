@@ -38,12 +38,11 @@ const CircleSection = ({number, title, desc}) => (
 export const Landing = () => {
   let navigate = useNavigate();
   const currentUser = useSelector(state => state.user.user);
-
   const handleClick = () => (currentUser ? navigate("/zombies") : window.web3Login());
 
   return (
       <InnerPageWrapper>
-        <Header currentUser={currentUser}/>
+        <Header/>
 
         <Container
             id="home"

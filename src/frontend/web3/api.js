@@ -9,7 +9,7 @@ import TokenFTAddress from "../contractsData/TokenFTContract-address.json";
 import TokenFTAbi from "../contractsData/TokenFTContract.json";
 import CollectionAddress from "../contractsData/CollectionContract-address.json";
 import CollectionAbi from "../contractsData/CollectionContract.json";
-import { setUserBalance } from '../store/userSlice';
+import { setUserAccountId, setUserBalance } from '../store/userSlice';
 
 export const web3Handler = () => {
   return new Promise(async (resolve, reject) => {
@@ -21,39 +21,35 @@ export const web3Handler = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
 
-        const landContract = new ethers.Contract(
+        window.contracts = {};
+        window.contracts['land'] = new ethers.Contract(
           LandNFTAddress.address,
           LandNFTAbi.abi,
           signer
         );
-        const zombieContract = new ethers.Contract(
+        window.contracts['zombie'] = new ethers.Contract(
           ZombieNFTAddress.address,
           ZombieNFTAbi.abi,
           signer
         );
-        const monsterContract = new ethers.Contract(
+        window.contracts['monster'] = new ethers.Contract(
           MonsterNFTAddress.address,
           MonsterNFTAbi.abi,
           signer
         );
-        const tokenContract = new ethers.Contract(
+        window.contracts['token'] = new ethers.Contract(
           TokenFTAddress.address,
           TokenFTAbi.abi,
           signer
         );
-        const collectionContract = new ethers.Contract(
+        window.contracts['collection'] = new ethers.Contract(
           CollectionAddress.address,
           CollectionAbi.abi,
           signer
         );
 
         resolve({
-          account: accounts[0],
-          landContract,
-          zombieContract,
-          monsterContract,
-          tokenContract,
-          collectionContract
+          account: accounts[0]
         });
       } catch (err) {
         reject("Metamask connection error");
@@ -114,9 +110,15 @@ export const isMetamaskInstalled = () => {
 // setTransactionList([...transactionList]);
 // }
 
-export const updateUserBalance = async (tokenContract, accountId) => {
-  const balance = await tokenContract.balanceOf(accountId);
+export const updateUserBalance = async (accountId) => {
+  const balance = await window.contracts['token'].balanceOf(accountId);
   setUserBalance({
     balance: parseInt(balance)
   });
 }
+
+export const updateUserAccount = (dispatch, account) => {
+  dispatch(setUserAccountId({ account }));
+  updateUserBalance(account);
+}
+

@@ -35,7 +35,7 @@ const MonsterParam = ({ title, pct }) => (
 const POPUP_PAGE_LIMIT = 40;
 const COLLECTION_ZOMBIES_COUNT = 10;
 
-export const OneCollection = ({ zombieContract, collectionContract }) => {
+export const OneCollection = () => {
   const { collection_id } = useParams();
   const [isReady, setIsReady] = React.useState(false);
   const [collection, setCollection] = React.useState({});
@@ -48,7 +48,7 @@ export const OneCollection = ({ zombieContract, collectionContract }) => {
 
   const loadCollection = async () => {
     async function fetchCollections() {
-      let collectionsObj = await collectionContract.collections(collection_id);
+      let collectionsObj = await window.contracts['collection'].collections(collection_id);
       let collection = transformCollections(collectionsObj, collection_id);
       setCollection(collection);
     }
@@ -57,7 +57,7 @@ export const OneCollection = ({ zombieContract, collectionContract }) => {
   };
 
   const loadZombies = async (page) => {
-    const zombiesObj = await zombieContract.userZombies(
+    const zombiesObj = await window.contracts['zombie'].userZombies(
       page,
       POPUP_PAGE_LIMIT.toString()
     );

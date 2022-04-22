@@ -16,17 +16,14 @@ import {
 import { Sidebar } from "./components/sidebar/Sidebar";
 import {
   web3Handler,
-  isMetamaskInstalled, updateUserBalance,
+  isMetamaskInstalled, updateUserAccount,
 } from "./web3/api";
 import { TransactionList } from "./components/TransactionList";
 import { useDispatch, useSelector } from "react-redux";
 import { addTransactionError } from './store/transactionSlice';
-import { setUserAccountId } from './store/userSlice';
-import { updateContract } from './store/contractSlice';
 
 export default function App() {
   const dispatch = useDispatch();
-  const contracts = useSelector(state => state.contracts.contracts);
 
   const [isReady, setIsReady] = React.useState(false);
   const [sellList, setSellList] = React.useState({
@@ -40,40 +37,8 @@ export default function App() {
   window.web3Login = () => {
     web3Handler()
       .then(
-        ({
-          account,
-          landContract,
-          zombieContract,
-          monsterContract,
-          tokenContract,
-          collectionContract
-        }) => {
-
-          updateContract({
-            name: "landContract",
-            contract: landContract
-          });
-          updateContract({
-            name: "zombieContract",
-            contract: zombieContract
-          });
-          updateContract({
-            name: "monsterContract",
-            contract: monsterContract
-          });
-          updateContract({
-            name: "tokenContract",
-            contract: tokenContract
-          });
-          updateContract({
-            name: "collectionContract",
-            contract: collectionContract
-          });
-
-
-          console.log('contracts.tokenContract', contracts.tokenContract);
-          dispatch(setUserAccountId({ account }));
-          updateUserBalance(contracts.tokenContract, account);
+        ({ account }) => {
+          updateUserAccount(dispatch, account);
 
           window.ethereum.on("chainChanged", (chainId) => {
             console.log("chainChanged", chainId);
@@ -82,9 +47,7 @@ export default function App() {
 
           window.ethereum.on("accountsChanged", (accounts) => { // async?
             console.log("accountsChanged", accounts);
-            const account = accounts[0];
-            dispatch(setUserAccountId({ account }));
-            updateUserBalance(contracts.tokenContract, account);
+            updateUserAccount(dispatch, accounts[0]);
           });
 
           setIsReady(true);
@@ -132,15 +95,15 @@ export default function App() {
           }
         />
 
-        {isReady && (
+        { isReady && (
           <>
             <Route
               exact
               path="/lands"
               element={
                 <Lands
-                  sellList={sellList}
-                  setSellList={setSellList}
+                  sellList={ sellList }
+                  setSellList={ setSellList }
                 />
               }
             />
@@ -149,8 +112,8 @@ export default function App() {
               path="/zombies"
               element={
                 <Zombies
-                  sellList={sellList}
-                  setSellList={setSellList}
+                  sellList={ sellList }
+                  setSellList={ setSellList }
                 />
               }
             />
@@ -173,15 +136,15 @@ export default function App() {
               path="/monsters"
               element={
                 <Monsters
-                  sellList={sellList}
-                  setSellList={setSellList}
+                  sellList={ sellList }
+                  setSellList={ setSellList }
                 />
               }
             />
             <Route
               exact
               path="/market"
-              element={<Market/>}
+              element={ <Market/> }
             />
             <Route
               exact
@@ -191,30 +154,30 @@ export default function App() {
               }
             />
           </>
-        )}
+        ) }
 
         <Route
           exact
           path="/faq"
-          element={<Faq/>}
+          element={ <Faq/> }
         />
         <Route
           exact
           path="/terms-conditions"
-          element={<Terms/>}
+          element={ <Terms/> }
         />
         <Route
           exact
           path="/privacy-policy"
-          element={<Privacy/>}
+          element={ <Privacy/> }
         />
       </Routes>
 
       <Sidebar
-        sellList={sellList}
-        setSellList={setSellList}
-        isOpen={sidebarIsOpen}
-        setIsOpen={setSidebarIsOpen}
+        sellList={ sellList }
+        setSellList={ setSellList }
+        isOpen={ sidebarIsOpen }
+        setIsOpen={ setSidebarIsOpen }
       />
       <TransactionList/>
     </BrowserRouter>

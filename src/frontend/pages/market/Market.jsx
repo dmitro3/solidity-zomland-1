@@ -18,11 +18,13 @@ import { Footer } from "../../components/Footer";
 import { Loader } from "../../components/basic/Loader";
 import { ButtonGroup } from "../../components/ButtonGroup";
 import { Card } from "../../components/card/Card";
+import { useSelector } from 'react-redux';
 
 const START = 0;
 const LIMIT = 10;
 
-export const Market = ({ contract }) => {
+export const Market = () => {
+  const currentUser = useSelector(state => state.user.user);
   const [isReady, setIsReady] = useState(false);
   const [items, setItems] = useState([]);
   const [active, setActive] = useState("Lands");
@@ -111,7 +113,6 @@ export const Market = ({ contract }) => {
                             <Card
                               nft={item}
                               key={index}
-                              currentUser={currentUser}
                               noMenu
                               rmFromMarket={async () => {
                                 setIsReady(false);

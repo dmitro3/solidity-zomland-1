@@ -24,7 +24,7 @@ import { Popup } from "../../components/Popup";
 
 const PAGE_LIMIT = "10";
 
-export const Monsters = ({ monsterContract, sellList, setSellList }) => {
+export const Monsters = ({ sellList, setSellList }) => {
   const [isReady, setIsReady] = useState(false);
   const [userMonsters, setUserMonsters] = useState([0, []]); // [<count>, [<arrayOfMonsters>]]
   const [currentPage, setCurrentPage] = useState(1);
