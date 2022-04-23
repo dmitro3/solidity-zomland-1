@@ -20,7 +20,7 @@ import {
 } from "./web3/api";
 import { TransactionList } from "./components/TransactionList";
 import { useDispatch, useSelector } from "react-redux";
-import { addTransactionError } from './store/transactionSlice';
+import { addTransactionError } from './web3/utils';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -37,8 +37,8 @@ export default function App() {
   window.web3Login = () => {
     web3Handler()
       .then(
-        ({ account }) => {
-          updateUserAccount(dispatch, account);
+        async ({ account }) => {
+          await updateUserAccount(dispatch, account);
 
           window.ethereum.on("chainChanged", (chainId) => {
             console.log("chainChanged", chainId);
@@ -55,10 +55,7 @@ export default function App() {
       )
       .catch(() => {
         if (!isMetamaskInstalled()) {
-          dispatch(addTransactionError({
-            id: new Date().toISOString(),
-            message: "Please install Metamask."
-          }))
+          addTransactionError(dispatch, "Please install Metamask.")
         }
 
         let allowPathList = [
@@ -94,7 +91,6 @@ export default function App() {
             <Landing/>
           }
         />
-
         { isReady && (
           <>
             <Route

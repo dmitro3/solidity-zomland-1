@@ -20,7 +20,7 @@ export const Collections = () => {
 
   useEffect(() => {
     async function fetchCollections() {
-      let collectionsObj = await window.contracts['collection'].getAllCollections();
+      let collectionsObj = await window.contracts.collection.getAllCollections();
       let collections = collectionsObj.map((collection, index) => transformCollections(collection, index))
       setAllCollections(collections);
       setIsReady(true);

@@ -21,32 +21,33 @@ export const web3Handler = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
 
-        window.contracts = {};
-        window.contracts['land'] = new ethers.Contract(
-          LandNFTAddress.address,
-          LandNFTAbi.abi,
-          signer
-        );
-        window.contracts['zombie'] = new ethers.Contract(
-          ZombieNFTAddress.address,
-          ZombieNFTAbi.abi,
-          signer
-        );
-        window.contracts['monster'] = new ethers.Contract(
-          MonsterNFTAddress.address,
-          MonsterNFTAbi.abi,
-          signer
-        );
-        window.contracts['token'] = new ethers.Contract(
-          TokenFTAddress.address,
-          TokenFTAbi.abi,
-          signer
-        );
-        window.contracts['collection'] = new ethers.Contract(
-          CollectionAddress.address,
-          CollectionAbi.abi,
-          signer
-        );
+        window.contracts = {
+          land: new ethers.Contract(
+            LandNFTAddress.address,
+            LandNFTAbi.abi,
+            signer
+          ),
+          zombie: new ethers.Contract(
+            ZombieNFTAddress.address,
+            ZombieNFTAbi.abi,
+            signer
+          ),
+          monster: new ethers.Contract(
+            MonsterNFTAddress.address,
+            MonsterNFTAbi.abi,
+            signer
+          ),
+          token: new ethers.Contract(
+            TokenFTAddress.address,
+            TokenFTAbi.abi,
+            signer
+          ),
+          collection: new ethers.Contract(
+            CollectionAddress.address,
+            CollectionAbi.abi,
+            signer
+          )
+        };
 
         resolve({
           account: accounts[0]
@@ -64,61 +65,15 @@ export const isMetamaskInstalled = () => {
   return typeof window.ethereum !== "undefined";
 };
 
-// export const appendTransactionList = (transactionList, setTransactionList, tx) => {
-//   transactionList.push({
-//     hash: tx.hash,
-//     message: tx.message || null,
-//     status: "pending"
-//   });
-//   setTransactionList([...transactionList]);
-//
-//   tx.wait().then(receipt => {
-//     const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
-//     if (index !== -1) {
-//       transactionList[index].status = (receipt.status === 1) ? "success" : "error";
-//       setTransactionList([...transactionList]);
-//
-//       setTimeout(() => {
-//         const index = transactionList.findIndex(oneTx => oneTx.hash === tx.hash);
-//         if (index !== -1) {
-//           transactionList.splice(index, 1);
-//           setTransactionList([...transactionList]);
-//         }
-//       }, 2000);
-//     }
-//   })
-// }
-
-// export const appendTransactionError = (transactionList, setTransactionList, message) => {
-//   transactionList.push({
-//     message,
-//     status: "error"
-//   });
-//   setTransactionList([...transactionList]);
-//
-//   setTimeout(() => {
-//     const index = transactionList.findIndex(oneTx => oneTx.message === message);
-//     if (index !== -1) {
-//       transactionList.splice(index, 1);
-//       setTransactionList([...transactionList]);
-//     }
-//   }, 5000);
-// };
-
-// export const hideTransaction = (transactionList, setTransactionList, index) => {
-// transactionList.splice(index, 1);
-// setTransactionList([...transactionList]);
-// }
-
 export const updateUserBalance = async (accountId) => {
-  const balance = await window.contracts['token'].balanceOf(accountId);
+  const balance = await window.contracts.token.balanceOf(accountId);
   setUserBalance({
     balance: parseInt(balance)
   });
 }
 
-export const updateUserAccount = (dispatch, account) => {
+export const updateUserAccount = async (dispatch, account) => {
   dispatch(setUserAccountId({ account }));
-  updateUserBalance(account);
+  await updateUserBalance(account);
 }
 

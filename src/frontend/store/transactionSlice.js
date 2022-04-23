@@ -11,30 +11,15 @@ const transactionSlice = createSlice({
         id: action.payload.id,
         hash: action.payload.hash,
         message: action.payload.message || "",
-        status: "pending"
+        status: action.payload.status || "pending"
       })
     },
 
-    addTransactionError(state, action) {
-      state.list.push({
-        id: action.payload.id,
-        hash: null,
-        message: action.payload.message || "",
-        status: "error"
-      });
-
-      // setTimeout(() => {
-      //   transactionSlice.caseReducers.removeTransaction(state, action);
-      // }, 3000);
-    },
-
     updateTransaction(state, action) {
-      const transaction = state.list.find(tx => tx.hash === action.payload.hash);
-      transaction.status = action.payload.status;
-
-      // setTimeout(() => {
-      //   transactionSlice.caseReducers.removeTransaction(state, action);
-      // }, 3000);
+      const transaction = state.list.find(tx => tx.id === action.payload.id);
+      if (transaction) {
+        transaction.status = action.payload.status;
+      }
     },
 
     removeTransaction(state, action) {
@@ -44,5 +29,5 @@ const transactionSlice = createSlice({
   }
 });
 
-export const { addTransaction, addTransactionError, updateTransaction, removeTransaction } = transactionSlice.actions;
+export const { addTransaction, updateTransaction, removeTransaction } = transactionSlice.actions;
 export default transactionSlice.reducer;

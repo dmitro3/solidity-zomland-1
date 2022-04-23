@@ -48,7 +48,7 @@ export const OneCollection = () => {
 
   const loadCollection = async () => {
     async function fetchCollections() {
-      let collectionsObj = await window.contracts['collection'].collections(collection_id);
+      let collectionsObj = await window.contracts.collection.collections(collection_id);
       let collection = transformCollections(collectionsObj, collection_id);
       setCollection(collection);
     }
@@ -57,7 +57,7 @@ export const OneCollection = () => {
   };
 
   const loadZombies = async (page) => {
-    const zombiesObj = await window.contracts['zombie'].userZombies(
+    const zombiesObj = await window.contracts.zombie.userZombies(
       page,
       POPUP_PAGE_LIMIT.toString()
     );

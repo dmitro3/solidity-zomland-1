@@ -36,9 +36,9 @@ const CircleSection = ({number, title, desc}) => (
 );
 
 export const Landing = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const currentUser = useSelector(state => state.user.user);
-  const handleClick = () => (currentUser ? navigate("/zombies") : window.web3Login());
+  const handleClick = () => (currentUser.accountId ? navigate("/zombies") : window.web3Login());
 
   return (
       <InnerPageWrapper>

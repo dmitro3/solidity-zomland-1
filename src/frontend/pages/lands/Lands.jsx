@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { addNewTransaction, landTypeMap, rmFromMarket, transformLand, } from "../../web3/utils";
+import { addPendingTransaction, landTypeMap, rmFromMarket, transformLand, } from "../../web3/utils";
 import { LandContent } from "../../web3/content";
 import { Container, InnerPageWrapper, Wrapper, } from "../../assets/styles/common.style";
 import { List } from "../../assets/styles/common.style";
@@ -27,7 +27,7 @@ export const Lands = ({ sellList, setSellList }) => {
 
   const loadAllLands = async () => {
     const allLands = {};
-    const allLandsObj = await window.contracts['land'].getAllLands();
+    const allLandsObj = await window.contracts.land.getAllLands();
 
     allLandsObj.map((land, index) => {
       allLands[landTypeMap[index]] = {
@@ -49,7 +49,7 @@ export const Lands = ({ sellList, setSellList }) => {
   useEffect(() => {
     const userLandsPromise = new Promise(async (resolve, reject) => {
       try {
-        const landsObj = await window.contracts['land'].userLands();
+        const landsObj = await window.contracts.land.userLands();
         const lands = landsObj.map(land => transformLand(land));
         resolve(lands || []);
       } catch (e) {
@@ -59,7 +59,7 @@ export const Lands = ({ sellList, setSellList }) => {
 
     const userTotalLandsPromise = new Promise(async (resolve, reject) => {
       try {
-        const userTotalCount = await window.contracts['land'].balanceOf(currentUser.accountId);
+        const userTotalCount = await window.contracts.land.balanceOf(currentUser.accountId);
         resolve(parseInt(userTotalCount));
       } catch (e) {
         reject(e);
@@ -89,7 +89,7 @@ export const Lands = ({ sellList, setSellList }) => {
   };
 
   const watchMintTransaction = (tx) => {
-    addNewTransaction(dispatch, tx, tx.message);
+    addPendingTransaction(dispatch, tx, tx.message);
 
     tx.wait().then(receipt => {
       if (receipt.status === 1) {

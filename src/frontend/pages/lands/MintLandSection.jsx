@@ -1,11 +1,10 @@
 import React from "react";
-import { convertFromYocto, convertToYocto } from "../../web3/utils";
+import { addTransactionError, convertFromYocto, convertToYocto } from "../../web3/utils";
 import { Row } from "../../assets/styles/common.style";
 import { Button } from "../../components/basic/Button";
 import { Card } from "../../components/card/Card";
 import { ethers } from 'ethers';
 import { useDispatch, useSelector } from "react-redux";
-import { addTransactionError } from '../../store/transactionSlice';
 
 export const MintLandSection = ({
   userLands,
@@ -38,17 +37,13 @@ export const MintLandSection = ({
   };
 
   const handleMint = async (depositAmount) => {
-    window.contracts['land'].safeMint({
+    window.contracts.land.safeMint({
       value: ethers.utils.parseEther(depositAmount)
     }).then(transaction => {
       transaction.message = "Minting Land NFT";
       watchMintTransaction(transaction);
     }).catch(err => {
-      dispatch(addTransactionError({
-        id: new Date().toISOString(),
-        message: err.message
-      }))
-      console.log(`ERR:`, err.message);
+      addTransactionError(dispatch, err.message);
     });
   };
 

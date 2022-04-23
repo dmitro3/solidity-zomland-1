@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  addNewTransaction,
+  addPendingTransaction, addTransactionError,
   convertFromYocto,
   formatId,
   rmFromMarket, transformLand, transformZombie,
@@ -25,7 +25,6 @@ import Dropdown from "../../components/basic/Dropdown";
 import { Pagination } from "../../components/Pagination";
 import { Popup } from "../../components/Popup";
 import { useDispatch, useSelector } from "react-redux";
-import { addTransaction, addTransactionError, updateTransaction } from '../../store/transactionSlice';
 import { updateUserBalance } from '../../web3/api';
 
 const PAGE_LIMIT = "20";
@@ -64,7 +63,7 @@ export const Zombies = ({
     //   requestParams["filter_rarity"] = filterRarity;
     // }
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
-    let zombiesObj = await window.contracts['zombie'].userZombies(startIndex, PAGE_LIMIT);
+    let zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT);
     let zombies = zombiesObj.filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
     setUserZombies(zombies);
     setIsReady(true);
@@ -74,7 +73,7 @@ export const Zombies = ({
     // setAllCollections(await contract.get_collections());
   }
   const fetchCountUserZombies = async () => {
-    const userTotalCount = await window.contracts['zombie'].balanceOf(currentUser.accountId);
+    const userTotalCount = await window.contracts.zombie.balanceOf(currentUser.accountId);
     setUserZombiesCount(parseInt(userTotalCount));
   }
 
@@ -102,7 +101,7 @@ export const Zombies = ({
     let oneDay = 24 * 60 * 60;
     let totalZombiesToMint = 0;
 
-    let userLandsObj = await window.contracts['land'].userLands();
+    let userLandsObj = await window.contracts.land.userLands();
     let userLands = userLandsObj.map(land => {
       const lastClaimTimestamp = parseInt(land.lastZombieClaim);
       if (!lastClaimTimestamp || timeNow - lastClaimTimestamp > oneDay) {
@@ -157,11 +156,11 @@ export const Zombies = ({
     mintInProgressList.push(landId);
     setMintInProgressList([...mintInProgressList]);
 
-    const gas = await window.contracts['zombie'].estimateGas.safeMint(landId);
-    await window.contracts['zombie'].safeMint(landId, {
+    const gas = await window.contracts.zombie.estimateGas.safeMint(landId);
+    await window.contracts.zombie.safeMint(landId, {
       gasLimit: gas * 2
     }).then(transaction => {
-      addNewTransaction(dispatch, transaction, "Minting Zombies");
+      addPendingTransaction(dispatch, transaction, "Minting Zombies");
 
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
@@ -178,10 +177,7 @@ export const Zombies = ({
         }, 2000);
       });
     }).catch(err => {
-      dispatch(addTransactionError({
-        id: new Date().toISOString(),
-        message: err.message
-      }))
+      addTransactionError(dispatch, err.message);
       removeMintInProgressList(landId);
     });
   };
@@ -266,8 +262,8 @@ export const Zombies = ({
 
   const handleKill = async () => {
     if (killItem) {
-      await window.contracts['zombie'].killZombie(killItem.tokenId).then(transaction => {
-        addNewTransaction(dispatch, transaction, "Kill Zombie to get ZML tokens");
+      await window.contracts.zombie.killZombie(killItem.tokenId).then(transaction => {
+        addPendingTransaction(dispatch, transaction, "Kill Zombie to get ZML tokens");
 
         transaction.wait().then(async receipt => {
           if (receipt.status === 1) {
@@ -281,10 +277,7 @@ export const Zombies = ({
           }
         });
       }).catch(err => {
-        dispatch(addTransactionError({
-          id: new Date().toISOString(),
-          message: err.message
-        }))
+        addTransactionError(dispatch, err.message);
       });
     }
     // let gas = convertToTera("90");

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { addNewTransaction, convertFromYocto, convertToYocto } from "../web3/utils";
+import { addPendingTransaction, addTransactionError, convertFromYocto, convertToYocto } from "../web3/utils";
 import { TokenContent } from "../web3/content";
 import {
   Container,
@@ -15,10 +15,9 @@ import { Popup } from "../components/Popup";
 import { Card } from "../components/card/Card";
 import { BigNumber } from 'ethers';
 import { useDispatch, useSelector } from 'react-redux';
-import { addTransaction, addTransactionError } from '../store/transactionSlice';
 import { updateUserBalance } from '../web3/api';
 
-export const Token = ({ contract, ftContract }) => {
+export const Token = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
 
@@ -53,22 +52,22 @@ export const Token = ({ contract, ftContract }) => {
   }, []);
 
   const updateEarnedRewards = async () => {
-    let earned = await ftContract.earned(currentUser.accountId);
+    let earned = await window.contracts.token.earned(currentUser.accountId);
     setRewardBalance(parseInt(earned));
   };
 
   const updateAPR = async () => {
-    let apr = await ftContract.getAPR();
+    let apr = await window.contracts.token.getAPR();
     setAprPct(parseInt(apr));
   };
 
   // const updateStakeMonsterPct = async () => {
-  //   let pct = await ftContract.getStakeMonsterPct(currentUser.accountId);
+  //   let pct = await window.contracts.token.getStakeMonsterPct(currentUser.accountId);
   //   setStakeMonsterPct(pct);
   // };
 
   // const getStakedMonster = async () => {
-  //   let stakeMonster = await ftContract.isStakeMonster(currentUser.accountId);
+  //   let stakeMonster = await window.contracts.token.isStakeMonster(currentUser.accountId);
   //   setStakeMonster(stakeMonster);
   // };
 
@@ -89,12 +88,12 @@ export const Token = ({ contract, ftContract }) => {
   };
 
   const updateTotalDeposit = async () => {
-    let totalStake = await ftContract.stakingTotalSupply();
+    let totalStake = await window.contracts.token.stakingTotalSupply();
     setTotalStake(parseInt(totalStake));
   };
 
   const updateDepositedAmount = async () => {
-    let deposited = await ftContract.myBalance();
+    let deposited = await window.contracts.token.myBalance();
     setDepositedBalance(deposited);
   };
 
@@ -112,9 +111,9 @@ export const Token = ({ contract, ftContract }) => {
     }
 
     handleDeposit(depositAmount);
-    // let allowedAmount = await ftContract.allowance(ftContract.address, currentUser.accountId);
+    // let allowedAmount = await window.contracts.token.allowance(window.contracts.token.address, currentUser.accountId);
     // if (parseInt(allowedAmount) < depositAmount) {
-    //   await ftContract.approve(currentUser.accountId, depositAmount).then(transaction => {
+    //   await window.contracts.token.approve(currentUser.accountId, depositAmount).then(transaction => {
     //     transaction.message = "Approve ZML for staking";
     //     appendTransactionList(transaction);
     //     transaction.wait().then(async receipt => {
@@ -134,8 +133,8 @@ export const Token = ({ contract, ftContract }) => {
   };
 
   const handleDeposit = async (depositAmount) => {
-    await ftContract.stake(depositAmount).then(transaction => {
-      addNewTransaction(dispatch, transaction, "Deposit ZML to staking");
+    await window.contracts.token.stake(depositAmount).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Deposit ZML to staking");
 
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
@@ -146,10 +145,7 @@ export const Token = ({ contract, ftContract }) => {
         }
       });
     }).catch(err => {
-      dispatch(addTransactionError({
-        id: new Date().toISOString(),
-        message: err.message
-      }));
+      addTransactionError(dispatch, err.message)
     });
   };
 
@@ -161,8 +157,8 @@ export const Token = ({ contract, ftContract }) => {
   const handleWithdraw = async () => {
     let withdrawAmount = convertToYocto(withdrawInput.toString());
     console.log(withdrawAmount);
-    await ftContract.withdraw(withdrawAmount).then(transaction => {
-      addNewTransaction(dispatch, transaction, "Withdraw ZML tokens");
+    await window.contracts.token.withdraw(withdrawAmount).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Withdraw ZML tokens");
 
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
@@ -173,16 +169,13 @@ export const Token = ({ contract, ftContract }) => {
         }
       });
     }).catch(err => {
-      dispatch(addTransactionError({
-        id: new Date().toISOString(),
-        message: err.message
-      }));
+      addTransactionError(dispatch, err.message);
     });
   };
 
   const handleWithdrawRewards = async () => {
-    await ftContract.getReward().then(transaction => {
-      addNewTransaction(dispatch, transaction, "Claim ZML Rewards");
+    await window.contracts.token.getReward().then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Claim ZML Rewards");
 
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
@@ -191,15 +184,12 @@ export const Token = ({ contract, ftContract }) => {
         }
       });
     }).catch(err => {
-      dispatch(addTransactionError({
-        id: new Date().toISOString(),
-        message: err.message
-      }));
+      addTransactionError(dispatch, err.message);
     });
   };
 
   // const checkApprovedAmount = async (amount) => {
-  //   let allowed = await ftContract.allowance(ftContract.address, currentUser.accountId);
+  //   let allowed = await window.contracts.token.allowance(window.contracts.token.address, currentUser.accountId);
   //   setIsDepositApproved(parseInt(allowed) >= parseInt(convertToYocto(amount)));
   // };
 

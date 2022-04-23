@@ -17,6 +17,9 @@ export const rarityMap = {
 export const getMedia = (media) => `https://zomland.fra1.digitaloceanspaces.com/${ media }.png`;
 
 export const convertFromYocto = (amount, digits = 1) => {
+  if (!amount) {
+    amount = 0;
+  }
   return (+ethers.utils.formatEther(amount.toString())).toFixed(digits);
 };
 
@@ -110,12 +113,13 @@ export const transformCollections = (coll, index) => {
   };
 };
 
-export const addNewTransaction = (dispatch, transaction, message) => {
+export const addPendingTransaction = (dispatch, transaction, message) => {
   const txId = new Date().toISOString();
   dispatch(addTransaction({
     id: txId,
     hash: transaction.hash,
     message,
+    status: "pending"
   }));
 
   transaction.wait().then((receipt) => {
@@ -137,4 +141,19 @@ export const addNewTransaction = (dispatch, transaction, message) => {
       }));
     }, 5000);
   });
+}
+
+export const addTransactionError = (dispatch, message) => {
+  const txId = new Date().toISOString();
+  dispatch(addTransaction({
+    id: txId,
+    message,
+    status: "error"
+  }));
+
+  setTimeout(() => {
+    dispatch(removeTransaction({
+      id: txId,
+    }));
+  }, 5000);
 }
