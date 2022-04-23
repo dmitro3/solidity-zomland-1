@@ -17,7 +17,7 @@ export const SellItem = ({ item_type, nft, cancelSell, setItemPrice, id }) => {
       <div>
         <div className="font-semibold pt-2 mb-1">
           <span className="text-indigo-100 mr-1">{item_type}</span> #
-          {formatId(nft.tokenId)}
+          {formatId(nft)}
         </div>
         <div>
           <input

@@ -64,7 +64,7 @@ export default function MintZombiePopup({
               <img src={getMedia(land.media)} alt="land" width="40"/>
             </div>
             <div className="basis-1/3 sm:pt-4 pt-2 font-semibold">
-              {land.landType} Land #{formatId(land.tokenId)}
+              {land.landType} Land {formatId(land)}
             </div>
             <div className="basis-1/4 pt-4 hidden sm:flex">
               {availabilityMap[land.landType]}

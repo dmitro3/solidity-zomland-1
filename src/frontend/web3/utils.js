@@ -27,7 +27,9 @@ export const convertToYocto = (amount) => {
   return ethers.utils.parseEther(amount.toString());
 };
 
-export const formatId = (tokenId) => tokenId;
+export const formatId = (nft) => {
+  return `${ nft.nftType } #${ nft.tokenId }`;
+};
 
 export const statusColorTextMap = (status) => {
   let result = "text-gray-500";

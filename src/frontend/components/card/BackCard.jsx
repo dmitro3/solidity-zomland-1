@@ -25,7 +25,7 @@ export const BackCard = ({
     <img
       className={`absolute ${sizeMapping[size || "md"]}`}
       src={land_back}
-      alt={nft.tokenId ? formatId(nft.tokenId) : ""}
+      alt={nft.tokenId ? formatId(nft) : ""}
     />
   );
 
@@ -46,7 +46,7 @@ export const BackCard = ({
         {nft.cardRarity || nft.landType}
       </div>
       <div className="text-4xl font-semibold text-purple-600">
-        #{nft.tokenId ? formatId(nft.tokenId) : ""}
+        {nft.tokenId ? formatId(nft) : ""}
       </div>
     </>
   );

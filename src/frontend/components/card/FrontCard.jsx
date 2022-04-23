@@ -1,6 +1,6 @@
 import React from "react";
 import { getMedia, formatId } from "../../web3/utils";
-import { CardFront, InfoWrapper, Rarity } from "../../assets/styles/card";
+import { CardFront, InfoSmallWrapper, InfoWrapper, Rarity } from "../../assets/styles/card";
 import { Price } from "../Price";
 import { CardDropdown } from "./CardDropdown";
 import { Button } from "../basic/Button";
@@ -23,14 +23,14 @@ export const FrontCard = ({
   const type = nft.landType ?? nft.cardRarity;
 
   const CharacteristicRow = ({ icon, title, value }) => (
-    <Row>
-      <div className="flex h-9 w-9 p-1.5 border-violet-500 rounded-full border-2 text-center justify-center">
-        <img alt="icon" className="h-full" src={icon}/>
+    <Row className="justify-center">
+      <div className="flex h-9 w-9 p-1.5 border-violet-500 rounded-full border-2 text-center justify-center bg-main">
+        <img alt="icon" className="h-full" src={icon} />
       </div>
-      <div className="mx-3 h-7 w-1 bg-violet-800/80"/>
-      <Col className="text-left text-xl">
+      <div className="mx-3 h-7 w-1 bg-violet-800/80" />
+      <Col className="text-left text-xl w-10">
         <div className="text-violet-500 text-xs uppercase">{title}</div>
-        {value}
+        <div className="leading-5">{value}</div>
       </Col>
     </Row>
   );
@@ -53,38 +53,32 @@ export const FrontCard = ({
             {type}
           </Rarity>
 
-          {nft.salePrice && size !== "sm" && !handleBuy && (
-            <Price title={nft.salePrice}/>
+          {nft.salePrice && size !== "sm" && (
+            <Price title={nft.salePrice} handleBuy={handleBuy} />
           )}
 
-          {nft.tokenId && !noMenu && !nft.salePrice ? (
+          {nft.tokenId && !noMenu && !nft.salePrice && (
             <CardDropdown
               setTransferPopupVisible={setTransferPopupVisible}
               setSellItems={setSellItems}
               setKillItem={setKillItem}
               rmFromMarket={rmFromMarket}
             />
-          ) : (
-            handleBuy && (
-              <Rarity type={type} className="text-sm p-1">
-                <span>#{formatId(nft.tokenId)}</span>
-              </Rarity>
-            )
           )}
         </div>
       </div>
+
       {nft.tokenId && (
         <>
           {size === "sm" || nft.nftType === "Land" ? (
-            <div
-              className="absolute flex font-semibold drop-shadow-md items-center justify-center bg-main/60 py-2 rounded-md w-full bottom-0 text-base">
-              <div>#{formatId(nft.tokenId)}</div>
-            </div>
+            <InfoSmallWrapper>
+              <div className="font-semibold">{formatId(nft)}</div>
+            </InfoSmallWrapper>
           ) : (
             <InfoWrapper withBtn={handleBuy || nft.salePrice}>
               <Row className="items-center">
-                <Col className="gap-1 my-2">
-                  <div className="mb-2">#{formatId(nft.tokenId)}</div>
+                <Col className="gap-1">
+                  <div className="mb-2">{formatId(nft)}</div>
                   <CharacteristicRow
                     icon={attack_icon}
                     title="Attack"
@@ -106,9 +100,10 @@ export const FrontCard = ({
                         title={
                           <>
                             <span className="mr-1">Buy for</span>
-                            {nft.salePrice} ${process.env.TOKEN_SYMBOL}
+                            {nft.salePrice} NEAR
                           </>
                         }
+                        className="mt-2"
                         size="xs"
                         noIcon
                         onClick={handleBuy}
@@ -118,6 +113,7 @@ export const FrontCard = ({
                         <Button
                           title="Remove from Market"
                           size="xs"
+                          className="mt-2"
                           noIcon
                           secondary
                           onClick={rmFromMarket}

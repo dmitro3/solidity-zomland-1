@@ -225,7 +225,7 @@ export const Monsters = ({ sellList, setSellList }) => {
               <p className="mb-6">
                 Monster{" "}
                 <span className="text-xl font-semibold">
-                  #{formatId(killItem.tokenId)}
+                  {formatId(killItem)}
                 </span>{" "}
                 will be killed and you will receive{" "}
                 <span className="text-xl font-semibold">

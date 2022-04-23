@@ -47,7 +47,7 @@ export const Card = ({
               src={getMedia(
                 "bafkreifdecdvospry7lmu6e3wzb5pgqj4e7shxgtwqwltj4brwxge7dipm"
               )}
-              alt={nft.tokenId ? formatId(nft.tokenId) : ""}
+              alt={nft.tokenId ? formatId(nft) : ""}
             />
             <div className="absolute flex flex-col h-full w-full justify-center items-center">
               {nft.salePrice && (
@@ -64,7 +64,7 @@ export const Card = ({
               </div>
 
               <div className="text-4xl font-semibold text-purple-600">
-                #{nft.tokenId ? formatId(nft.tokenId) : ""}
+                {nft.tokenId ? formatId(nft) : ""}
               </div>
 
               {nft.health && nft.attack && nft.brain && (

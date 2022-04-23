@@ -5,11 +5,19 @@ export const CardInner = styled.div.attrs(() => ({
   className: `relative h-full w-full text-center`,
 }))``;
 
+export const InfoSmallWrapper = styled.div.attrs(() => ({
+  className:
+    `absolute flex drop-shadow-md items-center justify-center rounded-md w-full bottom-0 text-base py-3`
+}))`
+background: linear-gradient(180deg, rgba(12,6,53,0.30) 0%, rgba(12,6,53,1) 75%);
+`;
+
 export const InfoWrapper = styled.div.attrs(() => ({
   className:
-    "absolute z-10 font-semibold flex drop-shadow-md justify-center pt-1 bg-main/80 rounded-md w-full bottom-0",
+    "absolute flex drop-shadow-md justify-center rounded-md w-full bottom-0 font-semibold py-3 z-10",
 }))`
-  bottom: ${(props) => (props.withBtn ? "-202px" : "-156px")};
+  bottom: ${ (props) => (props.withBtn ? "-180px" : "-132px") };
+  background: linear-gradient(180deg, rgba(12,6,53,0.4) 0%, rgba(15,8,65,0.8) 25%, rgba(12,6,53,1) 100%);
   transition: 0.5s;
 `;
 
@@ -24,7 +32,7 @@ export const FlipCard = styled.div`
     height: 198px;
   }
 
-  &:hover ${InfoWrapper} {
+  &:hover ${ InfoWrapper } {
     transition: 0.4s;
     bottom: 0;
   }
@@ -37,7 +45,8 @@ export const CardFront = styled.div.attrs((props) => ({
     h-full
     border-4 
     rounded-xl
-    ${statusColorBorderMap(props.type)}
+    overflow-hidden
+    ${ statusColorBorderMap(props.type) }
   `,
 }))`
   -webkit-backface-visibility: hidden;
@@ -48,7 +57,7 @@ export const Rarity = styled.div.attrs((props) => ({
   className: `
     uppercase
     font-semibold
-    ${statusColorTextMap(props.type)}
+    ${ statusColorTextMap(props.type) }
   `,
 }))``;
 

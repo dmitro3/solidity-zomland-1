@@ -419,7 +419,7 @@ export const Zombies = ({
               <p className="mb-6">
                 Zombie{ " " }
                 <span className="text-xl font-semibold">
-                  #{ formatId(killItem.tokenId) }
+                  { formatId(killItem) }
                 </span>{ " " }
                 will be killed and you will receive{ " " }
                 { killTokens && (
