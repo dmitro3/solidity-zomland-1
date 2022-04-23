@@ -13,17 +13,20 @@ import { Popup } from "../../components/Popup";
 import { MintLandSection } from "./MintLandSection";
 import { Card } from "../../components/card/Card";
 import { useDispatch, useSelector } from "react-redux";
-import { addTransaction, updateTransaction } from '../../store/transactionSlice';
 
-export const Lands = ({ sellList, setSellList }) => {
+export const Lands = ({sellList, setSellList}) => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
 
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
-  const [userTotalLands, setUserTotalLands] = useState();
   const [mintPopupVisible, setMintPopupVisible] = useState(false);
   const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    loadAllLands();
+    loadUserLands();
+  }, [currentUser]);
 
   const loadAllLands = async () => {
     const allLands = {};
@@ -42,50 +45,27 @@ export const Lands = ({ sellList, setSellList }) => {
     setAllLands(allLands);
   }
 
-  useEffect(() => {
-    loadAllLands();
-  }, []);
-
-  useEffect(() => {
-    const userLandsPromise = new Promise(async (resolve, reject) => {
-      try {
-        const landsObj = await window.contracts.land.userLands();
-        const lands = landsObj.map(land => transformLand(land));
-        resolve(lands || []);
-      } catch (e) {
-        reject(e);
-      }
-    });
-
-    const userTotalLandsPromise = new Promise(async (resolve, reject) => {
-      try {
-        const userTotalCount = await window.contracts.land.balanceOf(currentUser.accountId);
-        resolve(parseInt(userTotalCount));
-      } catch (e) {
-        reject(e);
-      }
-    });
-
-    Promise.all([
-      userLandsPromise,
-      userTotalLandsPromise
-    ]).then((result) => {
-      setUserLands(result[0]);
-      setUserTotalLands(result[1]);
-      setIsReady(true);
-    });
-  }, [allLands]);
+  const loadUserLands = async () => {
+    const landsObj = await window.contracts.land.userLands();
+    const lands = landsObj.map(land => transformLand(land));
+    setUserLands(lands || []);
+    setIsReady(true);
+  }
 
   const handleTransfer = async (land, transferAddress) => {
-    // let gas = convertToTera("60");
-    // await contract.transfer_land(
-    //   {
-    //     tokenId: land.tokenId,
-    //     recipient_id: transferAddress,
-    //   },
-    //   gas,
-    //   1
-    // );
+    await window.contracts.land.transferFrom(
+      currentUser.accountId,
+      transferAddress,
+      land.tokenId
+    ).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Transfer Land NFT");
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          setIsReady(false);
+          loadUserLands();
+        }
+      });
+    });
   };
 
   const watchMintTransaction = (tx) => {
@@ -93,7 +73,7 @@ export const Lands = ({ sellList, setSellList }) => {
 
     tx.wait().then(receipt => {
       if (receipt.status === 1) {
-        loadAllLands();
+        loadUserLands();
       }
     });
   }
@@ -104,10 +84,9 @@ export const Lands = ({ sellList, setSellList }) => {
     ) {
       sellList["lands"].push(land);
       sellList["zombies"] = sellList["monsters"] = [];
-      setSellList({ ...sellList });
+      setSellList({...sellList});
     }
   };
-
 
   const showMintPopup = async () => {
     setMintPopupVisible(true);

@@ -54,6 +54,27 @@ export const Zombies = ({
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = JSON.parse(searchParams.has("page"))
+      ? searchParams.get("page")
+      : currentPage;
+    // const rarity = JSON.parse(searchParams.has("rarity"))
+    //   ? searchParams.get("rarity")
+    //   : filterRarity;
+    // const collection = JSON.parse(searchParams.has("collection"))
+    //   ? searchParams.get("collection")
+    //   : filterCollection;
+
+    setCurrentPage(page);
+    // setFilterRarity(rarity);
+    // setFilterCollection(collection);
+
+    fetchUserLands();
+    fetchCollections();
+    fetchUserZombies(page);
+    fetchCountUserZombies();
+  }, [currentUser]);
 
   async function fetchUserZombies(currentPage) {
     // if (filterCollection) {
@@ -72,6 +93,7 @@ export const Zombies = ({
   const fetchCollections = async () => {
     // setAllCollections(await contract.get_collections());
   }
+
   const fetchCountUserZombies = async () => {
     const userTotalCount = await window.contracts.zombie.balanceOf(currentUser.accountId);
     setUserZombiesCount(parseInt(userTotalCount));
@@ -84,12 +106,12 @@ export const Zombies = ({
     ) {
       sellList["zombies"].push(zombie);
       sellList["lands"] = sellList["monsters"] = [];
-      setSellList({ ...sellList });
+      setSellList({...sellList});
     }
   };
 
   const buildUrl = () => {
-    let url = `/zombies?page=${ currentPage }`;
+    let url = `/zombies?page=${currentPage}`;
     // if (filterRarity) url = `${url}&rarity=${filterRarity}`;
     // if (filterCollection) url = `${url}&collection=${filterCollection}`;
 
@@ -120,28 +142,6 @@ export const Zombies = ({
     setUserClaimCount(totalZombiesToMint);
     setUserLands(userLands);
   }
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const page = JSON.parse(searchParams.has("page"))
-      ? searchParams.get("page")
-      : currentPage;
-    // const rarity = JSON.parse(searchParams.has("rarity"))
-    //   ? searchParams.get("rarity")
-    //   : filterRarity;
-    // const collection = JSON.parse(searchParams.has("collection"))
-    //   ? searchParams.get("collection")
-    //   : filterCollection;
-
-    setCurrentPage(page);
-    // setFilterRarity(rarity);
-    // setFilterCollection(collection);
-
-    fetchUserLands();
-    fetchCollections();
-    fetchUserZombies(page);
-    fetchCountUserZombies();
-  }, []);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -195,15 +195,19 @@ export const Zombies = ({
   };
 
   const handleTransfer = async (zombie, transferAddress) => {
-    // let gas = convertToTera("60");
-    // await contract.transfer_zombie(
-    //   {
-    //     token_id: zombie.token_id,
-    //     recipient_id: transferAddress,
-    //   },
-    //   gas,
-    //   1
-    // );
+    await window.contracts.zombie.transferFrom(
+      currentUser.accountId,
+      transferAddress,
+      zombie.tokenId
+    ).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Transfer Zombie NFT");
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          setIsReady(false);
+          fetchUserZombies(currentPage);
+        }
+      });
+    });
   };
 
   const rarityOptions = () => {
@@ -248,7 +252,7 @@ export const Zombies = ({
   };
 
   const onPageChanged = (page) => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({top: 0, behavior: "smooth"});
 
     setCurrentPage(page);
     fetchUserZombies(page);
@@ -300,37 +304,37 @@ export const Zombies = ({
       <Wrapper>
         <Container className="text-white text-center mt-6">
           <InnerPageHead
-            title={ ZombieContent.title }
-            description={ hasLands ? ZombieContent.description : "" }
+            title={ZombieContent.title}
+            description={hasLands ? ZombieContent.description : ""}
           />
 
-          { isReady ? (
+          {isReady ? (
             <>
-              { hasLands ? (
+              {hasLands ? (
                 <div className="sm:flex justify-between mt-8">
                   <div className="lg:basis-4/12 lg:flex hidden text-lg text-left pt-4 pl-1">
                     Available:
                     <span className="ml-2 font-semibold text-orange-500">
-                      { userZombiesCount } NFTs
+                      {userZombiesCount} NFTs
                     </span>
                   </div>
 
                   <Button
-                    title={ `Mint ${
+                    title={`Mint ${
                       userClaimCount > 0 ? userClaimCount : ""
-                    } Zombie${ userClaimCount !== 1 ? "s" : "" }` }
+                    } Zombie${userClaimCount !== 1 ? "s" : ""}`}
                     size="lg"
                     noIcon
-                    readonly={ userClaimCount === 0 }
-                    onClick={ showMintZombiesBlock }
+                    readonly={userClaimCount === 0}
+                    onClick={showMintZombiesBlock}
                   />
 
                   <div className="lg:basis-4/12 basis-full z-10 sm:text-right ml-2 mt-3 sm:mt-0">
                     <div className="inline-block mr-3">
                       <Dropdown
                         title="Rarity"
-                        selected={ filterRarity }
-                        options={ rarityOptions() }
+                        selected={filterRarity}
+                        options={rarityOptions()}
                       />
                     </div>
                     <div className="inline-block">
@@ -341,92 +345,92 @@ export const Zombies = ({
                             ? allCollections[filterCollection]?.title
                             : null
                         }
-                        options={ collectionOptions() }
+                        options={collectionOptions()}
                       />
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="mb-7 mt-10 leading-10">
-                  <b className="text-xl text-orange-500">{ LandContent.no_lands }.</b> <br/>
+                  <b className="text-xl text-orange-500">{LandContent.no_lands}.</b> <br/>
                   <p className="text-cyan-200 sm:w-1/2 w-3/4 sm:px-16 mx-auto leading-6">
-                    { ZombieContent.no_lands_details }
+                    {ZombieContent.no_lands_details}
                   </p>
                 </div>
-              ) }
+              )}
 
               <ListWrapper>
-                { hasZombies ? (
+                {hasZombies ? (
                   <List>
-                    { userZombies?.map((zombie, index) => (
+                    {userZombies?.map((zombie, index) => (
                       <Card
-                        nft={ zombie }
-                        key={ index }
-                        sellItems={ sellList["zombies"] }
-                        setSellItems={ () => appendToSellList(zombie) }
-                        rmFromMarket={ async () => {
+                        nft={zombie}
+                        key={index}
+                        sellItems={sellList["zombies"]}
+                        setSellItems={() => appendToSellList(zombie)}
+                        rmFromMarket={async () => {
                           setIsReady(false);
                           await rmFromMarket(contract, zombie);
                           setIsReady(true);
-                        } }
-                        handleTransfer={ (transferAddress) =>
+                        }}
+                        handleTransfer={(transferAddress) =>
                           handleTransfer(zombie, transferAddress)
                         }
-                        setKillItem={ () => showKillPopup(zombie) }
+                        setKillItem={() => showKillPopup(zombie)}
                       />
-                    )) }
+                    ))}
                   </List>
                 ) : (
                   <div>
-                    You don't have <span>{ filterRarity }</span>{ " " }
-                    { filterCollection
+                    You don't have <span>{filterRarity}</span>{" "}
+                    {filterCollection
                       ? allCollections[filterCollection].title
-                      : "" }{ " " }
+                      : ""}{" "}
                     Zombies.
                   </div>
-                ) }
+                )}
               </ListWrapper>
 
               <div className="mb-8">
                 <Pagination
-                  total={ userZombiesCount }
-                  limit={ parseInt(PAGE_LIMIT) }
-                  selectedPage={ currentPage }
-                  onPageChanged={ onPageChanged }
+                  total={userZombiesCount}
+                  limit={parseInt(PAGE_LIMIT)}
+                  selectedPage={currentPage}
+                  onPageChanged={onPageChanged}
                 />
               </div>
             </>
           ) : (
             <Loader/>
-          ) }
+          )}
         </Container>
 
         <MintZombiePopup
-          mintPopupVisible={ mintPopupVisible }
-          setMintPopupVisible={ setMintPopupVisible }
-          userLands={ userLands }
-          handleMint={ handleMint }
-          mintInProgressList={ mintInProgressList }
+          mintPopupVisible={mintPopupVisible}
+          setMintPopupVisible={setMintPopupVisible}
+          userLands={userLands}
+          handleMint={handleMint}
+          mintInProgressList={mintInProgressList}
         />
 
         <Popup
           title="Kill Zombie"
-          popupVisible={ killPopupVisible }
-          setPopupVisible={ setKillPopupVisible }
+          popupVisible={killPopupVisible}
+          setPopupVisible={setKillPopupVisible}
         >
-          { killItem && (
+          {killItem && (
             <div className="mt-2">
               <p className="mb-6">
-                Zombie{ " " }
+                Zombie{" "}
                 <span className="text-xl font-semibold">
-                  { formatId(killItem) }
-                </span>{ " " }
-                will be killed and you will receive{ " " }
-                { killTokens && (
+                  {formatId(killItem)}
+                </span>{" "}
+                will be killed and you will receive{" "}
+                {killTokens && (
                   <span className="text-xl font-semibold">
-                    { convertFromYocto(killTokens, 2) } ZML
+                    {convertFromYocto(killTokens, 2)} ZML
                   </span>
-                ) }{ " " }
+                )}{" "}
                 tokens.
               </p>
 
@@ -435,14 +439,14 @@ export const Zombies = ({
                   title="Cancel"
                   secondary
                   noIcon
-                  onClick={ () => setKillPopupVisible(false) }
+                  onClick={() => setKillPopupVisible(false)}
                 />
               </div>
               <div className="inline-block">
-                <Button title="Kill Zombie" onClick={ handleKill }/>
+                <Button title="Kill Zombie" onClick={handleKill}/>
               </div>
             </div>
-          ) }
+          )}
         </Popup>
       </Wrapper>
 

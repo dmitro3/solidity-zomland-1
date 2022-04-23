@@ -134,7 +134,7 @@ export const ZombieContent = {
   mint_zombie_from_land: "Select land you want to mint zombies for:",
   no_zombies: "You have no Zombies",
   no_lands_details:
-    "To mint and view zombies you need some Lands. Mint new one in Lands page and return to get zombies from this land.",
+    "To mint zombies you need some Lands. Mint new one in Lands page and return to get zombies from this land.",
 };
 
 export const MonsterContent = {
