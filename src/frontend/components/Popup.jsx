@@ -2,7 +2,7 @@ import React, { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/solid";
 
-export function Popup({ title, children, popupVisible, setPopupVisible, width }) {
+export function Popup({title, children, popupVisible, setPopupVisible, width}) {
   const cancelButtonRef = useRef(null);
   if (!width) {
     width = 'sm:w-[740px]';
@@ -26,7 +26,7 @@ export function Popup({ title, children, popupVisible, setPopupVisible, width })
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 bg-main bg-opacity-80 transition-opacity" />
+            <Dialog.Overlay className="fixed inset-0 bg-main bg-opacity-80 transition-opacity"/>
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
@@ -58,7 +58,7 @@ export function Popup({ title, children, popupVisible, setPopupVisible, width })
               />
               <Dialog.Title
                 as="h3"
-                className="sm:text-2xl text-xl uppercase leading-6 text-cyan-200 font-bold pb-8"
+                className="sm:text-2xl text-xl uppercase leading-6 text-cyan-200 font-bold pb-8 px-7"
               >
                 {title}
               </Dialog.Title>

@@ -172,7 +172,10 @@ export const OneCollection = () => {
                 <div className="sm:flex flex-row text-left bg-[#140E38]/95 shadow-md sm:p-12 p-6 rounded-2xl mt-10 mb-12">
                   <div className="xl:basis-3/4 md:basis-9/12 2xl:ml-10">
                     <h2 className="text-2xl font-semibold">
-                      Mint Collection: {collection.title}
+                      <Link to="/collections">
+                        <span className="text-2xl font-semibold text-sky-200">Collections</span>
+                      </Link> &raquo;
+                      Mint {collection.title}
                     </h2>
                     <p className="mt-1 mb-6 text-sm">
                       Select zombies for mint the {collection.title} Monster:
