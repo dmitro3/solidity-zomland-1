@@ -13,7 +13,6 @@ export const Header = () => {
   const currentUser = useSelector(state => state.user.user);
 
   const [scroll, setScroll] = useState(false);
-  const [userTokenBalance, setUserTokenBalance] = useState(0);
   const [isMobileOpened, setIsMobileOpened] = useState(false);
 
   const mobileMenuButton = (
@@ -48,10 +47,6 @@ export const Header = () => {
       setScroll(window.scrollY > 60);
     });
   }, []);
-
-  useEffect(() => {
-    setUserTokenBalance(currentUser.tokenBalance || 0);
-  }, [currentUser]);
 
   return (
       <div
@@ -88,9 +83,9 @@ export const Header = () => {
                           <p className="truncate font-semibold">
                             {currentUser.accountId.slice(0, 5) + '...' + currentUser.accountId.slice(38, 42)}
                           </p>
-                          {userTokenBalance != null && (
+                          {currentUser.tokenBalance !== null && (
                               <span className="font-bold text-orange-500 text-xl">
-                                {convertFromYocto(userTokenBalance, 2)} ZML
+                                {convertFromYocto(currentUser.tokenBalance || 0, 2)} ZML
                               </span>
                           )}
                         </Link>

@@ -37,7 +37,7 @@ export default function App() {
   window.web3Login = () => {
     web3Handler()
       .then(
-        async ({ account }) => {
+        async ({account}) => {
           await updateUserAccount(dispatch, account);
 
           window.ethereum.on("chainChanged", (chainId) => {
@@ -45,7 +45,7 @@ export default function App() {
             window.location.reload();
           });
 
-          window.ethereum.on("accountsChanged", (accounts) => { // async?
+          window.ethereum.on("accountsChanged", (accounts) => {
             console.log("accountsChanged", accounts);
             updateUserAccount(dispatch, accounts[0]);
           });
@@ -91,15 +91,15 @@ export default function App() {
             <Landing/>
           }
         />
-        { isReady && (
+        {isReady && (
           <>
             <Route
               exact
               path="/lands"
               element={
                 <Lands
-                  sellList={ sellList }
-                  setSellList={ setSellList }
+                  sellList={sellList}
+                  setSellList={setSellList}
                 />
               }
             />
@@ -108,8 +108,8 @@ export default function App() {
               path="/zombies"
               element={
                 <Zombies
-                  sellList={ sellList }
-                  setSellList={ setSellList }
+                  sellList={sellList}
+                  setSellList={setSellList}
                 />
               }
             />
@@ -132,15 +132,15 @@ export default function App() {
               path="/monsters"
               element={
                 <Monsters
-                  sellList={ sellList }
-                  setSellList={ setSellList }
+                  sellList={sellList}
+                  setSellList={setSellList}
                 />
               }
             />
             <Route
               exact
               path="/market"
-              element={ <Market/> }
+              element={<Market/>}
             />
             <Route
               exact
@@ -150,30 +150,30 @@ export default function App() {
               }
             />
           </>
-        ) }
+        )}
 
         <Route
           exact
           path="/faq"
-          element={ <Faq/> }
+          element={<Faq/>}
         />
         <Route
           exact
           path="/terms-conditions"
-          element={ <Terms/> }
+          element={<Terms/>}
         />
         <Route
           exact
           path="/privacy-policy"
-          element={ <Privacy/> }
+          element={<Privacy/>}
         />
       </Routes>
 
       <Sidebar
-        sellList={ sellList }
-        setSellList={ setSellList }
-        isOpen={ sidebarIsOpen }
-        setIsOpen={ setSidebarIsOpen }
+        sellList={sellList}
+        setSellList={setSellList}
+        isOpen={sidebarIsOpen}
+        setIsOpen={setSidebarIsOpen}
       />
       <TransactionList/>
     </BrowserRouter>

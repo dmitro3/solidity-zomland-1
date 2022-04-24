@@ -275,7 +275,7 @@ export const Zombies = ({
             setKillPopupVisible(false);
 
             // Update user balance
-            await updateUserBalance(currentUser.accountId);
+            await updateUserBalance(dispatch, currentUser.accountId);
           } else {
             alert('Minting error');
           }

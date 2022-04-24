@@ -65,15 +65,15 @@ export const isMetamaskInstalled = () => {
   return typeof window.ethereum !== "undefined";
 };
 
-export const updateUserBalance = async (accountId) => {
+export const updateUserBalance = async (dispatch, accountId) => {
   const balance = await window.contracts.token.balanceOf(accountId);
-  setUserBalance({
+  dispatch(setUserBalance({
     balance: parseInt(balance)
-  });
+  }));
 }
 
 export const updateUserAccount = async (dispatch, account) => {
-  dispatch(setUserAccountId({ account }));
-  await updateUserBalance(account);
+  dispatch(setUserAccountId({account}));
+  await updateUserBalance(dispatch, account);
 }
 

@@ -140,7 +140,7 @@ export const Token = () => {
         if (receipt.status === 1) {
           updateDepositedAmount();
           updateTotalDeposit();
-          updateUserBalance(currentUser.accountId);
+          updateUserBalance(dispatch, currentUser.accountId);
           setDepositInput(0);
         }
       });
@@ -164,7 +164,7 @@ export const Token = () => {
         if (receipt.status === 1) {
           updateDepositedAmount();
           updateTotalDeposit();
-          updateUserBalance(currentUser.accountId);
+          updateUserBalance(dispatch, currentUser.accountId);
           setWithdrawInput(0);
         }
       });
@@ -180,7 +180,7 @@ export const Token = () => {
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           updateEarnedRewards();
-          updateUserBalance(currentUser.accountId);
+          updateUserBalance(dispatch, currentUser.accountId);
         }
       });
     }).catch(err => {

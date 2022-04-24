@@ -13,13 +13,13 @@ export const MintLandSection = ({
 }) => {
   const dispatch = useDispatch();
 
-  const MintCard = ({ type, handleMint }) => (
+  const MintCard = ({type, handleMint}) => (
     <div className="sm:flex sm:flex-col">
       <Card noFlip nft={allLands[type]}/>
       <div className="mt-4">
         <Button title={`Mint ${type} Land`} onClick={handleMint}/>
         <div className="mt-3 font-semibold">
-          {convertFromYocto(allLands[type].price, 0)}{" "}
+          {convertFromYocto(allLands[type]?.price, 0)}{" "}
           {process.env.TOKEN_SYMBOL}
         </div>
       </div>

@@ -82,6 +82,7 @@ contract TokenFTContract is ERC20 {
 
   // TODO: Allow only Zombie or Monster Contract
   function transferOnKill(address _account, uint _amount) external {
+    console.log("Transfer", _account, _amount);
     IERC20(address(this)).transfer(_account, _amount);
   }
 
