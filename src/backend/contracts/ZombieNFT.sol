@@ -176,4 +176,19 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
   //    return 0;
   //  }
 
+  function getUserCollectionZombieCount() external view returns (uint[] memory){
+    address _collectionContract = IMain(mainContract).getContractCollection();
+    uint collectionCount = ICollection(_collectionContract).getAllCollectionsCount();
+    uint[] memory _result = new uint[](collectionCount);
+
+    uint _count = super.balanceOf(msg.sender);
+    for (uint _i = 0; _i < _count; ++_i) {
+      uint _zombieId = super.tokenOfOwnerByIndex(msg.sender, _i);
+      uint collection = zombies[_zombieId].collection;
+      _result[collection] += 1;
+    }
+
+    return _result;
+  }
+
 }

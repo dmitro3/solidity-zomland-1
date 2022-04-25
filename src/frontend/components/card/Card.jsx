@@ -27,21 +27,22 @@ export const Card = ({
   return (
     <>
       <FlipCard noFlip={true} className={`${classMapping[size || "md"]}`}>
-        <CardInner>
-          <FrontCard
-            nft={nft}
-            size={size}
-            noMenu={noMenu}
-            setSellItems={setSellItems}
-            setTransferPopupVisible={setTransferPopupVisible}
-            setKillItem={setKillItem}
-            rmFromMarket={rmFromMarket}
-            handleBuy={handleBuy}
-            // setSellPopupVisible={setSellPopupVisible}
-          />
-          <BackCard nft={nft} size={size} />
+        {nft && (
+          <CardInner>
+            <FrontCard
+              nft={nft}
+              size={size}
+              noMenu={noMenu}
+              setSellItems={setSellItems}
+              setTransferPopupVisible={setTransferPopupVisible}
+              setKillItem={setKillItem}
+              rmFromMarket={rmFromMarket}
+              handleBuy={handleBuy}
+              // setSellPopupVisible={setSellPopupVisible}
+            />
+            {/*<BackCard nft={nft} size={size} />*/}
 
-          {/* <CardBack className="relative">
+            {/* <CardBack className="relative">
             <img
               className={`absolute ${sm ? "h-40" : "h-80"}`}
               src={getMedia(
@@ -101,7 +102,8 @@ export const Card = ({
               )}
             </div>
           </CardBack> */}
-        </CardInner>
+          </CardInner>
+        )}
       </FlipCard>
 
       <Popup
@@ -111,7 +113,7 @@ export const Card = ({
       >
         <div className="mt-2 h-52 px-6 flex flex-row">
           <FlipCard noFlip={true} className={`${classMapping["sm"]}`}>
-            <FrontCard nft={nft} noMenu size="sm" />
+            <FrontCard nft={nft} noMenu size="sm"/>
           </FlipCard>
           <div className="ml-10 text-left">
             <p className="mb-6 mt-6">

@@ -36,12 +36,16 @@ contract CollectionContract is Ownable {
     return (_collectionIndex, _collection.zombieImages[_index]);
   }
 
-  function getAllCollections() public view returns (Collection[] memory) {
+  function getAllCollections() external view returns (Collection[] memory) {
     Collection[] memory _resultCollections = new Collection[](collectionCount);
     for (uint _i = 0; _i < collectionCount; ++_i) {
       _resultCollections[_i] = collections[_i];
     }
     return _resultCollections;
+  }
+
+  function getAllCollectionsCount() external view returns (uint){
+    return collectionCount;
   }
 
 }

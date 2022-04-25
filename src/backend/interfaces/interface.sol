@@ -18,6 +18,8 @@ interface IMain {
 
 
 interface ICollection {
+  function getAllCollectionsCount() external view returns (uint);
+
   function getCollectionAndZombie(uint8) external view returns (uint, string memory);
 }
 

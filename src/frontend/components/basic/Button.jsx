@@ -49,7 +49,7 @@ export const Button = ({
             : "border-transparent bg-orange-600 hover:bg-orange-700"
         } ${className}`}
         onClick={() => {
-          if (!disabled) {
+          if (!disabled && onClick) {
             onClick();
           }
         }}
