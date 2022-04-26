@@ -59,7 +59,9 @@ export const OneCollection = () => {
   const loadZombies = async (page) => {
     const zombiesObj = await window.contracts.zombie.userZombies(
       page,
-      POPUP_PAGE_LIMIT.toString()
+      POPUP_PAGE_LIMIT.toString(),
+      parseInt(collection_id) + 1,
+      ""
     );
     let result = zombiesObj
       .filter((zombie) => zombie.nftType)

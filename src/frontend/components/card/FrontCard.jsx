@@ -22,7 +22,7 @@ export const FrontCard = ({
   }) => {
     const type = nft.landType ?? nft.cardRarity;
 
-    const landTypeZombies = (landType) => {
+    const landTypeZombies = () => {
       let result;
       switch (nft.landType) {
         case "Small":
@@ -37,7 +37,7 @@ export const FrontCard = ({
       return `${result} zombie${result > 1 ? "s" : ""} / day`;
     }
 
-    const CharacteristicRow = ({icon, title, value}) => (
+    const CharacteristicRow = ({ icon, title, value }) => (
       <Row className="justify-center">
         <div className="flex h-9 w-9 p-1.5 border-violet-500 rounded-full border-2 text-center justify-center bg-main">
           <img alt="icon" className="h-full" src={icon}/>
@@ -86,7 +86,7 @@ export const FrontCard = ({
         {nft.tokenId ? (
           <>
             {size === "sm" || nft.nftType === "Land" ? (
-              <InfoSmallWrapper>
+              <InfoSmallWrapper size={size}>
                 <div className="font-semibold">{formatId(nft)}</div>
               </InfoSmallWrapper>
             ) : (
@@ -144,7 +144,7 @@ export const FrontCard = ({
         ) : (
           <>
             {nft.landType && (
-              <InfoSmallWrapper>
+              <InfoSmallWrapper size={size}>
                 {landTypeZombies(nft.landType)}
               </InfoSmallWrapper>
             )}
