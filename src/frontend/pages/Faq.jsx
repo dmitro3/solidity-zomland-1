@@ -192,7 +192,7 @@ export const Faq = () => {
                       <a href="https://twitter.com/Zomland_Game" target="_blank" className="link">Twitter</a>,{" "}
                       <a className="link" href="https://t.me/zomland_official" target="_blank">Telegram</a>{" "}
                       and simply stay connected to our{" "}
-                      <a href="https://discord.gg/peJUhPfBMJ" target="_blank" className="link">Discord server</a>.</p>
+                      <a href="https://discord.gg/Te3GkcJPjt" target="_blank" className="link">Discord server</a>.</p>
                   </div>
                 </FaqQuestion>
 

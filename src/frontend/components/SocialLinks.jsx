@@ -20,17 +20,28 @@ export const SocialLinks = ({ size, gmail }) => {
 
   return (
     <div className={`flex flex-row justify-end ${gapMap[size]}`}>
-      <a href="https://twitter.com/Zomland_Game" className={hoverClass} target="_blank">
+      <a
+        href="https://twitter.com/Zomland_Game"
+        className={hoverClass}
+        target="_blank"
+        rel="noreferrer"
+      >
         <img src={twitterIcon} alt="twitter" className={sizeMap[size]} />
       </a>
       <a
-        href="https://discord.gg/peJUhPfBMJ"
+        href="https://discord.gg/Te3GkcJPjt"
         target="_blank"
         className={hoverClass}
+        rel="noreferrer"
       >
         <img src={discordIcon} alt="discord" className={sizeMap[size]} />
       </a>
-      <a href="https://t.me/zomland_official" target="_blank" className={hoverClass}>
+      <a
+        href="https://t.me/zomland_official"
+        target="_blank"
+        className={hoverClass}
+        rel="noreferrer"
+      >
         <img src={telegramIcon} alt="telegram" className={sizeMap[size]} />
       </a>
       {gmail && (
