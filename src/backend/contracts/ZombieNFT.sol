@@ -179,39 +179,38 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
   }
 
   function userZombies(uint _startIndex, uint8 _count, uint _collectionFilter, string memory _rarityFilter) public view returns (Zombie[] memory) {
-    Zombie[] memory _resultZombies = new Zombie[](_count);
-    uint[] memory innerList = new uint[](_count);
-    uint innerListLength;
-    bytes memory tmpRarity = bytes(_rarityFilter);
+    uint[] memory _innerList = new uint[](_count);
+    uint _innerListLength;
 
     if (_collectionFilter != 0) {
       uint[] memory collectionList = userCollectionZombie[msg.sender][_collectionFilter - 1];
-      innerListLength = collectionList.length;
+      _innerListLength = collectionList.length;
       for (uint _i = _startIndex; _i < _count; ++_i) {
-        if (innerListLength > _i) {
-          innerList[_i] = collectionList[_i];
+        if (_innerListLength > _i) {
+          _innerList[_i] = collectionList[_i];
         }
       }
-    } else if (tmpRarity.length != 0) {
+    } else if (bytes(_rarityFilter).length != 0) {
       CardRarity _rarity = rarityFromString(_rarityFilter);
       uint[] memory rarityList = userRarityZombie[msg.sender][_rarity];
-      innerListLength = rarityList.length;
+      _innerListLength = rarityList.length;
       for (uint _i = _startIndex; _i < _count; ++_i) {
-        if (innerListLength > _i) {
-          innerList[_i] = rarityList[_i];
+        if (_innerListLength > _i) {
+          _innerList[_i] = rarityList[_i];
         }
       }
     } else {
-      innerListLength = super.balanceOf(msg.sender);
+      _innerListLength = super.balanceOf(msg.sender);
       for (uint _i = _startIndex; _i < _count; ++_i) {
-        if (innerListLength > _i) {
-          innerList[_i] = super.tokenOfOwnerByIndex(msg.sender, _i);
+        if (_innerListLength > _i) {
+          _innerList[_i] = super.tokenOfOwnerByIndex(msg.sender, _i);
         }
       }
     }
 
-    for (uint _i = 0; _i < innerListLength; ++_i) {
-      _resultZombies[_i] = zombies[innerList[_i]];
+    Zombie[] memory _resultZombies = new Zombie[](_innerListLength);
+    for (uint _i = 0; _i < _innerListLength; ++_i) {
+      _resultZombies[_i] = zombies[_innerList[_i]];
     }
     return _resultZombies;
   }
