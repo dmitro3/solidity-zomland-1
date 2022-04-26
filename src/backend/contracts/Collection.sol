@@ -48,4 +48,8 @@ contract CollectionContract is Ownable {
     return collectionCount;
   }
 
+  function getCollectionImage(uint collectionId) external returns (string){
+    return collections[collectionId].image;
+  }
+
 }

@@ -12,8 +12,7 @@ import "../interfaces/interface.sol";
 
   error ZombiesMintError(string message);
   error ZombiesKillError(string message);
-  error MonsterMintError(string message);
-  error MonsterMintCountError(string message, uint8 required);
+  error MonsterMintError(string message, uint tokenId);
 
 contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
   address internal mainContract;
@@ -185,6 +184,33 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
     _burn(_tokenId);
     ITokenFT(_contractTokenFT).transferOnKill(msg.sender, _zombie.killTokens);
+  }
+
+  function checkAndBurnZombies(address owner, uint[] memory zombiesList) external returns (uint, uint, uint, uint, uint, CardRarity){
+    uint _health = 0;
+    uint _attack = 0;
+    uint _brain = 0;
+    uint _killTokens = 0;
+    uint _collection = zombies[zombiesList[0]].collection;
+
+    uint8 _count = zombiesList.length;
+    uint8 rarityIndex = randomNumber(10, 1);
+    CardRarity _rarity = zombies[zombiesList[rarityIndex]].cardRarity;
+
+    for (uint _i = 0; _i < _count; ++_i) {
+      Zombie storage _zombie = zombies[zombiesList[_i]];
+      if (_zombie.ownerId != owner) {
+        revert MonsterMintError({message : "You don't own this zombie", tokenId : _zombie.tokenId});
+      } else {
+        _health += _zombie.health;
+        _attack += _zombie.attack;
+        _brain += _zombie.brain;
+        _killTokens += _zombie.killTokens;
+        _burn(_zombie.tokenId);
+      }
+    }
+
+    return (_health, _attack, _brain, _killTokens, _collection, _rarity);
   }
 
   //  function mintMonster(uint[] memory _zombiesList) public returns (uint) {

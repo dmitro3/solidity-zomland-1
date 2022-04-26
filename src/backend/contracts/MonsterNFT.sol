@@ -60,23 +60,29 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
   // ---------------- Public methods ---------------
 
   function safeMint(uint[] memory zombiesList) public {
-    //    _tokenIdCounter.increment();
-    //    _safeMint(msg.sender, _tokenId);
-    //    _setTokenURI(_tokenId, _uri);
-    //    uint8 _collectionSize = 10;
-    //    if (zombiesList.length != _collectionSize) {
-    //      revert MonsterMintCountError({message : "You need to send more zombies for mint Monster", required : _collectionSize});
-    //    }
-    //    for (uint _i = 0; _i < _collectionSize; ++_i) {
-    //      Zombie storage _zombie = zombies[zombiesList[_i]];
-    //      if (_zombie.ownerId != msg.sender) {
-    //        revert MonsterMintError({message : "You don't own this zombie"});
-    //      } else {
-    //        _burn(_zombie.tokenId);
-    //      }
-    //    }
+    uint8 _collectionSize = 10;
+    if (zombiesList.length != _collectionSize) {
+      revert MonsterMintCountError({message : "You need to send more zombies for mint Monster", required : _collectionSize});
+    }
 
-    //    return 0;
+    address _contractMonster = IMain(mainContract).getContractMonsterNFT();
+    (
+    uint _health,
+    uint _attack,
+    uint _brain,
+    uint _killTokens,
+    uint _collectionId,
+    CardRarity _rarity
+    ) = IMonsterNFT(_contractMonster).checkAndBurnZombies(msg.sender, zombiesList);
+
+    address _contractCollection = IMain(mainContract).getContractCollection();
+    string _uri = getCollectionImage(_collectionIndex);
+
+    _tokenIdCounter.increment();
+    _safeMint(msg.sender, _tokenId);
+    _setTokenURI(_tokenId, _uri);
+
+    monsters[_tokenId] = Monster(_tokenId, _rarity, _collectionId, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, "Monster", msg.sender);
   }
 
   function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
