@@ -59,12 +59,12 @@ export const Zombies = ({
     const page = JSON.parse(searchParams.has("page"))
       ? searchParams.get("page")
       : currentPage;
-    const rarity = JSON.parse(searchParams.has("rarity"))
-      ? searchParams.get("rarity")
-      : filterRarity;
     const collection = JSON.parse(searchParams.has("collection"))
       ? searchParams.get("collection")
       : filterCollection;
+    const rarity = JSON.parse(searchParams.has("rarity"))
+      ? searchParams.get("rarity")
+      : filterRarity;
 
     setCurrentPage(page);
     setFilterRarity(rarity);
@@ -79,7 +79,9 @@ export const Zombies = ({
 
   async function fetchUserZombies(currentPage, collection, rarity) {
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
-    let zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collection, rarity);
+    const collectionFilter = collection !== "" ? parseInt(collection) + 1 : 0;
+
+    let zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
     let zombies = zombiesObj.filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
     setUserZombies(zombies);
     setIsReady(true);
@@ -139,10 +141,18 @@ export const Zombies = ({
 
   useEffect(() => navigate(buildUrl(filterCollection, filterRarity)), [currentPage]);
 
-  const handleFilterChange = (filterCollection, filterRarity) => {
+  const handleCollectionChange = (filterCollection) => {
     setCurrentPage(1);
-    fetchUserZombies(1, filterCollection, filterRarity);
-    navigate(buildUrl(filterCollection, filterRarity));
+    fetchUserZombies(1, filterCollection, "");
+    setFilterRarity("");
+    navigate(buildUrl(filterCollection, ""));
+  }
+
+  const handleRarityChange = (filterRarity) => {
+    setCurrentPage(1);
+    fetchUserZombies(1, "", filterRarity);
+    setFilterCollection("");
+    navigate(buildUrl("", filterRarity));
   }
 
   const handleMint = async (landId) => {
@@ -213,7 +223,7 @@ export const Zombies = ({
         onClick: () => {
           let optionValue = option === "All" ? "" : option;
           setFilterRarity(optionValue);
-          handleFilterChange(filterCollection, optionValue);
+          handleRarityChange(optionValue);
         },
       })
     });
@@ -228,7 +238,7 @@ export const Zombies = ({
         onClick: () => {
           const selectedCollection = allCollections[key].id;
           setFilterCollection(selectedCollection);
-          handleFilterChange(selectedCollection, filterRarity);
+          handleCollectionChange(selectedCollection);
         },
       };
     });
@@ -238,7 +248,7 @@ export const Zombies = ({
         title: "All",
         onClick: () => {
           setFilterCollection("");
-          handleFilterChange("", filterRarity);
+          handleCollectionChange("");
         },
       },
       ...collections,

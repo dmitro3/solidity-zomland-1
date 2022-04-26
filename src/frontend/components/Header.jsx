@@ -78,7 +78,7 @@ export const Header = () => {
                 <>
                   <div className="flex flex-row">
                     <div className="text-right">
-                      <div className="mr-6 xl:mr-10 w-36 xl:w-40 hover:text-indigo-200">
+                      <div className="w-40 xl:w-48 hover:text-indigo-200">
                         <Link to="/token">
                           <p className="truncate font-semibold">
                             {currentUser.accountId.slice(0, 5) + '...' + currentUser.accountId.slice(38, 42)}

@@ -61,6 +61,30 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     super._burn(_tokenId);
   }
 
+  function rarityToString(CardRarity _rarity) private pure returns (string memory) {
+    if (_rarity == CardRarity.Common) {
+      return "Common";
+    } else if (_rarity == CardRarity.Uncommon) {
+      return "Uncommon";
+    } else if (_rarity == CardRarity.Rare) {
+      return "Rare";
+    }
+    return "Epic";
+  }
+
+  function rarityFromString(string memory _rarity) private pure returns (CardRarity) {
+    bytes32 _rarityHash = keccak256(abi.encodePacked(_rarity));
+    if (_rarityHash == keccak256(abi.encodePacked("Common"))) {
+      return CardRarity.Common;
+    } else if (_rarityHash == keccak256(abi.encodePacked("Uncommon"))) {
+      return CardRarity.Uncommon;
+    } else if (_rarityHash == keccak256(abi.encodePacked("Rare"))) {
+      return CardRarity.Rare;
+    } else {
+      return CardRarity.Epic;
+    }
+  }
+
   function randomNumber(uint _max, uint8 _shift) internal view returns (uint) {
     return uint(keccak256(abi.encodePacked(_shift, msg.sender, block.difficulty, block.timestamp, uint(1)))) % _max;
   }
@@ -70,28 +94,23 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     uint _to = _max;
 
     if (_rarity == CardRarity.Common) {
-      // from 0% to 25%
       _to = _max / 4;
     } else if (_rarity == CardRarity.Uncommon) {
-      // from 20% to 50%
       _from = _max / 5;
       _to = _max / 2;
     } else if (_rarity == CardRarity.Rare) {
-      // from 40% to 75%
       _from = _max * 2 / 5;
       _to = _max * 3 / 4;
     } else {
-      // from 65% to 100%
       _from = _max * 13 / 20;
     }
 
     uint _rand_range = _to - _from;
     if (_rand_range > 0) {
       uint _rand_divider = 1000 / (_rand_range + 1);
-      uint _result = (uint(keccak256(abi.encodePacked(_shift, msg.sender, block.difficulty, block.timestamp, uint(1)))) % 1000) / _rand_divider;
+      uint _result = randomNumber(1000, _shift) / _rand_divider;
       return _to + _result;
     }
-
     return 0;
   }
 
@@ -159,29 +178,42 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
   }
 
-  function userZombies(uint _startIndex, uint8 _count, string calldata collection, string calldata rarity) public view returns (Zombie[] memory) {
+  function userZombies(uint _startIndex, uint8 _count, uint _collectionFilter, string memory _rarityFilter) public view returns (Zombie[] memory) {
     Zombie[] memory _resultZombies = new Zombie[](_count);
-    uint _userBalance = super.balanceOf(msg.sender);
+    uint[] memory innerList = new uint[](_count);
+    uint innerListLength;
+    bytes memory tmpRarity = bytes(_rarityFilter);
 
-    for (uint _i = _startIndex; _i < _count; ++_i) {
-      if (_userBalance > _i) {
-        // userCollectionZombie[msg.sender][_collectionIndex]
-        uint _zombieId = super.tokenOfOwnerByIndex(msg.sender, _i);
-        _resultZombies[_i] = zombies[_zombieId];
+    if (_collectionFilter != 0) {
+      uint[] memory collectionList = userCollectionZombie[msg.sender][_collectionFilter - 1];
+      innerListLength = collectionList.length;
+      for (uint _i = _startIndex; _i < _count; ++_i) {
+        if (innerListLength > _i) {
+          innerList[_i] = collectionList[_i];
+        }
+      }
+    } else if (tmpRarity.length != 0) {
+      CardRarity _rarity = rarityFromString(_rarityFilter);
+      uint[] memory rarityList = userRarityZombie[msg.sender][_rarity];
+      innerListLength = rarityList.length;
+      for (uint _i = _startIndex; _i < _count; ++_i) {
+        if (innerListLength > _i) {
+          innerList[_i] = rarityList[_i];
+        }
+      }
+    } else {
+      innerListLength = super.balanceOf(msg.sender);
+      for (uint _i = _startIndex; _i < _count; ++_i) {
+        if (innerListLength > _i) {
+          innerList[_i] = super.tokenOfOwnerByIndex(msg.sender, _i);
+        }
       }
     }
-    return _resultZombies;
-  }
 
-  function rarityToString(CardRarity _rarity) private pure returns (string memory) {
-    if (_rarity == CardRarity.Common) {
-      return "Common";
-    } else if (_rarity == CardRarity.Uncommon) {
-      return "Uncommon";
-    } else if (_rarity == CardRarity.Rare) {
-      return "Rare";
+    for (uint _i = 0; _i < innerListLength; ++_i) {
+      _resultZombies[_i] = zombies[innerList[_i]];
     }
-    return "Epic";
+    return _resultZombies;
   }
 
   function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
