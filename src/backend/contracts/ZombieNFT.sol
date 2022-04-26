@@ -20,6 +20,8 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   mapping(uint => Zombie) zombies;
+  mapping(address => mapping(uint => uint[])) userCollectionZombie;
+  mapping(address => mapping(CardRarity => uint[])) userRarityZombie;
 
   enum CardRarity {
     Common,
@@ -118,6 +120,9 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
         _safeMint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, _uri);
         zombies[_tokenId] = Zombie(_tokenId, _rarity, _collectionIndex, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, _speed, "Zombie", msg.sender);
+
+        userCollectionZombie[msg.sender][_collectionIndex].push(_tokenId);
+        userRarityZombie[msg.sender][_rarity].push(_tokenId);
       }
       ILandNFT(_landContract).landSetMintTimestamp(_landId);
     } else {
@@ -125,12 +130,13 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
   }
 
-  function userZombies(uint _startIndex, uint8 _count) public view returns (Zombie[] memory) {
+  function userZombies(uint _startIndex, uint8 _count, uint collection, uint rarity) public view returns (Zombie[] memory) {
     Zombie[] memory _resultZombies = new Zombie[](_count);
     uint _userBalance = super.balanceOf(msg.sender);
 
     for (uint _i = _startIndex; _i < _count; ++_i) {
       if (_userBalance > _i) {
+        // userCollectionZombie[msg.sender][_collectionIndex]
         uint _zombieId = super.tokenOfOwnerByIndex(msg.sender, _i);
         _resultZombies[_i] = zombies[_zombieId];
       }

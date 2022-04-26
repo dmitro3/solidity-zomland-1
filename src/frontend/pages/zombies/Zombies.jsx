@@ -62,13 +62,13 @@ export const Zombies = ({
     // const rarity = JSON.parse(searchParams.has("rarity"))
     //   ? searchParams.get("rarity")
     //   : filterRarity;
-    // const collection = JSON.parse(searchParams.has("collection"))
-    //   ? searchParams.get("collection")
-    //   : filterCollection;
+    const collection = JSON.parse(searchParams.has("collection"))
+      ? searchParams.get("collection")
+      : filterCollection;
 
     setCurrentPage(page);
     // setFilterRarity(rarity);
-    // setFilterCollection(collection);
+    setFilterCollection(collection);
 
     fetchUserLands();
     fetchCollections();
@@ -77,11 +77,12 @@ export const Zombies = ({
   }, [currentUser]);
 
   async function fetchUserZombies(currentPage) {
-    // if (filterCollection) {
-    //   requestParams["filter_collection"] = Number(filterCollection);
-    // }
+    const requestParams = {};
+    if (filterCollection) {
+      requestParams["collection"] = Number(filterCollection);
+    }
     // if (filterRarity) {
-    //   requestParams["filter_rarity"] = filterRarity;
+    //   requestParams["rarity"] = filterRarity;
     // }
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
     let zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT);
