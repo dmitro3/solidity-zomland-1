@@ -159,7 +159,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
   }
 
-  function userZombies(uint _startIndex, uint8 _count, uint collection, uint rarity) public view returns (Zombie[] memory) {
+  function userZombies(uint _startIndex, uint8 _count, string calldata collection, string calldata rarity) public view returns (Zombie[] memory) {
     Zombie[] memory _resultZombies = new Zombie[](_count);
     uint _userBalance = super.balanceOf(msg.sender);
 

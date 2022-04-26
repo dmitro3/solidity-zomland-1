@@ -4,7 +4,7 @@ import {
   addPendingTransaction, addTransactionError,
   convertFromYocto,
   formatId,
-  rmFromMarket, transformLand, transformZombie,
+  rmFromMarket, transformCollections, transformLand, transformZombie,
 } from "../../web3/utils";
 import {
   Container,
@@ -46,8 +46,8 @@ export const Zombies = ({
   const [mintPopupVisible, setMintPopupVisible] = useState(false);
   const [killPopupVisible, setKillPopupVisible] = useState(false);
   const [killItem, setKillItem] = useState(null);
-  const [filterRarity, setFilterRarity] = useState(null);
-  const [filterCollection, setFilterCollection] = useState(null);
+  const [filterRarity, setFilterRarity] = useState("");
+  const [filterCollection, setFilterCollection] = useState("");
   const [allCollections, setAllCollections] = useState([]);
   const [mintInProgressList, setMintInProgressList] = useState([]);
 
@@ -59,40 +59,36 @@ export const Zombies = ({
     const page = JSON.parse(searchParams.has("page"))
       ? searchParams.get("page")
       : currentPage;
-    // const rarity = JSON.parse(searchParams.has("rarity"))
-    //   ? searchParams.get("rarity")
-    //   : filterRarity;
+    const rarity = JSON.parse(searchParams.has("rarity"))
+      ? searchParams.get("rarity")
+      : filterRarity;
     const collection = JSON.parse(searchParams.has("collection"))
       ? searchParams.get("collection")
       : filterCollection;
 
     setCurrentPage(page);
-    // setFilterRarity(rarity);
+    setFilterRarity(rarity);
     setFilterCollection(collection);
 
-    fetchUserLands();
-    fetchCollections();
-    fetchUserZombies(page);
-    fetchCountUserZombies();
+    fetchCollections().then(() => {
+      fetchUserLands();
+      fetchCountUserZombies();
+      fetchUserZombies(currentPage, collection, rarity);
+    });
   }, [currentUser]);
 
-  async function fetchUserZombies(currentPage) {
-    const requestParams = {};
-    if (filterCollection) {
-      requestParams["collection"] = Number(filterCollection);
-    }
-    // if (filterRarity) {
-    //   requestParams["rarity"] = filterRarity;
-    // }
+  async function fetchUserZombies(currentPage, collection, rarity) {
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
-    let zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT);
+    let zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collection, rarity);
     let zombies = zombiesObj.filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
     setUserZombies(zombies);
     setIsReady(true);
   }
 
   const fetchCollections = async () => {
-    // setAllCollections(await contract.get_collections());
+    let collectionsObj = await window.contracts.collection.getAllCollections();
+    let collections = collectionsObj.map((collection, index) => transformCollections(collection, index));
+    setAllCollections(collections);
   }
 
   const fetchCountUserZombies = async () => {
@@ -102,20 +98,18 @@ export const Zombies = ({
 
   const appendToSellList = (zombie) => {
     if (
-      !sellList["zombies"].filter((exist) => exist.token_id === zombie.token_id)
-        .length
+      !sellList["zombies"].filter((exist) => exist.token_id === zombie.token_id).length
     ) {
       sellList["zombies"].push(zombie);
       sellList["lands"] = sellList["monsters"] = [];
-      setSellList({...sellList});
+      setSellList({ ...sellList });
     }
   };
 
-  const buildUrl = () => {
+  const buildUrl = (filterCollection, filterRarity) => {
     let url = `/zombies?page=${currentPage}`;
-    // if (filterRarity) url = `${url}&rarity=${filterRarity}`;
-    // if (filterCollection) url = `${url}&collection=${filterCollection}`;
-
+    if (filterRarity) url = `${url}&rarity=${filterRarity}`;
+    if (filterCollection) url = `${url}&collection=${filterCollection}`;
     return url;
   };
 
@@ -136,7 +130,6 @@ export const Zombies = ({
           totalZombiesToMint += 8;
         }
       }
-
       return transformLand(land);
     });
 
@@ -144,14 +137,13 @@ export const Zombies = ({
     setUserLands(userLands);
   }
 
-  useEffect(() => {
-    setCurrentPage(1);
-    fetchCollections();
-    fetchUserZombies(1);
-    navigate(buildUrl());
-  }, [filterRarity, filterCollection]);
+  useEffect(() => navigate(buildUrl(filterCollection, filterRarity)), [currentPage]);
 
-  useEffect(() => navigate(buildUrl()), [currentPage]);
+  const handleFilterChange = (filterCollection, filterRarity) => {
+    setCurrentPage(1);
+    fetchUserZombies(1, filterCollection, filterRarity);
+    navigate(buildUrl(filterCollection, filterRarity));
+  }
 
   const handleMint = async (landId) => {
     mintInProgressList.push(landId);
@@ -168,7 +160,7 @@ export const Zombies = ({
           fetchUserLands();
           fetchCountUserZombies();
           setCurrentPage(1);
-          fetchUserZombies(1);
+          fetchUserZombies(1, filterCollection, filterRarity);
         } else {
           alert('Minting error');
         }
@@ -205,58 +197,59 @@ export const Zombies = ({
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           setIsReady(false);
-          fetchUserZombies(currentPage);
+          fetchUserZombies(currentPage, filterCollection, filterRarity);
         }
       });
     });
   };
 
   const rarityOptions = () => {
-    return [
-      {
-        title: "All",
-        onClick: () => setFilterRarity(null),
-      },
-      {
-        title: "Common",
-        onClick: () => setFilterRarity("Common"),
-      },
-      {
-        title: "Uncommon",
-        onClick: () => setFilterRarity("Uncommon"),
-      },
-      {
-        title: "Rare",
-        onClick: () => setFilterRarity("Rare"),
-      },
-      {
-        title: "Epic",
-        onClick: () => setFilterRarity("Epic"),
-      },
-    ];
+    const result = [];
+    const options = ["All", "Common", "Uncommon", "Rare", "Epic"];
+
+    options.map(option => {
+      result.push({
+        title: option,
+        onClick: () => {
+          let optionValue = option === "All" ? "" : option;
+          setFilterRarity(optionValue);
+          handleFilterChange(filterCollection, optionValue);
+        },
+      })
+    });
+
+    return result;
   };
 
   const collectionOptions = () => {
     const collections = Object.keys(allCollections).map((key) => {
       return {
         title: allCollections[key].title,
-        onClick: () => setFilterCollection(key),
+        onClick: () => {
+          const selectedCollection = allCollections[key].id;
+          setFilterCollection(selectedCollection);
+          handleFilterChange(selectedCollection, filterRarity);
+        },
       };
     });
+
     return [
       {
         title: "All",
-        onClick: () => setFilterCollection(null),
+        onClick: () => {
+          setFilterCollection("");
+          handleFilterChange("", filterRarity);
+        },
       },
       ...collections,
     ];
   };
 
   const onPageChanged = (page) => {
-    window.scrollTo({top: 0, behavior: "smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     setCurrentPage(page);
-    fetchUserZombies(page);
+    fetchUserZombies(page, filterCollection, filterRarity);
   };
 
   const showKillPopup = async (item) => {
@@ -272,7 +265,7 @@ export const Zombies = ({
 
         transaction.wait().then(async receipt => {
           if (receipt.status === 1) {
-            fetchUserZombies(currentPage);
+            fetchUserZombies(currentPage, filterCollection, filterRarity);
             setKillPopupVisible(false);
 
             // Update user balance
@@ -285,14 +278,6 @@ export const Zombies = ({
         addTransactionError(dispatch, err.message);
       });
     }
-    // let gas = convertToTera("90");
-    // await contract.kill_zombie(
-    //   {
-    //     zombie_id: killItem.token_id,
-    //   },
-    //   gas,
-    //   1
-    // );
   };
 
   const hasLands = userLands.length > 0;
