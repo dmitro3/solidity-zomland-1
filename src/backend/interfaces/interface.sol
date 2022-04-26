@@ -4,13 +4,6 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-  enum CardRarity {
-    Common,
-    Uncommon,
-    Rare,
-    Epic
-  }
-
 interface IMain {
   function getContractLandNFT() external view returns (address);
 
@@ -28,6 +21,8 @@ interface ICollection {
   function getAllCollectionsCount() external view returns (uint);
 
   function getCollectionAndZombie(uint8) external view returns (uint, string memory);
+
+  function getCollectionImage(uint) external returns (string memory);
 }
 
 
@@ -37,10 +32,10 @@ interface ILandNFT is IERC721 {
   function landSetMintTimestamp(uint) external;
 }
 
-interface IMonsterNFT is IERC721 {
-  function checkAndBurnZombies(address, uint) external returns (uint, uint, uint, uint, uint, CardRarity);
+interface IZombieNFT is IERC721 {
+  function checkAndBurnZombies(address, uint[] calldata) external returns (uint, uint, uint, uint, uint);
 
-  function getCollectionImage(uint) external returns (string);
+  function getRandomRarityByZombies(uint[] calldata) external returns (string memory);
 }
 
 

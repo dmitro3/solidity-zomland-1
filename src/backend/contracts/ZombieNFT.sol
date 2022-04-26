@@ -173,6 +173,17 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return _resultZombies;
   }
 
+  function rarityToString(CardRarity _rarity) private pure returns (string memory) {
+    if (_rarity == CardRarity.Common) {
+      return "Common";
+    } else if (_rarity == CardRarity.Uncommon) {
+      return "Uncommon";
+    } else if (_rarity == CardRarity.Rare) {
+      return "Rare";
+    }
+    return "Epic";
+  }
+
   function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
     return super.tokenURI(_tokenId);
   }
@@ -192,20 +203,18 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     ITokenFT(_contractTokenFT).transferOnKill(msg.sender, _zombie.killTokens);
   }
 
-  function checkAndBurnZombies(address owner, uint[] memory zombiesList) external returns (uint, uint, uint, uint, uint, CardRarity){
+  function checkAndBurnZombies(address _owner, uint[] memory zombiesList) external returns (uint, uint, uint, uint, uint){
     uint _health = 0;
     uint _attack = 0;
     uint _brain = 0;
     uint _killTokens = 0;
-    uint _collection = zombies[zombiesList[0]].collection;
-
-    uint8 _count = zombiesList.length;
-    uint8 rarityIndex = randomNumber(10, 1);
-    CardRarity _rarity = zombies[zombiesList[rarityIndex]].cardRarity;
+    uint _collectionId = zombies[zombiesList[0]].collection;
+    uint _count = zombiesList.length;
 
     for (uint _i = 0; _i < _count; ++_i) {
-      Zombie storage _zombie = zombies[zombiesList[_i]];
-      if (_zombie.ownerId != owner) {
+      uint _index = zombiesList[_i];
+      Zombie storage _zombie = zombies[_index];
+      if (_zombie.ownerId != _owner) {
         revert MonsterMintError({message : "You don't own this zombie", tokenId : _zombie.tokenId});
       } else {
         _health += _zombie.health;
@@ -216,27 +225,15 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
       }
     }
 
-    return (_health, _attack, _brain, _killTokens, _collection, _rarity);
+    return (_health, _attack, _brain, _killTokens, _collectionId);
   }
 
-  //  function mintMonster(uint[] memory _zombiesList) public returns (uint) {
-  //    uint8 _collectionSize = 10;
-  //    if (_zombiesList.length != _collectionSize) {
-  //      revert MonsterMintCountError({message : "You need to send more zombies for mint Monster", required : _collectionSize});
-  //    }
-  //    for (uint _i = 0; _i < _collectionSize; ++_i) {
-  //      Zombie storage _zombie = zombies[_zombiesList[_i]];
-  //      if (_zombie.ownerId != msg.sender) {
-  //        revert MonsterMintError({message : "You don't own this zombie"});
-  //      } else {
-  //        _burn(_zombie.tokenId);
-  //      }
-  //    }
-  //
-  //    // Call monster contract...
-  //
-  //    return 0;
-  //  }
+  function getRandomRarityByZombies(uint[] memory zombiesList) external returns (string memory){
+    uint _rarityIndex = randomNumber(9, 1);
+    uint _zombieByIndex = zombiesList[_rarityIndex];
+    CardRarity _rarity = zombies[_zombieByIndex].cardRarity;
+    return rarityToString(_rarity);
+  }
 
   function getUserCollectionZombieCount() external view returns (uint[] memory){
     address _collectionContract = IMain(mainContract).getContractCollection();

@@ -48,7 +48,7 @@ contract CollectionContract is Ownable {
     return collectionCount;
   }
 
-  function getCollectionImage(uint collectionId) external returns (string){
+  function getCollectionImage(uint collectionId) external view returns (string memory){
     return collections[collectionId].image;
   }
 
