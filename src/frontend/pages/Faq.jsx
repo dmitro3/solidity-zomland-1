@@ -9,6 +9,7 @@ import {
 } from "../assets/styles/common.style";
 import land_sample from "../assets/images/land-sample.png";
 import zombie_sample from "../assets/images/zombie-sample.png";
+import monster_sample from "../assets/images/monster-sample.png";
 import {Header} from "../components/Header";
 import {Footer} from "../components/Footer";
 import {InnerPageHead} from "../components/InnerPageHead";
@@ -181,7 +182,7 @@ export const Faq = () => {
                   <div>
                     <p>
                       First thing’s first, read our{" "}
-                      <a href="https://www.notion.so/Whitepaper-f13cc403f031402f9244712c24ee151f"
+                      <a href="https://dandelion-dash-25e.notion.site/Whitepaper-f13cc403f031402f9244712c24ee151f"
                          target="_blank"
                          className="link">ZomLand Whitepaper</a>{" "}
                       to get a broad overview of what we are building, and how you can use it.
@@ -217,7 +218,7 @@ export const Faq = () => {
                           <li>- <b className="text-orange-500">Large</b>: 8 zombies/day. Limited by 1.999 Lands.</li>
                         </ul>
                         <br/>
-                        <a href="https://www.notion.so/Lands-600806d8c2bc464f83bb2a205722fb85" className="link" target="_blank">Read more
+                        <a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" className="link" target="_blank">Read more
                           about Lands</a>
                       </div>
                     </div>
@@ -238,7 +239,7 @@ export const Faq = () => {
                     <div className="w-3/4">
                       <div className="ml-8">
                         <p>Front side represent Card Rarity, market Price and Token ID.</p>
-                        <p>Back side represent zombie characteristics: Health, Attack, Intellect and Speed.</p>
+                        <p>On hover you can see zombie characteristics: Health, Attack, Intellect and Speed.</p>
 
                         <br/>
                         <div className="flex flex-row">
@@ -262,25 +263,56 @@ export const Faq = () => {
                           </div>
                         </div>
                         <br/>
-                        <a href="https://www.notion.so/Zombies-7785dcc7ca5141fe9512038c61bf02d6" className="link" target="_blank">Read more
+                        <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6" className="link" target="_blank">Read more
                           about Zombies</a>
                       </div>
                     </div>
                   </div>
                 </FaqQuestion>
 
-                {/*<FaqQuestion*/}
-                {/*  index="7"*/}
-                {/*  openedIndex={openedIndex}*/}
-                {/*  changeOpened={(i) => setOpenedIndex(i)}*/}
-                {/*  title="Explain Monster Card"*/}
-                {/*>*/}
-                {/*  <div>*/}
-                {/*    <p>*/}
-                {/*      TODO...*/}
-                {/*    </p>*/}
-                {/*  </div>*/}
-                {/*</FaqQuestion>*/}
+                <FaqQuestion
+                    index="7"
+                    openedIndex={openedIndex}
+                    changeOpened={(i) => setOpenedIndex(i)}
+                    title="Explain Monster Card"
+                >
+                  <div className="flex flex-row">
+                    <div className="w-1/4 text-center">
+                      <img src={monster_sample} alt=""/>
+                      <small className="text-gray-400 inline-block mr-8">Monster Card Sample</small>
+                    </div>
+                    <div className="w-3/4">
+                      <div className="ml-8">
+                        <p>Front side represent Card Rarity, market Price and Token ID.</p>
+                        <p>On hover you can see monster characteristics: Health, Attack, Intellect and Speed.</p>
+
+                        <br/>
+                        <div className="flex flex-row">
+                          <div className="w-1/2">
+                            <b>Card rarity types:</b>
+                            <ul>
+                              <li>- <span className="text-gray-400">Common</span></li>
+                              <li>- <span className="text-blue-400">UnCommon</span></li>
+                              <li>- <span className="text-rose-400">Rare</span></li>
+                              <li>- <span className="text-orange-400">Epic</span></li>
+                            </ul>
+                          </div>
+                          <div className="w-1/2">
+                            <b>Monster characteristic:</b>
+                            <ul>
+                              <li>- Health</li>
+                              <li>- Attack</li>
+                              <li>- Intellect</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <br/>
+                        <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6" className="link" target="_blank">Read more
+                          about Monsters</a>
+                      </div>
+                    </div>
+                  </div>
+                </FaqQuestion>
 
                 <FaqQuestion
                     index="8"
