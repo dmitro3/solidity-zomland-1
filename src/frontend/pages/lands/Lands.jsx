@@ -35,9 +35,9 @@ export const Lands = ({sellList, setSellList}) => {
     allLandsObj.map((land, index) => {
       allLands[landTypeMap[index]] = {
         landType: landTypeMap[index],
-        total_count: parseInt(land.limitCount),
+        totalCount: parseInt(land.limitCount),
         price: parseInt(land.price),
-        zombie_per_day: parseInt(land.zombiesPerDay),
+        zombiePerDay: parseInt(land.zombiesPerDay),
         media: land.media,
       };
     });
