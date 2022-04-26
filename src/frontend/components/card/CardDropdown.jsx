@@ -16,7 +16,7 @@ export const CardDropdown = ({
       icon: <ArrowRightIcon className="h-5 w-5 mr-2 font-semibold"/>,
     },
     {
-      title: "Sell",
+      title: "Sell on Market",
       fn: setSellItems,
       icon: <CurrencyDollarIcon className="h-5 w-5 mr-2 font-semibold"/>,
     },

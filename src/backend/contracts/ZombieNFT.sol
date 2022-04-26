@@ -64,6 +64,36 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return uint(keccak256(abi.encodePacked(_shift, msg.sender, block.difficulty, block.timestamp, uint(1)))) % _max;
   }
 
+  function randomNumberByRarity(uint _max, uint8 _shift, CardRarity _rarity) internal view returns (uint) {
+    uint _from = 0;
+    uint _to = _max;
+
+    if (_rarity == CardRarity.Common) {
+      // from 0% to 25%
+      _to = _max / 4;
+    } else if (_rarity == CardRarity.Uncommon) {
+      // from 20% to 50%
+      _from = _max / 5;
+      _to = _max / 2;
+    } else if (_rarity == CardRarity.Rare) {
+      // from 40% to 75%
+      _from = _max * 2 / 5;
+      _to = _max * 3 / 4;
+    } else {
+      // from 65% to 100%
+      _from = _max * 13 / 20;
+    }
+
+    uint _rand_range = _to - _from;
+    if (_rand_range > 0) {
+      uint _rand_divider = 1000 / (_rand_range + 1);
+      uint _result = (uint(keccak256(abi.encodePacked(_shift, msg.sender, block.difficulty, block.timestamp, uint(1)))) % 1000) / _rand_divider;
+      return _to + _result;
+    }
+
+    return 0;
+  }
+
   function randomRarity(uint8 _num) internal view returns (CardRarity) {
     uint _index = randomNumber(1000, _num);
     if (_index <= 10) {
@@ -89,7 +119,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     } else if (_rarity == CardRarity.Uncommon) {
       _multiplier = 3;
     }
-    return _multiplier * (uint((_health + _attack + _brain + _speed)) / 2) * 1e18;
+    return _multiplier * (uint((_health + _attack + _brain + _speed)) / 4) * 1e18;
   }
 
   // ---------------- Public methods ---------------
@@ -108,10 +138,10 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
         CardRarity _rarity = randomRarity(_i);
         (uint _collectionIndex, string memory _uri) = randomCollectionMedia(_collectionContract, _i + 8);
         uint _tokenId = _tokenIdCounter.current();
-        uint8 _health = uint8(randomNumber(49, _i + 15) + 1);
-        uint8 _attack = uint8(randomNumber(24, _i + 20) + 1);
-        uint8 _brain = uint8(randomNumber(24, _i + 25) + 1);
-        uint8 _speed = uint8(randomNumber(19, _i + 30) + 1);
+        uint8 _health = uint8(randomNumberByRarity(49, _i + 15, _rarity) + 1);
+        uint8 _attack = uint8(randomNumberByRarity(24, _i + 20, _rarity) + 1);
+        uint8 _brain = uint8(randomNumberByRarity(24, _i + 25, _rarity) + 1);
+        uint8 _speed = uint8(randomNumberByRarity(19, _i + 30, _rarity) + 1);
         uint _killTokens = zombieKillTokens(_rarity, _health, _attack, _brain, _speed);
 
         _tokenIdCounter.increment();
