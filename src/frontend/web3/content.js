@@ -130,7 +130,7 @@ export const LandContent = {
 export const ZombieContent = {
   title: "My Zombies",
   description: `Zombies is your numerous army that will lead to achieve your goals. Each zombie has it's own characteristics of health, attack, intellect and speed.
-  <a href="https://www.notion.so/Zombies-7785dcc7ca5141fe9512038c61bf02d6" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
+  <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
   mint_zombie_from_land: "Select land you want to mint zombies for:",
   no_zombies: "You have no Zombies",
   no_lands_details:
@@ -140,14 +140,14 @@ export const ZombieContent = {
 export const MonsterContent = {
   title: "My Monsters",
   description: `Monster - strong, cool and powerful zombie that have additional features: discover lands, participate in battles and get additional rewards.
-  <a href="https://www.notion.so/Monsters-09efe65232ec4b01b143a1a63c61bf47" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
+  <a href="https://dandelion-dash-25e.notion.site/Monsters-09efe65232ec4b01b143a1a63c61bf47" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
   no_monsters: "You have no Monsters",
 };
 
 export const CollectionContent = {
   title: "Collections",
   description: `Your zombies can be combined to Collection and exchanged to the Monster. 
-  <a href="https://www.notion.so/Collections-7ef9dd8d414847a288d992e7f3ca4714" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
+  <a href="https://dandelion-dash-25e.notion.site/Collections-7ef9dd8d414847a288d992e7f3ca4714" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
 };
 
 export const MarketContent = {

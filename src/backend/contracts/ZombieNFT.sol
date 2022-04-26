@@ -12,8 +12,7 @@ import "../interfaces/interface.sol";
 
   error ZombiesMintError(string message);
   error ZombiesKillError(string message);
-  error MonsterMintError(string message);
-  error MonsterMintCountError(string message, uint8 required);
+  error MonsterMintError(string message, uint tokenId);
 
 contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
   address internal mainContract;
@@ -66,6 +65,36 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return uint(keccak256(abi.encodePacked(_shift, msg.sender, block.difficulty, block.timestamp, uint(1)))) % _max;
   }
 
+  function randomNumberByRarity(uint _max, uint8 _shift, CardRarity _rarity) internal view returns (uint) {
+    uint _from = 0;
+    uint _to = _max;
+
+    if (_rarity == CardRarity.Common) {
+      // from 0% to 25%
+      _to = _max / 4;
+    } else if (_rarity == CardRarity.Uncommon) {
+      // from 20% to 50%
+      _from = _max / 5;
+      _to = _max / 2;
+    } else if (_rarity == CardRarity.Rare) {
+      // from 40% to 75%
+      _from = _max * 2 / 5;
+      _to = _max * 3 / 4;
+    } else {
+      // from 65% to 100%
+      _from = _max * 13 / 20;
+    }
+
+    uint _rand_range = _to - _from;
+    if (_rand_range > 0) {
+      uint _rand_divider = 1000 / (_rand_range + 1);
+      uint _result = (uint(keccak256(abi.encodePacked(_shift, msg.sender, block.difficulty, block.timestamp, uint(1)))) % 1000) / _rand_divider;
+      return _to + _result;
+    }
+
+    return 0;
+  }
+
   function randomRarity(uint8 _num) internal view returns (CardRarity) {
     uint _index = randomNumber(1000, _num);
     if (_index <= 10) {
@@ -91,7 +120,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     } else if (_rarity == CardRarity.Uncommon) {
       _multiplier = 3;
     }
-    return _multiplier * (uint((_health + _attack + _brain + _speed)) / 2) * 1e18;
+    return _multiplier * (uint((_health + _attack + _brain + _speed)) / 4) * 1e18;
   }
 
   // ---------------- Public methods ---------------
@@ -110,10 +139,10 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
         CardRarity _rarity = randomRarity(_i);
         (uint _collectionIndex, string memory _uri) = randomCollectionMedia(_collectionContract, _i + 8);
         uint _tokenId = _tokenIdCounter.current();
-        uint8 _health = uint8(randomNumber(49, _i + 15) + 1);
-        uint8 _attack = uint8(randomNumber(24, _i + 20) + 1);
-        uint8 _brain = uint8(randomNumber(24, _i + 25) + 1);
-        uint8 _speed = uint8(randomNumber(19, _i + 30) + 1);
+        uint8 _health = uint8(randomNumberByRarity(49, _i + 15, _rarity) + 1);
+        uint8 _attack = uint8(randomNumberByRarity(24, _i + 20, _rarity) + 1);
+        uint8 _brain = uint8(randomNumberByRarity(24, _i + 25, _rarity) + 1);
+        uint8 _speed = uint8(randomNumberByRarity(19, _i + 30, _rarity) + 1);
         uint _killTokens = zombieKillTokens(_rarity, _health, _attack, _brain, _speed);
 
         _tokenIdCounter.increment();
@@ -161,6 +190,33 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
     _burn(_tokenId);
     ITokenFT(_contractTokenFT).transferOnKill(msg.sender, _zombie.killTokens);
+  }
+
+  function checkAndBurnZombies(address owner, uint[] memory zombiesList) external returns (uint, uint, uint, uint, uint, CardRarity){
+    uint _health = 0;
+    uint _attack = 0;
+    uint _brain = 0;
+    uint _killTokens = 0;
+    uint _collection = zombies[zombiesList[0]].collection;
+
+    uint8 _count = zombiesList.length;
+    uint8 rarityIndex = randomNumber(10, 1);
+    CardRarity _rarity = zombies[zombiesList[rarityIndex]].cardRarity;
+
+    for (uint _i = 0; _i < _count; ++_i) {
+      Zombie storage _zombie = zombies[zombiesList[_i]];
+      if (_zombie.ownerId != owner) {
+        revert MonsterMintError({message : "You don't own this zombie", tokenId : _zombie.tokenId});
+      } else {
+        _health += _zombie.health;
+        _attack += _zombie.attack;
+        _brain += _zombie.brain;
+        _killTokens += _zombie.killTokens;
+        _burn(_zombie.tokenId);
+      }
+    }
+
+    return (_health, _attack, _brain, _killTokens, _collection, _rarity);
   }
 
   //  function mintMonster(uint[] memory _zombiesList) public returns (uint) {
