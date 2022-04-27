@@ -11,23 +11,16 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../interfaces/interface.sol";
-//import "../library/utils.sol";
+import "../abstract/utils.sol";
 
   error MonsterMintCountError(string message, uint required);
 
-contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
+contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Utils {
   address internal mainContract;
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   mapping(uint => Monster) monsters;
   mapping(address => mapping(CardRarity => uint[])) userRarityMonster;
-
-  enum CardRarity {
-    Common,
-    Uncommon,
-    Rare,
-    Epic
-  }
 
   struct Monster {
     uint tokenId;
@@ -54,13 +47,43 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
 
   function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721, ERC721Enumerable) {
     super._beforeTokenTransfer(_from, _to, _tokenId);
+
+    if (_from != NULL_ADDRESS) {
+      Monster storage _monster = monsters[_tokenId];
+      removeMonsterRarity(_from, _tokenId, _monster.cardRarity);
+      addMonsterRarity(_to, _tokenId, _monster.cardRarity);
+    }
   }
 
   function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
+    Monster storage _monster = monsters[_tokenId];
+    removeMonsterRarity(msg.sender, _tokenId, _monster.cardRarity);
+
     super._burn(_tokenId);
   }
 
+  function addMonsterRarity(address _owner, uint _tokenId, CardRarity _rarity) private {
+    userRarityMonster[_owner][_rarity].push(_tokenId);
+  }
+
+  function removeMonsterRarity(address _owner, uint _tokenId, CardRarity _rarity) private {
+    (uint _rarityIndex, bool _existRarity) = Utils.indexOf(userRarityMonster[_owner][_rarity], _tokenId);
+    if (_existRarity) {
+      uint[] storage rarityList = userRarityMonster[_owner][_rarity];
+      rarityList[_rarityIndex] = rarityList[rarityList.length - 1];
+      rarityList.pop();
+    }
+  }
+
   // ---------------- Public methods ---------------
+
+  function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
+    return super.tokenURI(_tokenId);
+  }
+
+  function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
+    return super.supportsInterface(_interfaceId);
+  }
 
   function safeMint(uint[] memory zombiesList) public {
     uint8 _collectionSize = 10;
@@ -82,28 +105,7 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     _setTokenURI(_tokenId, _uri);
 
     monsters[_tokenId] = Monster(_tokenId, _rarity, _collectionId, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, "Monster", msg.sender);
-    userRarityMonster[msg.sender][_rarity].push(_tokenId);
-  }
-
-  function rarityFromString(string memory _rarity) private pure returns (CardRarity) {
-    bytes32 _rarityHash = keccak256(abi.encodePacked(_rarity));
-    if (_rarityHash == keccak256(abi.encodePacked("Common"))) {
-      return CardRarity.Common;
-    } else if (_rarityHash == keccak256(abi.encodePacked("Uncommon"))) {
-      return CardRarity.Uncommon;
-    } else if (_rarityHash == keccak256(abi.encodePacked("Rare"))) {
-      return CardRarity.Rare;
-    } else {
-      return CardRarity.Epic;
-    }
-  }
-
-  function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
-    return super.tokenURI(_tokenId);
-  }
-
-  function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
-    return super.supportsInterface(_interfaceId);
+    addMonsterRarity(msg.sender, _tokenId, _rarity);
   }
 
   function userMonsters(uint _startIndex, uint8 _count, string memory _rarityFilter) public view returns (uint, Monster[] memory) {

@@ -32,7 +32,7 @@ export default function MintZombiePopup({
   }, [currentDate]);
 
   const secondsToString = (countSec) => {
-    let hours = Math.floor(((countSec % 31536000) % 86400) / 3600);
+    const hours = Math.floor(((countSec % 31536000) % 86400) / 3600);
     let minutes = Math.floor((((countSec % 31536000) % 86400) % 3600) / 60);
     let seconds = Math.floor((((countSec % 31536000) % 86400) % 3600) % 60);
     if (minutes < 10) {

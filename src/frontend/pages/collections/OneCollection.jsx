@@ -53,8 +53,8 @@ export const OneCollection = () => {
 
   const loadCollection = async () => {
     async function fetchCollections() {
-      let collectionsObj = await window.contracts.collection.collections(collection_id);
-      let collection = transformCollections(collectionsObj, collection_id);
+      const collectionsObj = await window.contracts.collection.collections(collection_id);
+      const collection = transformCollections(collectionsObj, collection_id);
       setCollection(collection);
     }
 
@@ -68,12 +68,12 @@ export const OneCollection = () => {
       parseInt(collection_id) + 1,
       ""
     );
-    let result = zombiesObj[1].filter((zombie) => zombie.nftType).map((zombie) => transformZombie(zombie));
+    const result = zombiesObj[1].filter((zombie) => zombie.nftType).map((zombie) => transformZombie(zombie));
     setUserCollectionZombies(result);
   };
 
   useEffect(() => {
-    let zombieCardsList = [];
+    const zombieCardsList = [];
     for (let i = 0; i < COLLECTION_ZOMBIES_COUNT; i++) {
       zombieCardsList.push(null);
     }

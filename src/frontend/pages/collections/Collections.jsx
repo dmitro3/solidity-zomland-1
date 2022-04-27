@@ -19,15 +19,15 @@ export const Collections = () => {
   const [isReady, setIsReady] = React.useState(false);
 
   async function fetchCollections() {
-    let collectionsObj = await window.contracts.collection.getAllCollections();
-    let collections = collectionsObj.map((collection, index) => transformCollections(collection, index))
+    const collectionsObj = await window.contracts.collection.getAllCollections();
+    const collections = collectionsObj.map((collection, index) => transformCollections(collection, index))
     setAllCollections(collections);
   }
 
   useEffect(() => {
     fetchCollections().then(async () => {
-      let collectionCount = {};
-      let userZombiesCount = await window.contracts.zombie.getUserCollectionZombieCount();
+      const collectionCount = {};
+      const userZombiesCount = await window.contracts.zombie.getUserCollectionZombieCount();
 
       userZombiesCount.map((count, index) => {
         collectionCount[index] = parseInt(count);

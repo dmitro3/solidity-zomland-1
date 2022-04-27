@@ -79,10 +79,8 @@ export const Zombies = ({
   async function fetchUserZombies(currentPage, collection, rarity) {
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
     const collectionFilter = collection !== "" ? parseInt(collection) + 1 : 0;
-    setIsReady(false);
-
     const zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
-    let zombies = zombiesObj[1].filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
+    const zombies = zombiesObj[1].filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
     setUserZombiesCount(parseInt(zombiesObj[0]));
 
     setUserZombies(zombies);
@@ -90,8 +88,8 @@ export const Zombies = ({
   }
 
   const fetchCollections = async () => {
-    let collectionsObj = await window.contracts.collection.getAllCollections();
-    let collections = collectionsObj.map((collection, index) => transformCollections(collection, index));
+    const collectionsObj = await window.contracts.collection.getAllCollections();
+    const collections = collectionsObj.map((collection, index) => transformCollections(collection, index));
     setAllCollections(collections);
   }
 
@@ -113,12 +111,12 @@ export const Zombies = ({
   };
 
   async function fetchUserLands() {
-    let timeNow = parseInt(new Date().getTime() / 1000);
-    let oneDay = 24 * 60 * 60;
+    const timeNow = parseInt(new Date().getTime() / 1000);
+    const oneDay = 24 * 60 * 60;
     let totalZombiesToMint = 0;
 
-    let userLandsObj = await window.contracts.land.userLands();
-    let userLands = userLandsObj.map(land => {
+    const userLandsObj = await window.contracts.land.userLands();
+    const userLands = userLandsObj.map(land => {
       const lastClaimTimestamp = parseInt(land.lastZombieClaim);
       if (!lastClaimTimestamp || timeNow - lastClaimTimestamp > oneDay) {
         if (land.landType === 0) {
@@ -140,15 +138,15 @@ export const Zombies = ({
 
   const handleCollectionChange = (filterCollection) => {
     setCurrentPage(1);
-    fetchUserZombies(1, filterCollection, "");
     setFilterRarity("");
+    fetchUserZombies(1, filterCollection, "");
     navigate(buildUrl(filterCollection, ""));
   }
 
   const handleRarityChange = (filterRarity) => {
     setCurrentPage(1);
-    fetchUserZombies(1, "", filterRarity);
     setFilterCollection("");
+    fetchUserZombies(1, "", filterRarity);
     navigate(buildUrl("", filterRarity));
   }
 
@@ -182,7 +180,7 @@ export const Zombies = ({
   };
 
   const removeMintInProgressList = (landId) => {
-    let index = mintInProgressList.indexOf(landId);
+    const index = mintInProgressList.indexOf(landId);
     if (index !== -1) {
       mintInProgressList.splice(index, 1);
       setMintInProgressList([...mintInProgressList]);
@@ -217,7 +215,7 @@ export const Zombies = ({
       result.push({
         title: option,
         onClick: () => {
-          let optionValue = option === "All Rarities" ? "" : option;
+          const optionValue = option === "All Rarities" ? "" : option;
           setFilterRarity(optionValue);
           handleRarityChange(optionValue);
         },

@@ -53,7 +53,7 @@ export const Monsters = ({ sellList, setSellList }) => {
     setIsReady(false);
 
     const monstersObj = await window.contracts.monster.userMonsters(startIndex, PAGE_LIMIT, rarity || "");
-    let monsters = monstersObj[1].filter(monster => monster.nftType).map(monster => transformMonster(monster));
+    const monsters = monstersObj[1].filter(monster => monster.nftType).map(monster => transformMonster(monster));
     setUserMonstersCount(parseInt(monstersObj[0]));
 
     setUserMonsters(monsters);
@@ -67,7 +67,7 @@ export const Monsters = ({ sellList, setSellList }) => {
       result.push({
         title: option,
         onClick: () => {
-          let optionValue = option === "All Rarities" ? "" : option;
+          const optionValue = option === "All Rarities" ? "" : option;
           setFilterRarity(optionValue);
           handleRarityChange(optionValue);
         },

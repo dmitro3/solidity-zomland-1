@@ -13,9 +13,15 @@ contract TokenFTContract is ERC20 {
 
   mapping(address => uint) public userRewardPerTokenPaid;
   mapping(address => uint) public rewards;
-
   uint public stakingTotalSupply;
   mapping(address => uint) private _balances;
+
+  modifier onlyZombieMonsterContract() {
+    address monsterContract = IMain(mainContract).getContractMonsterNFT();
+    address zombieContract = IMain(mainContract).getContractZombieNFT();
+    require(zombieContract == msg.sender || monsterContract == msg.sender, "You can't call this method");
+    _;
+  }
 
   constructor(address _mainContract) ERC20("Zomland", "ZML") {
     mainContract = _mainContract;
@@ -80,9 +86,7 @@ contract TokenFTContract is ERC20 {
     return 0;
   }
 
-  // TODO: Allow only Zombie or Monster Contract
-  function transferOnKill(address _account, uint _amount) external {
-    console.log("Transfer", _account, _amount);
+  function transferOnKill(address _account, uint _amount) external onlyZombieMonsterContract {
     IERC20(address(this)).transfer(_account, _amount);
   }
 

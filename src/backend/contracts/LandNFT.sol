@@ -48,10 +48,11 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   mapping(address => bool) accountsWithSmallLand;
   mapping(uint => Land) lands;
 
-  //    modifier onlyMainContract() {
-  //        require(contractMain == _msgSender(), "Caller is not main contract");
-  //        _;
-  //    }
+  modifier onlyZombieContract() {
+    address zombieContract = IMain(mainContract).getContractZombieNFT();
+    require(zombieContract == msg.sender, "You can't call this method");
+    _;
+  }
 
   constructor(address _mainContract) ERC721("ZomLand", "ZMLL") {
     mainContract = _mainContract;
@@ -139,8 +140,7 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     return 0;
   }
 
-  function landSetMintTimestamp(uint _landId) external {
-    // TODO: allow just for Zombies contract.
+  function landSetMintTimestamp(uint _landId) external onlyZombieContract {
     lands[_landId].lastZombieClaim = block.timestamp;
   }
 

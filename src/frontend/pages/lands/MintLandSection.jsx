@@ -1,10 +1,10 @@
 import React from "react";
-import { addTransactionError, convertFromYocto, convertToYocto } from "../../web3/utils";
+import { addTransactionError, convertFromYocto } from "../../web3/utils";
 import { Row } from "../../assets/styles/common.style";
 import { Button } from "../../components/basic/Button";
 import { Card } from "../../components/card/Card";
 import { ethers } from 'ethers';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 export const MintLandSection = ({
   userLands,
