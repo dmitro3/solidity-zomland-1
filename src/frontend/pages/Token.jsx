@@ -99,10 +99,9 @@ export const Token = () => {
 
   const handleDepositApprove = async () => {
     let depositAmount = convertToYocto(depositInput.toString());
-    if (
-      BigNumber.from(currentUser.tokenBalance) <
-      BigNumber.from(depositAmount)
-    ) {
+    console.log('currentUser.tokenBalance', currentUser.tokenBalance);
+    console.log('depositAmount', depositAmount);
+    if (BigNumber.from(currentUser.tokenBalance.toString()).lt(BigNumber.from(depositAmount))) {
       depositAmount = currentUser.tokenBalance;
     }
     if (depositAmount <= 1) {
@@ -111,25 +110,6 @@ export const Token = () => {
     }
 
     handleDeposit(depositAmount);
-    // let allowedAmount = await window.contracts.token.allowance(window.contracts.token.address, currentUser.accountId);
-    // if (parseInt(allowedAmount) < depositAmount) {
-    //   await window.contracts.token.approve(currentUser.accountId, depositAmount).then(transaction => {
-    //     transaction.message = "Approve ZML for staking";
-    //     appendTransactionList(transaction);
-    //     transaction.wait().then(async receipt => {
-    //       if (receipt.status === 1) {
-    //         console.log('Approved');
-    //         handleDeposit(depositAmount);
-    //       } else {
-    //         appendTransactionError("Approve transaction Failed");
-    //       }
-    //     });
-    //   }).catch(err => {
-    //     appendTransactionError(err.message);
-    //   });
-    // } else {
-    //   handleDeposit(depositAmount);
-    // }
   };
 
   const handleDeposit = async (depositAmount) => {

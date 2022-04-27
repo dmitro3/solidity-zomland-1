@@ -178,41 +178,46 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
   }
 
-  function userZombies(uint _startIndex, uint8 _count, uint _collectionFilter, string memory _rarityFilter) public view returns (Zombie[] memory) {
+  function userZombies(uint _startIndex, uint8 _count, uint _collectionFilter, string memory _rarityFilter) public view returns (uint, Zombie[] memory) {
     uint[] memory _innerList = new uint[](_count);
+    uint _endIndex = _startIndex + _count;
     uint _innerListLength;
+    uint _innerIndex = 0;
 
     if (_collectionFilter != 0) {
       uint[] memory collectionList = userCollectionZombie[msg.sender][_collectionFilter - 1];
       _innerListLength = collectionList.length;
-      for (uint _i = _startIndex; _i < _count; ++_i) {
+      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
         if (_innerListLength > _i) {
-          _innerList[_i] = collectionList[_i];
+          _innerList[_innerIndex] = collectionList[_i];
+          _innerIndex += 1;
         }
       }
     } else if (bytes(_rarityFilter).length != 0) {
       CardRarity _rarity = rarityFromString(_rarityFilter);
       uint[] memory rarityList = userRarityZombie[msg.sender][_rarity];
       _innerListLength = rarityList.length;
-      for (uint _i = _startIndex; _i < _count; ++_i) {
+      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
         if (_innerListLength > _i) {
-          _innerList[_i] = rarityList[_i];
+          _innerList[_innerIndex] = rarityList[_i];
+          _innerIndex += 1;
         }
       }
     } else {
       _innerListLength = super.balanceOf(msg.sender);
-      for (uint _i = _startIndex; _i < _count; ++_i) {
+      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
         if (_innerListLength > _i) {
-          _innerList[_i] = super.tokenOfOwnerByIndex(msg.sender, _i);
+          _innerList[_innerIndex] = super.tokenOfOwnerByIndex(msg.sender, _i);
+          _innerIndex += 1;
         }
       }
     }
 
     Zombie[] memory _resultZombies = new Zombie[](_innerListLength);
-    for (uint _i = 0; _i < _innerListLength; ++_i) {
+    for (uint _i = 0; _i < _innerIndex; ++_i) {
       _resultZombies[_i] = zombies[_innerList[_i]];
     }
-    return _resultZombies;
+    return (_innerListLength, _resultZombies);
   }
 
   function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){

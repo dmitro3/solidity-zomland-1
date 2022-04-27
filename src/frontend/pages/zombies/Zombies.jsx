@@ -66,14 +66,13 @@ export const Zombies = ({
       ? searchParams.get("rarity")
       : filterRarity;
 
-    setCurrentPage(page);
+    setCurrentPage(parseInt(page));
     setFilterRarity(rarity);
     setFilterCollection(collection);
 
     fetchCollections().then(() => {
       fetchUserLands();
-      fetchCountUserZombies();
-      fetchUserZombies(currentPage, collection, rarity);
+      fetchUserZombies(page, collection, rarity);
     });
   }, [currentUser]);
 
@@ -81,8 +80,11 @@ export const Zombies = ({
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
     const collectionFilter = collection !== "" ? parseInt(collection) + 1 : 0;
 
-    let zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
-    let zombies = zombiesObj.filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
+    setIsReady(false);
+    const zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
+    let zombies = zombiesObj[1].filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
+    setUserZombiesCount(parseInt(zombiesObj[0]));
+
     setUserZombies(zombies);
     setIsReady(true);
   }
@@ -91,11 +93,6 @@ export const Zombies = ({
     let collectionsObj = await window.contracts.collection.getAllCollections();
     let collections = collectionsObj.map((collection, index) => transformCollections(collection, index));
     setAllCollections(collections);
-  }
-
-  const fetchCountUserZombies = async () => {
-    const userTotalCount = await window.contracts.zombie.balanceOf(currentUser.accountId);
-    setUserZombiesCount(parseInt(userTotalCount));
   }
 
   const appendToSellList = (zombie) => {
@@ -168,7 +165,6 @@ export const Zombies = ({
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           fetchUserLands();
-          fetchCountUserZombies();
           setCurrentPage(1);
           fetchUserZombies(1, filterCollection, filterRarity);
         } else {
