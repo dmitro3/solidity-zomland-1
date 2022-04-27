@@ -8,7 +8,7 @@ Play-To-Earn NFT Collectible Game.
 yarn local
 ```
 
-### 2. Deploy:
+### 2. Deploy to local:
 
 ```
 yarn deploy
@@ -32,7 +32,8 @@ npx hardhat test
 yarn console
 ```
 
-### Test your contracts in console:
+Test your contracts in console:
+=================
 
 **Init contracts**
 
@@ -66,3 +67,26 @@ await TokenContract.balanceOf("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
 await TokenContract.withdraw("1000000000000000000")
 await TokenContract.earned("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
 ```
+
+Deploy to testnet:
+===============
+
+#### 1. Set Account PRIVATE KEY
+
+```
+export METER_TESTNET_PRIVATE_KEY=
+```
+
+#### 2. Deploy to testnet
+
+```
+yarn deploy:dev
+```
+
+#### 3. Build frontend
+
+```
+yarn build:dev
+```
+
+#### 4. Upload frontend files 
