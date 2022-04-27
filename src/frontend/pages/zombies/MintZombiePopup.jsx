@@ -77,7 +77,10 @@ export default function MintZombiePopup({
                     size="sm"
                     secondary
                     disabled={mintInProgressList.indexOf(land.tokenId) !== -1}
-                    onClick={() => handleMint(land.tokenId)}
+                    onClick={() => {
+                      handleMint(land.tokenId);
+                      mintInProgressList.push(land.tokenId);
+                    }}
                   />
                 </div>
               ) : (

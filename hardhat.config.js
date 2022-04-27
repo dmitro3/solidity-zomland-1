@@ -32,10 +32,10 @@ module.exports = {
   },
   networks: {
     hardhat: {
-      mining: {
-        auto: false,
-        interval: 1000
-      }
+      // mining: {
+      //   auto: false,
+      //   interval: 1000
+      // }
     },
     // meter_testnet: {
     //   url: "https://rpctest.meter.io",

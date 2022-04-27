@@ -14,7 +14,7 @@ export const rarityMap = {
   3: "Epic",
 };
 
-export const getMedia = (media) => `https://zomland.fra1.digitaloceanspaces.com/${ media }.png`;
+export const getMedia = (media) => `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
 
 export const convertFromYocto = (amount, digits = 1) => {
   if (!amount) {
@@ -28,7 +28,7 @@ export const convertToYocto = (amount) => {
 };
 
 export const formatId = (nft) => {
-  return `${ nft.nftType } #${ nft.tokenId }`;
+  return `${nft.nftType} #${nft.tokenId}`;
 };
 
 export const statusColorTextMap = (status) => {
@@ -98,12 +98,29 @@ export const transformZombie = (zombie) => {
     media: zombie.media,
     nftType: zombie.nftType,
     ownerId: zombie.ownerId,
-    health: zombie.health,
-    attack: zombie.attack,
-    brain: zombie.brain,
-    speed: zombie.speed,
-    mintDate: zombie.mintDate,
-    collection: zombie.collection,
+    health: parseInt(zombie.health),
+    attack: parseInt(zombie.attack),
+    brain: parseInt(zombie.brain),
+    speed: parseInt(zombie.speed),
+    mintDate: parseInt(zombie.mintDate),
+    collection: parseInt(zombie.collection),
+  };
+};
+
+export const transformMonster = (monster) => {
+  return {
+    tokenId: parseInt(monster.tokenId).toString(),
+    cardRarity: rarityMap[monster.cardRarity],
+    killTokens: parseInt(monster.killTokens),
+    salePrice: parseInt(monster.salePrice) || null,
+    media: monster.media,
+    nftType: monster.nftType,
+    ownerId: monster.ownerId,
+    health: parseInt(monster.health),
+    attack: parseInt(monster.attack),
+    brain: parseInt(monster.brain),
+    mintDate: parseInt(monster.mintDate),
+    collection: parseInt(monster.collection),
   };
 };
 

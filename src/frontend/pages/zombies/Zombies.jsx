@@ -79,8 +79,8 @@ export const Zombies = ({
   async function fetchUserZombies(currentPage, collection, rarity) {
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
     const collectionFilter = collection !== "" ? parseInt(collection) + 1 : 0;
-
     setIsReady(false);
+
     const zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
     let zombies = zombiesObj[1].filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
     setUserZombiesCount(parseInt(zombiesObj[0]));
@@ -158,7 +158,7 @@ export const Zombies = ({
 
     const gas = await window.contracts.zombie.estimateGas.safeMint(landId);
     await window.contracts.zombie.safeMint(landId, {
-      gasLimit: gas * 2
+      gasLimit: parseInt(gas * 1.5)
     }).then(transaction => {
       addPendingTransaction(dispatch, transaction, "Minting Zombies");
 
@@ -211,13 +211,13 @@ export const Zombies = ({
 
   const rarityOptions = () => {
     const result = [];
-    const options = ["All", "Common", "Uncommon", "Rare", "Epic"];
+    const options = ["All Rarities", "Common", "Uncommon", "Rare", "Epic"];
 
     options.map(option => {
       result.push({
         title: option,
         onClick: () => {
-          let optionValue = option === "All" ? "" : option;
+          let optionValue = option === "All Rarities" ? "" : option;
           setFilterRarity(optionValue);
           handleRarityChange(optionValue);
         },
@@ -241,7 +241,7 @@ export const Zombies = ({
 
     return [
       {
-        title: "All",
+        title: "All Collections",
         onClick: () => {
           setFilterCollection("");
           handleCollectionChange("");
@@ -324,14 +324,14 @@ export const Zombies = ({
                   <div className="lg:basis-4/12 basis-full z-10 sm:text-right ml-2 mt-3 sm:mt-0">
                     <div className="inline-block mr-3">
                       <Dropdown
-                        title="Rarity"
+                        title="All Rarities"
                         selected={filterRarity}
                         options={rarityOptions()}
                       />
                     </div>
                     <div className="inline-block">
                       <Dropdown
-                        title="Collection"
+                        title="All Collections"
                         selected={
                           filterCollection
                             ? allCollections[filterCollection]?.title

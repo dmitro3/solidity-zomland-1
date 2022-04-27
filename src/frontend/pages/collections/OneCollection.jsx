@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CollectionContent } from "../../web3/content";
 import {
   Container,
@@ -15,6 +15,7 @@ import { Popup } from "../../components/Popup";
 import { Button } from "../../components/basic/Button";
 import { PlusIcon } from "@heroicons/react/solid";
 import {
+  addPendingTransaction, addTransactionError,
   getMedia,
   transformCollections,
   transformZombie,
@@ -22,6 +23,7 @@ import {
 import { MonsterTopParams } from "../../assets/styles/collection";
 import { Card } from "../../components/card/Card";
 import { Pagination } from "../../components/Pagination";
+import { useDispatch } from "react-redux";
 
 const MonsterParam = ({ title, pct }) => (
   <div className="whitespace-nowrap text-center">
@@ -32,10 +34,13 @@ const MonsterParam = ({ title, pct }) => (
   </div>
 );
 
-const POPUP_PAGE_LIMIT = 40;
+const POPUP_PAGE_LIMIT = 20;
 const COLLECTION_ZOMBIES_COUNT = 10;
 
 export const OneCollection = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { collection_id } = useParams();
   const [isReady, setIsReady] = React.useState(false);
   const [collection, setCollection] = React.useState({});
@@ -43,8 +48,8 @@ export const OneCollection = () => {
   const [userCollectionZombies, setUserCollectionZombies] = React.useState([]);
   const [zombieCards, setZombieCards] = React.useState([]);
   const [zombiesPopupVisible, setZombiesPopupVisible] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMintLoader, setIsMintLoader] = useState(false);
 
   const loadCollection = async () => {
     async function fetchCollections() {
@@ -63,10 +68,7 @@ export const OneCollection = () => {
       parseInt(collection_id) + 1,
       ""
     );
-    let result = zombiesObj
-      .filter((zombie) => zombie.nftType)
-      .map((zombie) => transformZombie(zombie));
-    console.log(result);
+    let result = zombiesObj[1].filter((zombie) => zombie.nftType).map((zombie) => transformZombie(zombie));
     setUserCollectionZombies(result);
   };
 
@@ -124,27 +126,37 @@ export const OneCollection = () => {
     return (countZombieType * oneZombiePct).toFixed(1);
   };
 
-  // const mintMonster = async () => {
-  //   if (countZombieSelected() === COLLECTION_ZOMBIES_COUNT) {
-  //     const zombie_list = zombieCards
-  //       .filter((zombie) => zombie)
-  //       .map((zombie) => zombie.tokenId);
-  //     const GAS = convertToTera("200");
-  //     const DEPOSIT = convertToYocto("0.01");
-  //     await contract.mint_collection(
-  //       {
-  //         collection_id: Number(collection_id),
-  //         zombie_list: zombie_list,
-  //       },
-  //       GAS,
-  //       DEPOSIT
-  //     );
-  //   } else {
-  //     alert(
-  //       `You need to add ${COLLECTION_ZOMBIES_COUNT} zombies to mint the Monster`
-  //     );
-  //   }
-  // };
+  const mintMonster = async () => {
+    if (countZombieSelected() === COLLECTION_ZOMBIES_COUNT) {
+      setIsMintLoader(true);
+
+      const zombieList = zombieCards.filter((zombie) => zombie).map(
+        (zombie) => parseInt(zombie.tokenId)
+      );
+      const gas = await window.contracts.monster.estimateGas.safeMint(zombieList);
+
+      await window.contracts.monster.safeMint(zombieList, {
+        gasLimit: parseInt(gas * 1.5)
+      }).then(transaction => {
+        addPendingTransaction(dispatch, transaction, "Minting Monster");
+
+        transaction.wait().then(receipt => {
+          if (receipt.status === 1) {
+            setIsMintLoader(false);
+            navigate("/monsters");
+          } else {
+            alert('Minting error');
+          }
+        });
+      }).catch(err => {
+        addTransactionError(dispatch, err.message);
+        setIsMintLoader(false);
+      });
+    } else {
+      alert(`You need to add ${COLLECTION_ZOMBIES_COUNT} zombies to mint the Monster`);
+      setIsMintLoader(false);
+    }
+  };
 
   return (
     <>
@@ -160,17 +172,6 @@ export const OneCollection = () => {
 
             {isReady ? (
               <>
-                {searchParams.get("transactionHashes") && (
-                  <Link to="/monsters">
-                    <div className="block font-semibold mt-10 w-1/2 mx-auto py-5 rounded-xl mint-success transition cursor-pointer">
-                      <p className="mb-1">You monster successfully minted!</p>
-                      <span className="text-orange-500">
-                        Check it on Monsters Page
-                      </span>
-                    </div>
-                  </Link>
-                )}
-
                 <div className="sm:flex flex-row text-left bg-[#140E38]/95 shadow-md sm:p-12 p-6 rounded-2xl mt-10 mb-12">
                   <div className="xl:basis-3/4 md:basis-9/12 2xl:ml-10">
                     <h2 className="text-2xl font-semibold">
@@ -254,15 +255,21 @@ export const OneCollection = () => {
                         ""
                       )}
 
-                      <div className="text-center mt-4">
-                        <Button
-                          size="lg"
-                          noIcon
-                          title="Mint Monster"
-                          disabled
-                          // onClick={mintMonster}
-                        />
-                      </div>
+                      {!isMintLoader ? (
+                        <div className="text-center mt-4">
+                          <Button
+                            size="lg"
+                            noIcon
+                            title="Mint Monster"
+                            disabled={countZombieSelected() < 10}
+                            onClick={mintMonster}
+                          />
+                        </div>
+                      ) : (
+                        <div className="mt-4">
+                          <Loader/>
+                        </div>
+                      )}
 
                       {countZombieSelected() ? (
                         <div className="mt-5">

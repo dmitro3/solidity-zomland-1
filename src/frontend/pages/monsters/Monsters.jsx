@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { MonsterContent } from "../../web3/content";
 import {
+  addPendingTransaction,
   convertFromYocto,
   formatId,
   rmFromMarket,
+  transformMonster,
 } from "../../web3/utils";
 import {
   Container,
@@ -21,90 +23,85 @@ import Dropdown from "../../components/basic/Dropdown";
 import { Pagination } from "../../components/Pagination";
 import { Button } from "../../components/basic/Button";
 import { Popup } from "../../components/Popup";
+import { useDispatch, useSelector } from 'react-redux';
 
 const PAGE_LIMIT = "10";
 
 export const Monsters = ({ sellList, setSellList }) => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.user.user);
+
   const [isReady, setIsReady] = useState(false);
-  const [userMonsters, setUserMonsters] = useState([0, []]); // [<count>, [<arrayOfMonsters>]]
+  const [userMonsters, setUserMonsters] = useState([]);
+  const [userMonstersCount, setUserMonstersCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filterRarity, setFilterRarity] = useState(null);
+  const [filterRarity, setFilterRarity] = useState("");
   const [killItem, setKillItem] = useState(null);
   const [killPopupVisible, setKillPopupVisible] = useState(false);
 
-  async function fetchUserMonsters(currentPage) {
-    // let requestParams = {
-    //   account_id: currentUser.accountId,
-    //   page_num: currentPage.toString(),
-    //   page_limit: PAGE_LIMIT,
-    // };
-    // if (filterRarity) {
-    //   requestParams["filter_rarity"] = filterRarity;
-    // }
-    // let monsters = await contract.user_monsters(requestParams);
-
-    // Convert price from Yocto NEAR
-    // monsters[1] = monsters[1].map((mn) => {
-    //   if (mn.salePrice) {
-    //     mn.salePrice = convertFromYocto(mn.salePrice);
-    //   }
-    //   return mn;
-    // });
-
-    // setUserMonsters(monsters);
-    setIsReady(true);
-  }
-
   useEffect(() => {
-    fetchUserMonsters(currentPage);
-  }, []);
+    fetchUserMonsters(currentPage, filterRarity);
+  }, [currentUser]);
 
   useEffect(() => {
     setCurrentPage(1);
-    fetchUserMonsters(1);
+    fetchUserMonsters(1, filterRarity);
   }, [filterRarity]);
 
+  async function fetchUserMonsters(currentPage, rarity) {
+    const startIndex = (currentPage - 1) * PAGE_LIMIT;
+    setIsReady(false);
+
+    const monstersObj = await window.contracts.monster.userMonsters(startIndex, PAGE_LIMIT, rarity || "");
+    let monsters = monstersObj[1].filter(monster => monster.nftType).map(monster => transformMonster(monster));
+    setUserMonstersCount(parseInt(monstersObj[0]));
+
+    setUserMonsters(monsters);
+    setIsReady(true);
+  }
+
   const rarityOptions = () => {
-    return [
-      {
-        title: "All",
-        onClick: () => setFilterRarity(null),
-      },
-      {
-        title: "Common",
-        onClick: () => setFilterRarity("Common"),
-      },
-      {
-        title: "Uncommon",
-        onClick: () => setFilterRarity("Uncommon"),
-      },
-      {
-        title: "Rare",
-        onClick: () => setFilterRarity("Rare"),
-      },
-      {
-        title: "Epic",
-        onClick: () => setFilterRarity("Epic"),
-      },
-    ];
+    const result = [];
+    const options = ["All Rarities", "Common", "Uncommon", "Rare", "Epic"];
+    options.map(option => {
+      result.push({
+        title: option,
+        onClick: () => {
+          let optionValue = option === "All Rarities" ? "" : option;
+          setFilterRarity(optionValue);
+          handleRarityChange(optionValue);
+        },
+      })
+    });
+
+    return result;
   };
+
+  const handleRarityChange = (filterRarity) => {
+    setCurrentPage(1);
+    fetchUserMonsters(1, filterRarity);
+  }
 
   const onPageChanged = (page) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setCurrentPage(page);
-    fetchUserMonsters(page);
+    fetchUserMonsters(page, filterRarity);
   };
 
   const handleTransfer = async (monster, transferAddress) => {
-    // let gas = convertToTera("60");
-    // await contract.transfer_monster(
-    //   {
-    //     tokenId: monster.tokenId,
-    //     recipient_id: transferAddress,
-    //   },
-    //   gas,
-    //   1
-    // );
+    await window.contracts.monster.transferFrom(
+      currentUser.accountId,
+      transferAddress,
+      monster.tokenId
+    ).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Transfer Monster NFT");
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          setIsReady(false);
+          fetchUserMonsters(currentPage, filterRarity);
+        }
+      });
+    });
   };
 
   const showKillPopup = (item) => {
@@ -113,14 +110,7 @@ export const Monsters = ({ sellList, setSellList }) => {
   };
 
   const handleKill = async () => {
-    // let gas = convertToTera("90");
-    // await contract.kill_monster(
-    //   {
-    //     monster_id: killItem.tokenId,
-    //   },
-    //   gas,
-    //   1
-    // );
+
   };
 
   const appendToSellList = (monster) => {
@@ -137,7 +127,7 @@ export const Monsters = ({ sellList, setSellList }) => {
 
   return (
     <InnerPageWrapper>
-      <Header />
+      <Header/>
 
       <Wrapper>
         <Container className="text-white text-center mt-6">
@@ -152,18 +142,10 @@ export const Monsters = ({ sellList, setSellList }) => {
                 <div className="basis-1/2 text-lg text-left pt-2 pl-1">
                   Available:
                   <span className="ml-2 font-semibold text-orange-500">
-                    {userMonsters[0]} NFTs
+                    {userMonstersCount} NFTs
                   </span>
                 </div>
-                {/*<Button*/}
-                {/*  title={`Mint ${*/}
-                {/*    userClaimCount > 0 ? userClaimCount : ""*/}
-                {/*  } Monster${userClaimCount !== 1 ? "s" : ""}`}*/}
-                {/*  size="lg"*/}
-                {/*  noIcon*/}
-                {/*  disabled={userClaimCount === 0}*/}
-                {/*  onClick={showMintMonstersBlock}*/}
-                {/*/>*/}
+
                 <div className="basis-1/2 z-10 text-right">
                   <div className="inline-block mr-1">
                     <Dropdown
@@ -176,9 +158,9 @@ export const Monsters = ({ sellList, setSellList }) => {
               </div>
 
               <ListWrapper>
-                {userMonsters[0] > 0 ? (
+                {userMonsters.length > 0 ? (
                   <List>
-                    {userMonsters[1]?.map((monster, index) => (
+                    {userMonsters.map((monster, index) => (
                       <Card
                         nft={monster}
                         key={index}
@@ -186,7 +168,7 @@ export const Monsters = ({ sellList, setSellList }) => {
                         setSellItems={() => appendToSellList(monster)}
                         rmFromMarket={async () => {
                           setIsReady(false);
-                          await rmFromMarket(monsterContract, monster);
+                          // await rmFromMarket(monsterContract, monster);
                           setIsReady(true);
                         }}
                         handleTransfer={(transferAddress) =>
@@ -203,7 +185,7 @@ export const Monsters = ({ sellList, setSellList }) => {
 
               <div className="mb-8">
                 <Pagination
-                  total={parseInt(userMonsters[0])}
+                  total={userMonstersCount}
                   limit={parseInt(PAGE_LIMIT)}
                   selectedPage={currentPage}
                   onPageChanged={onPageChanged}
@@ -211,12 +193,12 @@ export const Monsters = ({ sellList, setSellList }) => {
               </div>
             </>
           ) : (
-            <Loader />
+            <Loader/>
           )}
         </Container>
 
         <Popup
-          title="Kill Zombie"
+          title="Kill Monster"
           popupVisible={killPopupVisible}
           setPopupVisible={setKillPopupVisible}
         >
@@ -243,14 +225,14 @@ export const Monsters = ({ sellList, setSellList }) => {
                 />
               </div>
               <div className="inline-block">
-                <Button title="Kill Monster" onClick={handleKill} />
+                <Button title="Kill Monster" onClick={handleKill}/>
               </div>
             </div>
           )}
         </Popup>
       </Wrapper>
 
-      <Footer />
+      <Footer/>
     </InnerPageWrapper>
   );
 };

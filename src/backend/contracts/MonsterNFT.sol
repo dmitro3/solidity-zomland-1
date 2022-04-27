@@ -11,6 +11,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../interfaces/interface.sol";
+//import "../library/utils.sol";
 
   error MonsterMintCountError(string message, uint required);
 
@@ -19,6 +20,7 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   mapping(uint => Monster) monsters;
+  mapping(address => mapping(CardRarity => uint[])) userRarityMonster;
 
   enum CardRarity {
     Common,
@@ -80,6 +82,7 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     _setTokenURI(_tokenId, _uri);
 
     monsters[_tokenId] = Monster(_tokenId, _rarity, _collectionId, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, "Monster", msg.sender);
+    userRarityMonster[msg.sender][_rarity].push(_tokenId);
   }
 
   function rarityFromString(string memory _rarity) private pure returns (CardRarity) {
@@ -101,6 +104,39 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
 
   function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(_interfaceId);
+  }
+
+  function userMonsters(uint _startIndex, uint8 _count, string memory _rarityFilter) public view returns (uint, Monster[] memory) {
+    uint[] memory _innerList = new uint[](_count);
+    uint _endIndex = _startIndex + _count;
+    uint _innerListLength;
+    uint _innerIndex = 0;
+
+    if (bytes(_rarityFilter).length != 0) {
+      CardRarity _rarity = rarityFromString(_rarityFilter);
+      uint[] memory rarityList = userRarityMonster[msg.sender][_rarity];
+      _innerListLength = rarityList.length;
+      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
+        if (_innerListLength > _i) {
+          _innerList[_innerIndex] = rarityList[_i];
+          _innerIndex += 1;
+        }
+      }
+    } else {
+      _innerListLength = super.balanceOf(msg.sender);
+      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
+        if (_innerListLength > _i) {
+          _innerList[_innerIndex] = super.tokenOfOwnerByIndex(msg.sender, _i);
+          _innerIndex += 1;
+        }
+      }
+    }
+
+    Monster[] memory _resultMonsters = new Monster[](_innerListLength);
+    for (uint _i = 0; _i < _innerIndex; ++_i) {
+      _resultMonsters[_i] = monsters[_innerList[_i]];
+    }
+    return (_innerListLength, _resultMonsters);
   }
 
 }
