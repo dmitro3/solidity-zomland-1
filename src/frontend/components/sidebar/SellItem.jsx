@@ -2,7 +2,7 @@ import React from "react";
 import { XIcon } from "@heroicons/react/outline";
 import { getMedia, formatId, statusColorBorderMap } from "../../web3/utils";
 
-export const SellItem = ({ item_type, nft, cancelSell, setItemPrice, id }) => {
+export const SellItem = ({item_type, nft, cancelSell, setItemPrice, id}) => {
   const [priceInput, setPriceInput] = React.useState();
 
   return (
@@ -16,7 +16,7 @@ export const SellItem = ({ item_type, nft, cancelSell, setItemPrice, id }) => {
       />
       <div>
         <div className="font-semibold pt-2 mb-1">
-          <span className="text-indigo-100 mr-1">{item_type}</span> #
+          <span className="text-indigo-100 mr-1">{item_type}</span>
           {formatId(nft)}
         </div>
         <div>

@@ -99,7 +99,7 @@ export const Zombies = ({
     ) {
       sellList["zombies"].push(zombie);
       sellList["lands"] = sellList["monsters"] = [];
-      setSellList({ ...sellList });
+      setSellList({...sellList});
     }
   };
 
@@ -250,7 +250,7 @@ export const Zombies = ({
   };
 
   const onPageChanged = (page) => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({top: 0, behavior: "smooth"});
 
     setCurrentPage(page);
     fetchUserZombies(page, filterCollection, filterRarity);
