@@ -44,6 +44,22 @@ module.exports = {
     // meter_mainnet: {
     //   url: "https://rpc.meter.io",
     //   accounts: [`${process.env.METER_MAINNET_PRIVATE_KEY}`]
+    // },
+    // bsc_testnet: {
+    //   url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+    //   chainId: 97,
+    //   gasPrice: 20000000000,
+    //   accounts: {mnemonic: ${process.env.BSC_TESTNET_PRIVATE_KEY}}
+    // },
+    // bsc_mainnet: {
+    //   url: "https://bsc-dataseed.binance.org/",
+    //   chainId: 56,
+    //   gasPrice: 20000000000,
+    //   accounts: {mnemonic: ${process.env.BSC_MAINNET_PRIVATE_KEY}}
+    // }
+    // kardiachain_mainnet: {
+    //   url: "https://rpc.kardiachain.io",
+    //   accounts: [`${process.env.KARDIA_MAINNET_PRIVATE_KEY}`]
     // }
   },
 };
