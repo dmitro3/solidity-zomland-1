@@ -45,7 +45,7 @@ export const SocialLinks = ({ size, gmail }) => {
         <img src={telegramIcon} alt="telegram" className={sizeMap[size]} />
       </a>
       {gmail && (
-        <a className={hoverClass} href="mailto:someteam.eu@gmail.com">
+        <a className={hoverClass} href="mailto:atomic.lab.web@gmail.com">
           <img alt="gmail" src={gmailIcon} className={sizeMap[size]} />
         </a>
       )}

@@ -400,7 +400,7 @@ export const PrivacyContent = {
   description: `
   <div class="flex flex-col gap-4 px-4">
   <p class="mt-1">
-    SomeTeam.eu, (hereafter “the Company”, “we”, “us” or “our”) is committed to protecting the privacy and security of the personal information that is provided 
+    AtomicLab, (hereafter “the Company”, “we”, “us” or “our”) is committed to protecting the privacy and security of the personal information that is provided 
     to us or collected by us during the course of our business. We store and process personal information in accordance with the EU General Data Protection Regulation.
   </p>
   <p class="mt-1">
@@ -418,7 +418,7 @@ export const PrivacyContent = {
     1. Who is responsible for your personal information?
   </p>
   <p>
-    SomeTeam is responsible for your personal information as provided to us or collected by us during the course of our business.
+    AtomicLab is responsible for your personal information as provided to us or collected by us during the course of our business.
   </p>
   
   <p class="mt-5 text-xl font-semibold">
@@ -579,7 +579,7 @@ export const PrivacyContent = {
     provide reasons for our decision as required by the law.
   </p>
   <p class="mt-1">
-    If you would like to exercise these rights, please contact us in writing by email to: <a href="mailto:someteam.eu@gmail.com">someteam.eu@gmail.com</a>.
+    If you would like to exercise these rights, please contact us in writing by email to: <a href="mailto:atomic.lab.web@gmail.com">atomic.lab.web@gmail.com</a>.
   </p>
   <p class="mt-1">
     You will not, in general, have to pay a fee to exercise any of your individual rights. However, we may charge a fee for access to your personal information 

@@ -21,12 +21,12 @@ export const Footer = () => (
                   © MADE BY{" "}
                 </small>
                 <a
-                  href="mailto:someteam.eu@gmail.com"
+                  href="https://atomic-lab.io/"
                   target="_blank"
                   className="font-semibold"
                   rel="noreferrer"
                 >
-                  <small>SomeTeam.eu</small>
+                  <small>atomic-lab.io</small>
                 </a>
               </div>
             </Col>
