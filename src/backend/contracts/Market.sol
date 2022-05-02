@@ -5,6 +5,8 @@ import "hardhat/console.sol";
 import "../interfaces/interface.sol";
 import "../abstract/utils.sol";
 
+  error MarketError(string message);
+
 contract MarketContract is Utils {
   address internal mainContract;
   mapping(uint => uint) lands; // id => price
@@ -16,7 +18,17 @@ contract MarketContract is Utils {
   }
 
   function publishOnMarket(uint[] calldata idList, uint[] calldata priceList, string calldata typeNFT) public {
-
+    for (uint i = 0; i < idList.length; i++) {
+      if (typeNFT == "land") {
+        lands[idList[i]] = priceList[i];
+      } else if (typeNFT == "zombie") {
+        zombies[idList[i]] = priceList[i];
+      } else if (typeNFT == "monster") {
+        market[idList[i]] = priceList[i];
+      } else {
+        revert MarketError({message : "Wrong typeNFT param"});
+      }
+    }
   }
 
   function removeFromMarket(uint[] calldata idList, uint[] calldata priceList, string calldata typeNFT) public {

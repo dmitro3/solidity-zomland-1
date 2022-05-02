@@ -56,10 +56,14 @@ module.exports = {
     //   chainId: 56,
     //   gasPrice: 20000000000,
     //   accounts: {mnemonic: ${process.env.BSC_MAINNET_PRIVATE_KEY}}
-    // }
+    // },
+    // kardiachain_testnet: {
+    //   url: "https://dev.kardiachain.io",
+    //   accounts: [`${process.env.KARDIA_TESTNET_PRIVATE_KEY}`]
+    // },
     // kardiachain_mainnet: {
     //   url: "https://rpc.kardiachain.io",
     //   accounts: [`${process.env.KARDIA_MAINNET_PRIVATE_KEY}`]
-    // }
+    // },
   },
 };
