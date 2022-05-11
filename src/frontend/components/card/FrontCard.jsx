@@ -50,6 +50,36 @@ export const FrontCard = ({
       </Row>
     );
 
+    const BuySellButtons = () => (
+      <Row>
+        {handleBuy ? (
+          <Button
+            title={
+              <>
+                <span className="mr-1">Buy for</span>
+                {nft.salePrice} {process.env.TOKEN_SYMBOL}
+              </>
+            }
+            className="mt-2"
+            size="xs"
+            noIcon
+            onClick={handleBuy}
+          />
+        ) : (
+          nft.salePrice && (
+            <Button
+              title="Remove from Market"
+              size="xs"
+              className="mt-2"
+              noIcon
+              secondary
+              onClick={rmFromMarket}
+            />
+          )
+        )}
+      </Row>
+    );
+
     return (
       <CardFront type={type}>
         <img
@@ -75,8 +105,8 @@ export const FrontCard = ({
             {nft.tokenId && !noMenu && !nft.salePrice && (
               <CardDropdown
                 setTransferPopupVisible={setTransferPopupVisible}
-                setSellItems={setSellItems}
                 setKillItem={setKillItem}
+                setSellItems={setSellItems}
                 rmFromMarket={rmFromMarket}
               />
             )}
@@ -86,8 +116,13 @@ export const FrontCard = ({
         {nft.tokenId ? (
           <>
             {size === "sm" || nft.nftType === "Land" ? (
-              <InfoSmallWrapper size={size}>
-                <div className="font-semibold">{formatId(nft)}</div>
+              <InfoSmallWrapper size={size} withBtn={handleBuy || nft.salePrice}>
+                <Row className="items-center">
+                  <Col className="gap-1">
+                    <div className="mb-2">{formatId(nft)}</div>
+                    <BuySellButtons/>
+                  </Col>
+                </Row>
               </InfoSmallWrapper>
             ) : (
               <InfoWrapper withBtn={handleBuy || nft.salePrice}>
@@ -109,33 +144,7 @@ export const FrontCard = ({
                       title="Brain"
                       value={nft.brain}
                     />
-                    <Row>
-                      {handleBuy ? (
-                        <Button
-                          title={
-                            <>
-                              <span className="mr-1">Buy for</span>
-                              {nft.salePrice} {process.env.TOKEN_SYMBOL}
-                            </>
-                          }
-                          className="mt-2"
-                          size="xs"
-                          noIcon
-                          onClick={handleBuy}
-                        />
-                      ) : (
-                        nft.salePrice && (
-                          <Button
-                            title="Remove from Market"
-                            size="xs"
-                            className="mt-2"
-                            noIcon
-                            secondary
-                            onClick={rmFromMarket}
-                          />
-                        )
-                      )}
-                    </Row>
+                    <BuySellButtons/>
                   </Col>
                 </Row>
               </InfoWrapper>

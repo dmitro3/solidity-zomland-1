@@ -180,7 +180,7 @@ export const Token = () => {
   return (
     <>
       <InnerPageWrapper>
-        <Header currentUser={currentUser}/>
+        <Header/>
 
         <Wrapper>
           <Container className="text-white text-center mt-6">

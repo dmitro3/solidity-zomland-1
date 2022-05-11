@@ -123,7 +123,6 @@ export const Market = () => {
                           {isOwner(item.ownerId) ? (
                             <Card
                               nft={item}
-                              noMenu
                               rmFromMarket={async () => {
                                 setIsReady(false);
                                 // await rmFromMarket(contract, item);
@@ -133,8 +132,6 @@ export const Market = () => {
                           ) : (
                             <Card
                               nft={item}
-                              currentUser={currentUser}
-                              noMenu
                               handleBuy={() => handleBuy(item)}
                             />
                           )}

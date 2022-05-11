@@ -76,6 +76,8 @@ export const Sidebar = ({
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           dispatch(cleanupSaleList({ type: "zombies" }));
+          // Todo: Replace it to update component
+          document.location.reload();
         }
       });
     });
@@ -91,6 +93,8 @@ export const Sidebar = ({
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           dispatch(cleanupSaleList({ type: "lands" }));
+          // Todo: Replace it to update component
+          document.location.reload();
         }
       });
     });
@@ -106,6 +110,8 @@ export const Sidebar = ({
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
           dispatch(cleanupSaleList({ type: "monsters" }));
+          // Todo: Replace it to update component
+          document.location.reload();
         }
       });
     });

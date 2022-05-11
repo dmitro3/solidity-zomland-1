@@ -14,13 +14,16 @@ export const CardDropdown = ({
       title: "Transfer",
       fn: setTransferPopupVisible,
       icon: <ArrowRightIcon className="h-5 w-5 mr-2 font-semibold"/>,
-    },
-    {
+    }
+  ];
+
+  if (setSellItems) {
+    actions.push({
       title: "Sell on Market",
       fn: setSellItems,
       icon: <CurrencyDollarIcon className="h-5 w-5 mr-2 font-semibold"/>,
-    },
-  ];
+    });
+  }
 
   if (setKillItem) {
     actions.push({

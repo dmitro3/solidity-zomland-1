@@ -7,10 +7,12 @@ export const CardInner = styled.div.attrs(() => ({
 
 export const InfoSmallWrapper = styled.div.attrs(() => ({
   className:
-    `absolute flex drop-shadow-md items-center justify-center rounded-md w-full bottom-0 text-base`
+    `absolute flex drop-shadow-md justify-center rounded-md w-full bottom-0 font-semibold z-10`
 }))`
+bottom: ${(props) => (props.withBtn ? "-56px" : "-8px")};
 background: linear-gradient(180deg, rgba(12,6,53,0.30) 0%, rgba(12,6,53,1) 75%);
 padding: ${(props) => (props.size === "sm" ? "6px 0" : "10px 0")};
+transition: 0.3s;
 `;
 
 export const InfoWrapper = styled.div.attrs(() => ({
@@ -33,6 +35,10 @@ export const FlipCard = styled.div`
     height: 198px;
   }
 
+  &:hover ${InfoSmallWrapper} {
+    transition: 0.4s;
+    bottom: 0;
+  }
   &:hover ${InfoWrapper} {
     transition: 0.4s;
     bottom: 0;
