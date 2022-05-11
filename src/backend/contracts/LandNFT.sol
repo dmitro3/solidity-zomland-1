@@ -11,6 +11,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "../interfaces/interface.sol";
 
   error LandsLimitError(string message, uint limit);
+  error LandsCallError(string message);
   error LandsSmallLimitError(string message);
 
 contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
@@ -51,6 +52,12 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   modifier onlyZombieContract() {
     address zombieContract = IMain(mainContract).getContractZombieNFT();
     require(zombieContract == msg.sender, "You can't call this method");
+    _;
+  }
+
+  modifier onlyMarketContract() {
+    address _marketContract = IMain(mainContract).getContractMarket();
+    require(_marketContract == msg.sender, "You can't call this method");
     _;
   }
 
@@ -182,4 +189,22 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(_interfaceId);
   }
+
+  function setLandSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
+    lands[_tokenId].salePrice = _price;
+  }
+
+  function getMarketItems(uint _startIndex, uint8 _count) public view returns (uint, Land[] memory) {
+    Land[] memory _userLands = new Land[](_count);
+    address _marketContract = IMain(mainContract).getContractMarket();
+
+    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getFromMarket(_startIndex, _count, "land");
+    for (uint _i = 0; _i < _count; ++_i) {
+      if (_i < total) {
+        _userLands[_i] = lands[_saleIdList[_i]];
+      }
+    }
+    return (total, _userLands);
+  }
+
 }

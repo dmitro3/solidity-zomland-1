@@ -39,6 +39,12 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     address ownerId;
   }
 
+  modifier onlyMarketContract() {
+    address _marketContract = IMain(mainContract).getContractMarket();
+    require(_marketContract == msg.sender, "You can't call this method");
+    _;
+  }
+
   constructor(address _mainContract) ERC721("ZomLand", "ZMLZ") {
     mainContract = _mainContract;
   }
@@ -277,6 +283,23 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
 
     return _result;
+  }
+
+  function getMarketItems(uint _startIndex, uint8 _count) public view returns (uint, Zombie[] memory) {
+    Zombie[] memory _userZombies = new Zombie[](_count);
+    address _marketContract = IMain(mainContract).getContractMarket();
+
+    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getFromMarket(_startIndex, _count, "zombie");
+    for (uint _i = 0; _i < _count; ++_i) {
+      if (_i < total) {
+        _userZombies[_i] = zombies[_saleIdList[_i]];
+      }
+    }
+    return (total, _userZombies);
+  }
+
+  function setZombieSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
+    zombies[_tokenId].salePrice = _price;
   }
 
 }

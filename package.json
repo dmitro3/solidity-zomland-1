@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "deploy": "npx hardhat run src/backend/scripts/deploy.js --network localhost",
-    "deploy:dev": "npx hardhat run src/backend/scripts/deploy.js --network meter_testnet",
+    "deploy:dev:meter": "npx hardhat run src/backend/scripts/deploy.js --network meter_testnet",
+    "deploy:dev:oasis": "npx hardhat run src/backend/scripts/deploy.js --network emerald_testnet",
     "start": "NODE_ENV=local parcel src/index.html --open",
     "console": "npx hardhat console --network localhost",
     "local": "npx hardhat node",

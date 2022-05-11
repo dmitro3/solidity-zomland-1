@@ -1,32 +1,31 @@
 import React from "react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/outline";
-import { convertToYocto } from "../../web3/utils";
+import { addPendingTransaction, convertToYocto } from "../../web3/utils";
 import { Button } from "../basic/Button";
 import { SellItem } from "./SellItem";
+import { useDispatch, useSelector } from 'react-redux';
+import { changePrice, cleanupSaleList, removeFromSale } from '../../store/marketSlice';
 
 export const Sidebar = ({
-  currentUser,
-  contract,
-  sellList,
-  setSellList,
   isOpen,
   setIsOpen,
 }) => {
-  const cancelItemSell = (tokenId, nftType) => {
-    sellList[nftType] = sellList[nftType].filter(
-      (zombie) => zombie.tokenId !== tokenId
-    );
-    setSellList({...sellList});
+  const dispatch = useDispatch();
+  const sellList = useSelector(state => state.market.sale);
+
+  const cancelItemSell = (tokenId, type) => {
+    dispatch(removeFromSale({
+      type,
+      tokenId
+    }));
   };
 
-  const setItemPrice = (nft, price, nftType) => {
-    sellList[nftType] = sellList[nftType].map((item) => {
-      if (item.tokenId === nft.tokenId) {
-        item.salePrice = price;
-      }
-      return item;
-    });
-    setSellList({...sellList});
+  const setItemPrice = (nft, price, type) => {
+    dispatch(changePrice({
+      type,
+      price,
+      tokenId: nft.tokenId,
+    }))
   };
 
   const createSaleObject = (list) => {
@@ -68,37 +67,48 @@ export const Sidebar = ({
   };
 
   const sellZombieItems = async (sellObject) => {
-    // await contract.publish_zombies_on_market(
-    //     {
-    //       token_price_list: sellObject,
-    //       account_id: currentUser.accountId,
-    //     },
-    //     defaultGas,
-    //     1
-    // );
+    await window.contracts.market.publishOnMarket(
+      Object.keys(sellObject),
+      Object.values(sellObject),
+      "zombie"
+    ).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Sell Zombies");
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          dispatch(cleanupSaleList({ type: "zombies" }));
+        }
+      });
+    });
   };
 
   const sellLandItems = async (sellObject) => {
-    console.log(sellObject);
-    // await contract.publish_lands_on_market(
-    //     {
-    //       token_price_list: sellObject,
-    //       account_id: currentUser.accountId,
-    //     },
-    //     defaultGas,
-    //     1
-    // );
+    await window.contracts.market.publishOnMarket(
+      Object.keys(sellObject),
+      Object.values(sellObject),
+      "land"
+    ).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Sell Lands");
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          dispatch(cleanupSaleList({ type: "lands" }));
+        }
+      });
+    });
   };
 
   const sellMonsterItems = async (sellObject) => {
-    // await contract.publish_monsters_on_market(
-    //     {
-    //       token_price_list: sellObject,
-    //       account_id: currentUser.accountId,
-    //     },
-    //     defaultGas,
-    //     1
-    // );
+    await window.contracts.market.publishOnMarket(
+      Object.keys(sellObject),
+      Object.values(sellObject),
+      "monster"
+    ).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Sell Monsters");
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          dispatch(cleanupSaleList({ type: "monsters" }));
+        }
+      });
+    });
   };
 
   const sellBtnText = () => {
@@ -154,7 +164,7 @@ export const Sidebar = ({
             <section key={key}>
               {sellList[key].length > 0 && (
                 <div className="mb-10">
-                  <h3 className="uppercase text-xl text-center font-semibold mb-4">
+                  <h3 className="uppercase text-lg text-center font-semibold mb-4">
                     Sell {key}
                   </h3>
                   <div

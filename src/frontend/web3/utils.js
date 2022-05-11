@@ -77,11 +77,13 @@ export const rmFromMarket = async (contract, item) => {
 };
 
 export const transformLand = (land) => {
+
   return {
     tokenId: parseInt(land.tokenId).toString(),
     landType: landTypeMap[land.landType],
     lastZombieClaim: parseInt(land.lastZombieClaim),
-    salePrice: parseInt(land.salePrice) || null,
+    salePrice: parseInt(land.salePrice) ? convertFromYocto(land.salePrice, 2) : null,
+    price: parseInt(land.salePrice) || null,
     media: land.media,
     nftType: land.nftType,
     ownerId: land.ownerId,
@@ -94,7 +96,8 @@ export const transformZombie = (zombie) => {
     tokenId: parseInt(zombie.tokenId).toString(),
     cardRarity: rarityMap[zombie.cardRarity],
     killTokens: parseInt(zombie.killTokens),
-    salePrice: parseInt(zombie.salePrice) || null,
+    salePrice: parseInt(zombie.salePrice) ? convertFromYocto(zombie.salePrice, 2) : null,
+    price: parseInt(zombie.salePrice) || null,
     media: zombie.media,
     nftType: zombie.nftType,
     ownerId: zombie.ownerId,
@@ -112,7 +115,8 @@ export const transformMonster = (monster) => {
     tokenId: parseInt(monster.tokenId).toString(),
     cardRarity: rarityMap[monster.cardRarity],
     killTokens: parseInt(monster.killTokens),
-    salePrice: parseInt(monster.salePrice) || null,
+    salePrice: parseInt(monster.salePrice) ? convertFromYocto(monster.salePrice, 2) : null,
+    price: parseInt(monster.salePrice) || null,
     media: monster.media,
     nftType: monster.nftType,
     ownerId: monster.ownerId,

@@ -24,20 +24,15 @@ import { addTransactionError } from './web3/utils';
 
 export default function App() {
   const dispatch = useDispatch();
+  const sellList = useSelector(state => state.market.sale);
 
   const [isReady, setIsReady] = React.useState(false);
-  const [sellList, setSellList] = React.useState({
-    lands: [],
-    zombies: [],
-    monsters: [],
-  });
-
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
 
   window.web3Login = () => {
     web3Handler()
       .then(
-        async ({account}) => {
+        async ({ account }) => {
           await updateUserAccount(dispatch, account);
 
           window.ethereum.on("chainChanged", (chainId) => {
@@ -97,20 +92,14 @@ export default function App() {
               exact
               path="/lands"
               element={
-                <Lands
-                  sellList={sellList}
-                  setSellList={setSellList}
-                />
+                <Lands/>
               }
             />
             <Route
               exact
               path="/zombies"
               element={
-                <Zombies
-                  sellList={sellList}
-                  setSellList={setSellList}
-                />
+                <Zombies/>
               }
             />
             <Route
@@ -131,10 +120,7 @@ export default function App() {
               exact
               path="/monsters"
               element={
-                <Monsters
-                  sellList={sellList}
-                  setSellList={setSellList}
-                />
+                <Monsters/>
               }
             />
             <Route
@@ -170,8 +156,6 @@ export default function App() {
       </Routes>
 
       <Sidebar
-        sellList={sellList}
-        setSellList={setSellList}
         isOpen={sidebarIsOpen}
         setIsOpen={setSidebarIsOpen}
       />

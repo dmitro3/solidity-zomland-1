@@ -24,12 +24,14 @@ import { Pagination } from "../../components/Pagination";
 import { Button } from "../../components/basic/Button";
 import { Popup } from "../../components/Popup";
 import { useDispatch, useSelector } from 'react-redux';
+import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 
 const PAGE_LIMIT = "10";
 
-export const Monsters = ({ sellList, setSellList }) => {
+export const Monsters = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
+  const sellList = useSelector(state => state.market.sale);
 
   const [isReady, setIsReady] = useState(false);
   const [userMonsters, setUserMonsters] = useState([]);
@@ -115,13 +117,14 @@ export const Monsters = ({ sellList, setSellList }) => {
 
   const appendToSellList = (monster) => {
     if (
-      !sellList["zombies"].filter(
-        (exist) => exist.tokenId === monster.tokenId
-      ).length
+      !sellList["monsters"].filter((exist) => exist.tokenId === monster.tokenId).length
     ) {
-      sellList["monsters"].push(monster);
-      sellList["lands"] = sellList["zombies"] = [];
-      setSellList({ ...sellList });
+      dispatch(addForSale({
+        type: "monsters",
+        item: monster
+      }));
+      dispatch(cleanupSaleList({ type: "lands" }));
+      dispatch(cleanupSaleList({ type: "zombies" }));
     }
   };
 

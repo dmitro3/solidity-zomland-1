@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { FlipCard, CardInner, CardBack } from "../../assets/styles/card";
+import { FlipCard, CardInner } from "../../assets/styles/card";
 import { FrontCard } from "./FrontCard";
-import { BackCard } from "./BackCard";
 import { Popup } from "../Popup";
 import { Button } from "../basic/Button";
 
@@ -38,7 +37,6 @@ export const Card = ({
               setKillItem={setKillItem}
               rmFromMarket={rmFromMarket}
               handleBuy={handleBuy}
-              // setSellPopupVisible={setSellPopupVisible}
             />
           </CardInner>
         )}

@@ -75,6 +75,7 @@ Deploy to testnet:
 
 ```
 export METER_TESTNET_PRIVATE_KEY=
+export OASIS_TESTNET_PRIVATE_KEY=
 ```
 
 #### 2. Deploy to testnet

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   convertFromYocto,
   convertToYocto,
-  rmFromMarket,
+  rmFromMarket, transformLand, transformMonster, transformZombie,
 } from "../../web3/utils";
 import {
   Container,
@@ -21,32 +21,39 @@ import { Card } from "../../components/card/Card";
 import { useSelector } from 'react-redux';
 
 const START = 0;
-const LIMIT = 10;
+const LIMIT = 20;
 
 export const Market = () => {
   const currentUser = useSelector(state => state.user.user);
   const [isReady, setIsReady] = useState(false);
   const [items, setItems] = useState([]);
+  const [itemsCount, setItemsCount] = useState(0);
   const [active, setActive] = useState("Lands");
 
-  const showMarket = async (name, contract_method) => {
+  const showMarket = async (name) => {
     setIsReady(false);
-    // let items = await contract_method({
-    //   start: START,
-    //   limit: LIMIT,
-    // }).catch((err) => console.log(err));
-    //
-    // items = items?.map((item) => {
-    //   item.salePrice = convertFromYocto(item.salePrice);
-    //   return item;
-    // });
-    // setItems(items ?? []);
+    let saleResults;
+    let saleItems;
+
+    if (name === "Lands") {
+      saleResults = await window.contracts.land.getMarketItems(START, LIMIT);
+      saleItems = saleResults[1].filter(item => item.nftType).map(item => transformLand(item));
+    } else if (name === "Zombies") {
+      saleResults = await window.contracts.zombie.getMarketItems(START, LIMIT);
+      saleItems = saleResults[1].filter(item => item.nftType).map(item => transformZombie(item));
+    } else {
+      saleResults = await window.contracts.monster.getMarketItems(START, LIMIT);
+      saleItems = saleResults[1].filter(item => item.nftType).map(item => transformMonster(item));
+    }
+
+    setItems(saleItems);
+    setItemsCount(saleResults[0]);
     setIsReady(true);
     setActive(name);
   };
 
   useEffect(() => {
-    showMarket("Lands", "contract.get_lands_from_market");
+    showMarket("Lands");
   }, []);
 
   const handleBuy = async (item) => {
@@ -68,9 +75,13 @@ export const Market = () => {
     setIsReady(true);
   };
 
+  const isOwner = (nftOwner) => {
+    return currentUser.accountId.toLowerCase() === nftOwner.toLowerCase();
+  }
+
   return (
     <InnerPageWrapper>
-      <Header />
+      <Header/>
 
       <Wrapper>
         <Container className="text-white text-center mt-6">
@@ -84,19 +95,19 @@ export const Market = () => {
                 {
                   title: "Lands",
                   onClick: () =>
-                    showMarket("Lands", "contract.get_lands_from_market"),
+                    showMarket("Lands"),
                   active: active === "Lands",
                 },
                 {
                   title: "Zombies",
                   onClick: () =>
-                    showMarket("Zombies", "contract.get_zombies_from_market"),
+                    showMarket("Zombies"),
                   active: active === "Zombies",
                 },
                 {
                   title: "Monsters",
                   onClick: () =>
-                    showMarket("Monsters", "contract.get_monsters_from_market"),
+                    showMarket("Monsters"),
                   active: active === "Monsters",
                 },
               ]}
@@ -108,28 +119,26 @@ export const Market = () => {
                   {items.length > 0 ? (
                     <>
                       {items.map((item, index) => (
-                        <>
-                          {currentUser.accountId === item.ownerId ? (
+                        <div key={index}>
+                          {isOwner(item.ownerId) ? (
                             <Card
                               nft={item}
-                              key={index}
                               noMenu
                               rmFromMarket={async () => {
                                 setIsReady(false);
-                                await rmFromMarket(contract, item);
+                                // await rmFromMarket(contract, item);
                                 setIsReady(true);
                               }}
                             />
                           ) : (
                             <Card
                               nft={item}
-                              key={index}
                               currentUser={currentUser}
                               noMenu
                               handleBuy={() => handleBuy(item)}
                             />
                           )}
-                        </>
+                        </div>
                       ))}
                     </>
                   ) : (
@@ -137,14 +146,14 @@ export const Market = () => {
                   )}
                 </List>
               ) : (
-                <Loader />
+                <Loader/>
               )}
             </ListWrapper>
           </div>
         </Container>
       </Wrapper>
 
-      <Footer />
+      <Footer/>
     </InnerPageWrapper>
   );
 };

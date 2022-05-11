@@ -13,10 +13,12 @@ import { Popup } from "../../components/Popup";
 import { MintLandSection } from "./MintLandSection";
 import { Card } from "../../components/card/Card";
 import { useDispatch, useSelector } from "react-redux";
+import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 
-export const Lands = ({sellList, setSellList}) => {
+export const Lands = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
+  const sellList = useSelector(state => state.market.sale);
 
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
@@ -82,9 +84,12 @@ export const Lands = ({sellList, setSellList}) => {
     if (
       !sellList["lands"].filter((exist) => exist.tokenId === land.tokenId).length
     ) {
-      sellList["lands"].push(land);
-      sellList["zombies"] = sellList["monsters"] = [];
-      setSellList({...sellList});
+      dispatch(addForSale({
+        type: "lands",
+        item: land
+      }));
+      dispatch(cleanupSaleList({ type: "zombies" }));
+      dispatch(cleanupSaleList({ type: "monsters" }));
     }
   };
 
@@ -129,7 +134,7 @@ export const Lands = ({sellList, setSellList}) => {
                       setSellItems={() => appendToSellList(land)}
                       rmFromMarket={async () => {
                         setIsReady(false);
-                        await rmFromMarket(window.contracts['land'], land);
+                        // await rmFromMarket(window.contracts['land'], land);
                         setIsReady(true);
                       }}
                       handleTransfer={(transferAddress) =>

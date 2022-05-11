@@ -9,6 +9,8 @@ import TokenFTAddress from "../contractsData/TokenFTContract-address.json";
 import TokenFTAbi from "../contractsData/TokenFTContract.json";
 import CollectionAddress from "../contractsData/CollectionContract-address.json";
 import CollectionAbi from "../contractsData/CollectionContract.json";
+import MarketAddress from "../contractsData/MarketContract-address.json";
+import MarketAbi from "../contractsData/MarketContract.json";
 import { setUserAccountId, setUserBalance } from '../store/userSlice';
 
 export const web3Handler = () => {
@@ -46,6 +48,11 @@ export const web3Handler = () => {
             CollectionAddress.address,
             CollectionAbi.abi,
             signer
+          ),
+          market: new ethers.Contract(
+            MarketAddress.address,
+            MarketAbi.abi,
+            signer
           )
         };
 
@@ -73,7 +80,7 @@ export const updateUserBalance = async (dispatch, accountId) => {
 }
 
 export const updateUserAccount = async (dispatch, account) => {
-  dispatch(setUserAccountId({account}));
+  dispatch(setUserAccountId({ account }));
   await updateUserBalance(dispatch, account);
 }
 

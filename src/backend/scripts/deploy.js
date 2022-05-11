@@ -24,7 +24,7 @@ async function main() {
   const tokenFT = await TokenFT.deploy(main.address);
 
   const Market = await ethers.getContractFactory("MarketContract");
-  const market = await TokenFT.deploy(main.address);
+  const market = await Market.deploy(main.address);
 
   const MainContract = await ethers.getContractAt("MainContract", main.address);
   await MainContract.updateContractAddress(

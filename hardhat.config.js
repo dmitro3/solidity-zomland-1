@@ -65,5 +65,9 @@ module.exports = {
     //   url: "https://rpc.kardiachain.io",
     //   accounts: [`${process.env.KARDIA_MAINNET_PRIVATE_KEY}`]
     // },
+    emerald_testnet: {
+      url: "https://testnet.emerald.oasis.dev",
+      accounts: process.env.OASIS_TESTNET_PRIVATE_KEY !== undefined ? [process.env.OASIS_TESTNET_PRIVATE_KEY] : [],
+    },
   },
 };

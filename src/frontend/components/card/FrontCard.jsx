@@ -115,7 +115,7 @@ export const FrontCard = ({
                           title={
                             <>
                               <span className="mr-1">Buy for</span>
-                              {nft.salePrice} NEAR
+                              {nft.salePrice} {process.env.TOKEN_SYMBOL}
                             </>
                           }
                           className="mt-2"

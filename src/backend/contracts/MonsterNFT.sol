@@ -37,6 +37,12 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     address ownerId;
   }
 
+  modifier onlyMarketContract() {
+    address _marketContract = IMain(mainContract).getContractMarket();
+    require(_marketContract == msg.sender, "You can't call this method");
+    _;
+  }
+
   constructor(address _mainContract) ERC721("ZomLand", "ZMLM") {
     mainContract = _mainContract;
   }
@@ -139,6 +145,23 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
       _resultMonsters[_i] = monsters[_innerList[_i]];
     }
     return (_innerListLength, _resultMonsters);
+  }
+
+  function getMarketItems(uint _startIndex, uint8 _count) public view returns (uint, Monster[] memory) {
+    Monster[] memory _userMonsters = new Monster[](_count);
+    address _marketContract = IMain(mainContract).getContractMarket();
+
+    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getFromMarket(_startIndex, _count, "monster");
+    for (uint _i = 0; _i < _count; ++_i) {
+      if (_i < total) {
+        _userMonsters[_i] = monsters[_saleIdList[_i]];
+      }
+    }
+    return (total, _userMonsters);
+  }
+
+  function setMonsterSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
+    monsters[_tokenId].salePrice = _price;
   }
 
 }

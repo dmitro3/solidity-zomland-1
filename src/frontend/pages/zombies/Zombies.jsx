@@ -26,15 +26,14 @@ import { Pagination } from "../../components/Pagination";
 import { Popup } from "../../components/Popup";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserBalance } from '../../web3/api';
+import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 
 const PAGE_LIMIT = "20";
 
-export const Zombies = ({
-  sellList,
-  setSellList,
-}) => {
+export const Zombies = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
+  const sellList = useSelector(state => state.market.sale);
 
   const [isReady, setIsReady] = useState(false);
   const [userZombies, setUserZombies] = useState([]);
@@ -95,11 +94,14 @@ export const Zombies = ({
 
   const appendToSellList = (zombie) => {
     if (
-      !sellList["zombies"].filter((exist) => exist.token_id === zombie.token_id).length
+      !sellList["zombies"].filter((exist) => exist.tokenId === zombie.tokenId).length
     ) {
-      sellList["zombies"].push(zombie);
-      sellList["lands"] = sellList["monsters"] = [];
-      setSellList({...sellList});
+      dispatch(addForSale({
+        type: "zombies",
+        item: zombie
+      }));
+      dispatch(cleanupSaleList({ type: "lands" }));
+      dispatch(cleanupSaleList({ type: "monsters" }));
     }
   };
 
@@ -250,7 +252,7 @@ export const Zombies = ({
   };
 
   const onPageChanged = (page) => {
-    window.scrollTo({top: 0, behavior: "smooth"});
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     setCurrentPage(page);
     fetchUserZombies(page, filterCollection, filterRarity);
@@ -360,7 +362,7 @@ export const Zombies = ({
                         setSellItems={() => appendToSellList(zombie)}
                         rmFromMarket={async () => {
                           setIsReady(false);
-                          await rmFromMarket(contract, zombie);
+                          // await rmFromMarket(contract, zombie);
                           setIsReady(true);
                         }}
                         handleTransfer={(transferAddress) =>
