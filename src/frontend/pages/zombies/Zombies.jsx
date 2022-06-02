@@ -291,7 +291,7 @@ export const Zombies = () => {
 
   return (
     <InnerPageWrapper>
-      <Header/>
+      <Header />
 
       <Wrapper>
         <Container className="text-white text-center mt-6">
@@ -303,7 +303,7 @@ export const Zombies = () => {
           {isReady ? (
             <>
               {hasLands ? (
-                <div className="sm:flex justify-between mt-8">
+                <div className="sm:flex justify-between mt-8 relative z-20">
                   <div className="lg:basis-4/12 lg:flex hidden text-lg text-left pt-4 pl-1">
                     Available:
                     <span className="ml-2 font-semibold text-orange-500">
@@ -344,7 +344,7 @@ export const Zombies = () => {
                 </div>
               ) : (
                 <div className="mb-7 mt-10 leading-10">
-                  <b className="text-xl text-orange-500">{LandContent.no_lands}.</b> <br/>
+                  <b className="text-xl text-orange-500">{LandContent.no_lands}.</b> <br />
                   <p className="text-cyan-200 sm:w-1/2 w-3/4 sm:px-16 mx-auto leading-6">
                     {ZombieContent.no_lands_details}
                   </p>
@@ -393,7 +393,7 @@ export const Zombies = () => {
               </div>
             </>
           ) : (
-            <Loader/>
+            <Loader />
           )}
         </Container>
 
@@ -435,14 +435,14 @@ export const Zombies = () => {
                 />
               </div>
               <div className="inline-block">
-                <Button title="Kill Zombie" onClick={handleKill}/>
+                <Button title="Kill Zombie" onClick={handleKill} />
               </div>
             </div>
           )}
         </Popup>
       </Wrapper>
 
-      <Footer/>
+      <Footer />
     </InnerPageWrapper>
   );
 };

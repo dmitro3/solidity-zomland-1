@@ -57,7 +57,7 @@ export const CardLand = ({
                 {/*)}*/}
 
                 {nft.landType === "Micro" && nft.tokenId && (
-                  <Counter from={nft.countMintedZombies} to={30} />
+                  <Counter from={nft.countMintedZombies || 0} to={30} />
                 )}
 
                 {nft.salePrice && size !== "sm" && (
