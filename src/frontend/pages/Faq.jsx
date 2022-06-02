@@ -103,9 +103,10 @@ export const Faq = () => {
                   </p>
                   <h3 className="mt-3 font-semibold">Lands.</h3>
                   <p>
-                    The logic of the game starts with the Lands - with them you can mint zombies every day (the number of
+                    The logic of the game starts with the Lands - with them you can mint zombies every day (the number
+                    of
                     zombies depends on the type of land).
-                    You can mint one Small Land for free or buy larger lands to
+                    You can mint one Micro Land for free or buy larger lands to
                     get more zombies each day.
                   </p>
                   <p>
@@ -205,20 +206,36 @@ export const Faq = () => {
                   <div className="flex flex-row">
                     <div className="w-1/4 text-center">
                       <img src={land_sample} alt=""/>
-                      <small className="text-gray-400 inline-block mr-8">Land Card Sample</small>
+                      <small className="text-gray-400 inline-block">Land Card Sample</small>
                     </div>
                     <div className="w-3/4">
                       <div className="ml-8">
-                        <p>Front side represent Card Type, market Price and Token ID.</p>
+                        <p>Front side represent Card Type (size) and Token ID.
+                          For Micro Land in top right corner you can see how much
+                          zombies minted (it contain 30 zombies).</p>
                         <br/>
                         <b>Card Types:</b>
                         <ul>
-                          <li>- <b className="text-gray-500">Small</b>: 1 zombie/day. Limited by 59.999 Lands.</li>
-                          <li>- <b className="text-blue-500">Medium</b>: 4 zombies/day. Limited by 5.999 Lands.</li>
-                          <li>- <b className="text-orange-500">Large</b>: 8 zombies/day. Limited by 1.999 Lands.</li>
+                          <li>
+                            - <b className="text-gray-500">Micro</b>:
+                            1 zombie/day. Limited by 49.999 Lands.
+                          </li>
+                          <li>
+                            - <b className="text-green-500">Small</b>:
+                            2 zombie/day. Limited by 9.999 Lands.
+                          </li>
+                          <li>
+                            - <b className="text-blue-500">Medium</b>:
+                            4 zombies/day. Limited by 5.999 Lands.
+                          </li>
+                          <li>
+                            - <b className="text-rose-500">Large</b>:
+                            8 zombies/day. Limited by 1.999 Lands.
+                          </li>
                         </ul>
                         <br/>
-                        <a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" className="link" target="_blank">Read more
+                        <a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85"
+                           className="link" target="_blank">Read more
                           about Lands</a>
                       </div>
                     </div>
@@ -234,7 +251,7 @@ export const Faq = () => {
                   <div className="flex flex-row">
                     <div className="w-1/4 text-center">
                       <img src={zombie_sample} alt=""/>
-                      <small className="text-gray-400 inline-block mr-8">Zombie Card Sample</small>
+                      <small className="text-gray-400 inline-block">Zombie Card Sample</small>
                     </div>
                     <div className="w-3/4">
                       <div className="ml-8">
@@ -263,7 +280,8 @@ export const Faq = () => {
                           </div>
                         </div>
                         <br/>
-                        <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6" className="link" target="_blank">Read more
+                        <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6"
+                           className="link" target="_blank">Read more
                           about Zombies</a>
                       </div>
                     </div>
@@ -279,7 +297,7 @@ export const Faq = () => {
                   <div className="flex flex-row">
                     <div className="w-1/4 text-center">
                       <img src={monster_sample} alt=""/>
-                      <small className="text-gray-400 inline-block mr-8">Monster Card Sample</small>
+                      <small className="text-gray-400 inline-block">Monster Card Sample</small>
                     </div>
                     <div className="w-3/4">
                       <div className="ml-8">
@@ -303,11 +321,13 @@ export const Faq = () => {
                               <li>- Health</li>
                               <li>- Attack</li>
                               <li>- Intellect</li>
+                              <li>- Speed <small>(always equal 1)</small></li>
                             </ul>
                           </div>
                         </div>
                         <br/>
-                        <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6" className="link" target="_blank">Read more
+                        <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6"
+                           className="link" target="_blank">Read more
                           about Monsters</a>
                       </div>
                     </div>
@@ -340,9 +360,10 @@ export const Faq = () => {
                     <ul>
                       <li>- Join our team as ambassador and earn tokens based on your contribution and activity.</li>
                       <li>- Hold the Monsters to get ZML airdrops.</li>
-                      <li>- Kill Zombies and get ZML tokend based on Card rarity and zombie characteristics.</li>
+                      <li>- Kill Zombies and get ZML tokens based on Card rarity and zombie characteristics.</li>
                       <li>- Stake your ZML tokens. You can increase your staking rewards using Monster Cards.</li>
-                      <li>- Send Monsters to Discover your Lands. Monster can find resources that will be sold to get ZML tokens (coming
+                      <li>- Send Monsters to Discover your Lands. Monster can find resources that will be sold to get
+                        ZML tokens (coming
                         soon).
                       </li>
                       <li>- Win battle in Battle Arena to increase you Monster ZML price (coming soon).</li>

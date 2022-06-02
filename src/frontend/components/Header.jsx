@@ -7,11 +7,11 @@ import {SocialLinks} from "./SocialLinks";
 import {NavLinks} from "./header/NavLinks";
 import {MobileNavLinks} from "./header/MobileNavLinks";
 import {MenuIcon, XIcon} from "@heroicons/react/outline";
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
+import leaderboard_icon from "../assets/images/leaderboard.png";
 
 export const Header = () => {
   const currentUser = useSelector(state => state.user.user);
-
   const [scroll, setScroll] = useState(false);
   const [isMobileOpened, setIsMobileOpened] = useState(false);
 
@@ -76,6 +76,10 @@ export const Header = () => {
 
             {currentUser.accountId ? (
                 <>
+                  <Link to="/leaderboard">
+                    <img src={leaderboard_icon} alt="leaderboard" className="h-7 mb-1"/>
+                  </Link>
+
                   <div className="flex flex-row">
                     <div className="text-right">
                       <div className="w-40 xl:w-48 hover:text-indigo-200">

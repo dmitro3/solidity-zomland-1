@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.12;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -20,6 +20,7 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   Counters.Counter private _tokenIdCounter;
 
   enum LandType {
+    Micro,
     Small,
     Medium,
     Large
@@ -33,6 +34,7 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     string media;
     string nftType;
     uint discoverEvents;
+    uint countMintedZombies;
     address ownerId;
   }
 
@@ -46,7 +48,7 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   mapping(uint8 => LandType) public landTypeIndex;
   mapping(LandType => uint) public landTypeCount;
   mapping(LandType => LandTypeData) public landTypeData;
-  mapping(address => bool) accountsWithSmallLand;
+  mapping(address => bool) accountsWithMicroLand;
   mapping(uint => Land) lands;
 
   modifier onlyZombieContract() {
@@ -64,26 +66,34 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   constructor(address _mainContract) ERC721("ZomLand", "ZMLL") {
     mainContract = _mainContract;
 
-    landTypeIndex[0] = LandType.Small;
-    landTypeIndex[1] = LandType.Medium;
-    landTypeIndex[2] = LandType.Large;
+    landTypeIndex[0] = LandType.Micro;
+    landTypeIndex[1] = LandType.Small;
+    landTypeIndex[2] = LandType.Medium;
+    landTypeIndex[3] = LandType.Large;
+
+    landTypeData[LandType.Micro] = LandTypeData({
+    price : 0.001 ether,
+    limitCount : 49999,
+    zombiesPerDay : 1,
+    media : "bafkreidurt5hsjdqid2tl6azwbxye5fpizrzfvcxhavjpwg2wr5kdvk7t4"
+    });
 
     landTypeData[LandType.Small] = LandTypeData({
-    price : 0,
-    limitCount : 59999,
-    zombiesPerDay : 1,
+    price : 0.077 ether,
+    limitCount : 9999,
+    zombiesPerDay : 2,
     media : "bafkreihvcoraixdyx6jbrlmlfw45psrjlkwemp7ie3wckye7frnyhbdnoi"
     });
 
     landTypeData[LandType.Medium] = LandTypeData({
-    price : 5 ether,
+    price : 0.15 ether,
     limitCount : 5999,
     zombiesPerDay : 4,
     media : "bafkreiepzrmwcequ5u6b5dx2jdrr2vq5ujehibu4v32zdxrg4jdgts2ozq"
     });
 
     landTypeData[LandType.Large] = LandTypeData({
-    price : 9 ether,
+    price : 0.33 ether,
     limitCount : 1999,
     zombiesPerDay : 8,
     media : "bafkreigezufih7gmv6d6xfbm3ackbvsxxbw5mprlt3hx5kvte7kjkbaxju"
@@ -104,7 +114,9 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
 
   // small=0, medium=5, large=9
   function landTypeByPrice() internal view returns (LandType) {
-    if (msg.value == landTypeData[LandType.Small].price) {
+    if (msg.value == landTypeData[LandType.Micro].price) {
+      return LandType.Micro;
+    } else if (msg.value == landTypeData[LandType.Small].price) {
       return LandType.Small;
     } else if (msg.value == landTypeData[LandType.Medium].price) {
       return LandType.Medium;
@@ -114,12 +126,28 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     revert("Wrong deposit amount");
   }
 
+  function landTypeToString(LandType _landType) internal pure returns (string memory){
+    if (_landType == LandType.Micro) {
+      return "Micro";
+    } else if (_landType == LandType.Small) {
+      return "Small";
+    } else if (_landType == LandType.Medium) {
+      return "Medium";
+    }
+    return "Large";
+  }
+
+  function landInfo(uint _id) external view returns (address, string memory, uint) {
+    Land storage land = lands[_id];
+    return (land.ownerId, landTypeToString(land.landType), land.countMintedZombies);
+  }
+
   function checkLimits(LandType _landType) internal view {
     uint _maxCount = landTypeData[_landType].limitCount;
-    if (_landType == LandType.Small) {
+    if (_landType == LandType.Micro) {
       // limit one small lend per account
-      if (accountsWithSmallLand[msg.sender] == true) {
-        revert LandsSmallLimitError({message : "You can mint just one Small Land"});
+      if (accountsWithMicroLand[msg.sender] == true) {
+        revert LandsSmallLimitError({message : "You can mint just one Micro Land"});
       }
     }
 
@@ -131,10 +159,12 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   // ---------------- Public methods ---------------
 
   function getAllLands() public view returns (LandTypeData[] memory) {
-    LandTypeData[] memory _lands = new LandTypeData[](3);
-    for (uint8 i = 0; i < 3; ++i) {
+    LandTypeData[] memory _lands = new LandTypeData[](4);
+    for (uint8 i = 0; i < 4; ++i) {
       _lands[i] = landTypeData[landTypeIndex[i]];
+      console.log("_lands", i);
     }
+
     return _lands;
   }
 
@@ -162,10 +192,10 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     _safeMint(msg.sender, _tokenId);
     _setTokenURI(_tokenId, _uri);
 
-    lands[_tokenId] = Land(_tokenId, _landType, 0, 0, landTypeData[_landType].media, "Land", 0, msg.sender);
+    lands[_tokenId] = Land(_tokenId, _landType, 0, 0, landTypeData[_landType].media, "Land", 0, 0, msg.sender);
     landTypeCount[_landType]++;
-    if (_landType == LandType.Small) {
-      accountsWithSmallLand[msg.sender] = true;
+    if (_landType == LandType.Micro) {
+      accountsWithMicroLand[msg.sender] = true;
     }
 
     return _tokenId;

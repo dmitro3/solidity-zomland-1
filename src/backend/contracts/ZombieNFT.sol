@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.12;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -37,6 +37,8 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     uint8 speed;
     string nftType;
     address ownerId;
+    ModifierItems[] modifier_items;
+    uint next_battle;
   }
 
   modifier onlyMarketContract() {
@@ -90,7 +92,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     if (_rand_range > 0) {
       uint _rand_divider = 1000 / (_rand_range + 1);
       uint _result = randomNumber(1000, _shift) / _rand_divider;
-      return _to + _result;
+      return _from + _result;
     }
     return 0;
   }
@@ -116,7 +118,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     } else if (_rarity == CardRarity.Uncommon) {
       _multiplier = 3;
     }
-    return _multiplier * (uint((_health + _attack + _brain + _speed)) / 4) * 1e18;
+    return _multiplier * (uint((_health + _attack + _brain + _speed * 10)) / 7) * 1e18;
   }
 
   function removeZombieCollectionRarity(address _owner, uint _tokenId, uint _collectionId, CardRarity _rarity) private {
@@ -153,12 +155,16 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
   function safeMint(uint _landId) public {
     address _landContract = IMain(mainContract).getContractLandNFT();
     address _collectionContract = IMain(mainContract).getContractCollection();
+    (address _ownerId, string memory _landType, uint _landMintedZombies) = ILandNFT(_landContract).landInfo(_landId);
 
-    if (ILandNFT(_landContract).ownerOf(_landId) != msg.sender) {
+    if (_ownerId != msg.sender) {
       revert ZombiesMintError({message : "You don't have this Land"});
     }
-    uint8 _zombiesMintCount = ILandNFT(_landContract).getLandMintZombiesCount(_landId);
+    if (string_equal(_landType, "Micro") && _landMintedZombies == 30) {
+      revert ZombiesMintError({message : "Land resource is depleted: you minted all zombies."});
+    }
 
+    uint8 _zombiesMintCount = ILandNFT(_landContract).getLandMintZombiesCount(_landId);
     if (_zombiesMintCount > 0) {
       for (uint8 _i = 0; _i < _zombiesMintCount; ++_i) {
         CardRarity _rarity = randomRarity(_i);
@@ -167,19 +173,23 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
         uint8 _health = uint8(randomNumberByRarity(49, _i + 15, _rarity) + 1);
         uint8 _attack = uint8(randomNumberByRarity(24, _i + 20, _rarity) + 1);
         uint8 _brain = uint8(randomNumberByRarity(24, _i + 25, _rarity) + 1);
-        uint8 _speed = uint8(randomNumberByRarity(19, _i + 30, _rarity) + 1);
+        uint8 _speed = uint8(randomNumberByRarity(1, _i + 30, _rarity) + 1);
         uint _killTokens = zombieKillTokens(_rarity, _health, _attack, _brain, _speed);
 
         _tokenIdCounter.increment();
         _safeMint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, _uri);
-        zombies[_tokenId] = Zombie(_tokenId, _rarity, _collectionId, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, _speed, "Zombie", msg.sender);
+
+        zombies[_tokenId] = Zombie(
+          _tokenId, _rarity, _collectionId, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, _speed,
+          "Zombie", msg.sender, new ModifierItems[](0), block.timestamp
+        );
 
         addZombieCollectionRarity(msg.sender, _tokenId, _collectionId, _rarity);
       }
       ILandNFT(_landContract).landSetMintTimestamp(_landId);
     } else {
-      revert ZombiesMintError({message : "You can't mint from this Land"});
+      revert ZombiesMintError({message : "You can't mint on this Land, wait 24 hours!"});
     }
   }
 

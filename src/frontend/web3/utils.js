@@ -2,9 +2,10 @@ import { ethers } from 'ethers';
 import { addTransaction, removeTransaction, updateTransaction } from '../store/transactionSlice';
 
 export const landTypeMap = {
-  0: "Small",
-  1: "Medium",
-  2: "Large",
+  0: "Micro",
+  1: "Small",
+  2: "Medium",
+  3: "Large",
 };
 
 export const rarityMap = {
@@ -14,7 +15,12 @@ export const rarityMap = {
   3: "Epic",
 };
 
-export const getMedia = (media) => `https://zomland.fra1.digitaloceanspaces.com/${media}.png`;
+export const getMedia = (media) => {
+  if (media.toLocaleLowerCase().indexOf(".png") === -1) {
+    media += ".png";
+  }
+  return `${process.env.SPACES_URL}/${media}`;
+}
 
 export const convertFromYocto = (amount, digits = 1) => {
   if (!amount) {
@@ -31,13 +37,20 @@ export const formatId = (nft) => {
   return `${nft.nftType} #${nft.tokenId}`;
 };
 
+export const formatLandId = (landType, tokenId, size = "md") => {
+  if (size === "sm") {
+    return `${landType} #${tokenId}`;
+  }
+  return `${landType} Land #${tokenId}`;
+};
+
 export const statusColorTextMap = (status) => {
   let result = "text-gray-500";
-  if (status === "Medium" || status === "Uncommon") {
+  if (status === "Small" || status === "Uncommon") {
+    result = "text-green-500";
+  } else if (status === "Medium" || status === "Rare") {
     result = "text-blue-500";
   } else if (status === "Large" || status === "Epic") {
-    result = "text-orange-500";
-  } else if (status === "Rare") {
     result = "text-rose-500";
   }
   return result;
@@ -45,11 +58,11 @@ export const statusColorTextMap = (status) => {
 
 export const statusColorBorderMap = (status) => {
   let result = "border-gray-500";
-  if (status === "Medium" || status === "Uncommon") {
+  if (status === "Small" || status === "Uncommon") {
+    result = "border-green-500";
+  } else if (status === "Medium" || status === "Rare") {
     result = "border-blue-500";
   } else if (status === "Large" || status === "Epic") {
-    result = "border-orange-500";
-  } else if (status === "Rare") {
     result = "border-rose-500";
   }
   return result;

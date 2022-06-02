@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.12;
 
 abstract contract Utils {
   address public constant NULL_ADDRESS = 0x0000000000000000000000000000000000000000;
@@ -9,6 +9,13 @@ abstract contract Utils {
     Uncommon,
     Rare,
     Epic
+  }
+
+  enum ModifierItems {
+    WeaponV1,
+    WeaponV2,
+    ArmorV1,
+    ArmorV2
   }
 
   function rarityToString(CardRarity _rarity) internal pure returns (string memory) {

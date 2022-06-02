@@ -7,21 +7,27 @@ export const CardInner = styled.div.attrs(() => ({
 
 export const InfoSmallWrapper = styled.div.attrs(() => ({
   className:
-    `absolute flex drop-shadow-md justify-center rounded-md w-full bottom-0 font-semibold z-10`
+    `absolute flex drop-shadow-md items-center justify-center rounded-md w-full bottom-0 text-base py-3`
 }))`
-bottom: ${(props) => (props.withBtn ? "-56px" : "-8px")};
-background: linear-gradient(180deg, rgba(12,6,53,0.30) 0%, rgba(12,6,53,1) 75%);
-padding: ${(props) => (props.size === "sm" ? "6px 0" : "10px 0")};
-transition: 0.3s;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 6, 53, 0.3) 0%,
+    rgba(12, 6, 53, 1) 75%
+  );
 `;
 
 export const InfoWrapper = styled.div.attrs(() => ({
   className:
     "absolute flex drop-shadow-md justify-center rounded-md w-full bottom-0 font-semibold py-3 z-10",
 }))`
-  bottom: ${(props) => (props.withBtn ? "-180px" : "-132px")};
-  background: linear-gradient(180deg, rgba(12,6,53,0.4) 0%, rgba(15,8,65,0.8) 25%, rgba(12,6,53,1) 100%);
-  transition: 0.5s;
+  transform:  translateY(${(props) => (props.withBtn ? "222px" : "172px")});
+  background: linear-gradient(
+    180deg,
+    rgba(12, 6, 53, 0.4) 0%,
+    rgba(15, 8, 65, 0.8) 25%,
+    rgba(12, 6, 53, 1) 100%
+  );
+  transition: 0.3s 2s;
 `;
 
 export const FlipCard = styled.div`
@@ -32,16 +38,12 @@ export const FlipCard = styled.div`
 
   &.small {
     width: 140px;
-    height: 198px;
+    height: 196px;
   }
 
-  &:hover ${InfoSmallWrapper} {
-    transition: 0.4s;
-    bottom: 0;
-  }
   &:hover ${InfoWrapper} {
-    transition: 0.4s;
-    bottom: 0;
+    transition: 0.2s 0.2s;
+    transform: translateY(0);
   }
 `;
 

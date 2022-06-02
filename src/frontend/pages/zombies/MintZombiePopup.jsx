@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getMedia, formatId } from "../../web3/utils";
+import { getMedia, formatId, formatLandId } from "../../web3/utils";
 import { Button } from "../../components/basic/Button";
 import { Popup } from "../../components/Popup";
 
@@ -13,7 +13,8 @@ export default function MintZombiePopup({
   const funRef = useRef(null);
   const [currentDate, setCurrentDate] = useState(Date.now());
   const availabilityMap = {
-    Small: "1 zombie / day",
+    Micro: "1 zombie / day",
+    Small: "2 zombies / day",
     Medium: "4 zombies / day",
     Large: "8 zombies / day",
   };
@@ -64,7 +65,7 @@ export default function MintZombiePopup({
               <img src={getMedia(land.media)} alt="land" width="40"/>
             </div>
             <div className="basis-1/3 sm:pt-4 pt-2 font-semibold">
-              {land.landType} Land {formatId(land)}
+              {formatLandId(land.landType, land.tokenId)}
             </div>
             <div className="basis-1/4 pt-4 hidden sm:flex">
               {availabilityMap[land.landType]}

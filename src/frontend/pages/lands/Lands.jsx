@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { addPendingTransaction, landTypeMap, rmFromMarket, transformLand, } from "../../web3/utils";
+import { addPendingTransaction, addTransactionError, convertFromYocto, landTypeMap, rmFromMarket, transformLand, } from "../../web3/utils";
 import { LandContent } from "../../web3/content";
 import { Container, InnerPageWrapper, Wrapper, } from "../../assets/styles/common.style";
 import { List } from "../../assets/styles/common.style";
@@ -14,6 +14,8 @@ import { MintLandSection } from "./MintLandSection";
 import { Card } from "../../components/card/Card";
 import { useDispatch, useSelector } from "react-redux";
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
+import { ethers } from 'ethers';
+import { CardLand } from '../../components/card-land/CardLand';
 
 export const Lands = () => {
   const dispatch = useDispatch();
@@ -37,9 +39,9 @@ export const Lands = () => {
     allLandsObj.map((land, index) => {
       allLands[landTypeMap[index]] = {
         landType: landTypeMap[index],
-        totalCount: parseInt(land.limitCount),
-        price: parseInt(land.price),
-        zombiePerDay: parseInt(land.zombiesPerDay),
+        totalCount: land.limitCount.toString(),
+        price: convertFromYocto(land.price, index > 1 ? 2 : 3),
+        zombiePerDay: land.zombiesPerDay.toString(),
         media: land.media,
       };
     });
@@ -53,6 +55,16 @@ export const Lands = () => {
     setUserLands(lands || []);
     setIsReady(true);
   }
+
+  const isMicroLand = () => {
+    let result = false;
+    userLands.map((land) => {
+      if (land.landType === "Micro") {
+        result = true;
+      }
+    });
+    return result;
+  };
 
   const handleTransfer = async (land, transferAddress) => {
     await window.contracts.land.transferFrom(
@@ -99,7 +111,7 @@ export const Lands = () => {
 
   return (
     <InnerPageWrapper>
-      <Header/>
+      <Header />
 
       <Wrapper>
         <Container className="text-white text-center mt-6">
@@ -127,7 +139,7 @@ export const Lands = () => {
               <List>
                 {userLands.length ? (
                   userLands.map((land, index) => (
-                    <Card
+                    <CardLand
                       nft={land}
                       key={index}
                       sellItems={sellList["lands"]}
@@ -145,21 +157,21 @@ export const Lands = () => {
                 ) : (
                   <div>
                     <div className="mb-7 leading-10">
-                      <b className="text-xl">{LandContent.no_lands}.</b> <br/>
+                      <b className="text-xl">{LandContent.no_lands}.</b> <br />
                       <p className="text-cyan-200 leading-6 px-4">
                         {LandContent.no_lands_details}:
                       </p>
                     </div>
                     <MintLandSection
+                      isMicroLand={isMicroLand}
                       allLands={allLands}
-                      userLands={userLands}
                       watchMintTransaction={(tx) => watchMintTransaction(tx)}
                     />
                   </div>
                 )}
               </List>
             ) : (
-              <Loader/>
+              <Loader />
             )}
           </ListWrapper>
         </Container>
@@ -172,8 +184,8 @@ export const Lands = () => {
         >
           <div className="mt-2">
             <MintLandSection
+              isMicroLand={isMicroLand}
               allLands={allLands}
-              userLands={userLands}
               watchMintTransaction={(tx) => {
                 watchMintTransaction(tx);
                 setMintPopupVisible(false);
@@ -182,7 +194,7 @@ export const Lands = () => {
           </div>
         </Popup>
       </Wrapper>
-      <Footer/>
+      <Footer />
     </InnerPageWrapper>
   );
 };
