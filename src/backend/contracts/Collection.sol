@@ -7,6 +7,7 @@ import "../interfaces/interface.sol";
 
 contract CollectionContract is Ownable {
   address internal mainContract;
+  string public collectionIpfsHash;
   mapping(uint => Collection) public collections;
   uint public collectionCount;
 
@@ -17,6 +18,7 @@ contract CollectionContract is Ownable {
 
   constructor(address _mainContract) {
     mainContract = _mainContract;
+    collectionIpfsHash = "bafybeigm2p2cm3pqrlel326s6kjfh4x22ne5sfrlvpgouq7tltatulbqru";
   }
 
   function addCollection(string memory _title, string memory _image) public onlyOwner {
@@ -37,12 +39,12 @@ contract CollectionContract is Ownable {
     return (_collectionIndex, _image);
   }
 
-  function getAllCollections() external view returns (Collection[] memory) {
+  function getAllCollections() external view returns (string memory, Collection[] memory) {
     Collection[] memory _resultCollections = new Collection[](collectionCount);
     for (uint _i = 0; _i < collectionCount; ++_i) {
       _resultCollections[_i] = collections[_i];
     }
-    return _resultCollections;
+    return (collectionIpfsHash, _resultCollections);
   }
 
   function getAllCollectionsCount() external view returns (uint){
@@ -50,7 +52,7 @@ contract CollectionContract is Ownable {
   }
 
   function getCollectionImage(uint collectionId) external view returns (string memory){
-    return collections[collectionId].image;
+    return string.concat(collectionIpfsHash, "/", collections[collectionId].title, "-1.png");
   }
 
 }

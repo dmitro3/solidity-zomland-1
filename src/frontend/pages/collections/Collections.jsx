@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { CollectionContent } from "../../web3/content";
-import { getMedia, transformCollections } from "../../web3/utils";
+import React, {useEffect, useState} from "react";
+import {CollectionContent} from "../../web3/content";
+import {getMedia, transformCollections} from "../../web3/utils";
 import {
   Container,
   InnerPageWrapper,
   Link,
   Wrapper,
 } from "../../assets/styles/common.style";
-import { InnerPageHead } from "../../components/InnerPageHead";
-import { Header } from "../../components/Header";
-import { Loader } from "../../components/basic/Loader";
-import { Footer } from "../../components/Footer";
-import { Button } from "../../components/basic/Button";
+import {InnerPageHead} from "../../components/InnerPageHead";
+import {Header} from "../../components/Header";
+import {Loader} from "../../components/basic/Loader";
+import {Footer} from "../../components/Footer";
+import {Button} from "../../components/basic/Button";
 
 export const Collections = () => {
   const [allCollections, setAllCollections] = useState([]);
+  const [collectionIpfsHash, setCollectionIpfsHash] = useState("");
   const [userCollectionCount, setUserCollectionCount] = useState({});
   const [isReady, setIsReady] = React.useState(false);
 
   async function fetchCollections() {
     const collectionsObj = await window.contracts.collection.getAllCollections();
-    const collections = collectionsObj.map((collection, index) => transformCollections(collection, index))
+    setCollectionIpfsHash(collectionsObj[0]);
+    const collections = collectionsObj[1].map((collection, index) => transformCollections(collection, index))
     setAllCollections(collections);
   }
 
@@ -61,7 +63,7 @@ export const Collections = () => {
                       className="w-1/3 bg-[#0e0737]"
                     >
                       <img
-                        src={getMedia(collection.image)}
+                        src={getMedia(`${collectionIpfsHash}/${collection.title}-1.png`)}
                         alt={`collection #${collection.id}`}
                         className="bg-cover max-h-full max-w-full border-4 rounded-xl border-gray-500"
                       />

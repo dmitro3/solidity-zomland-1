@@ -45,9 +45,9 @@ async function main() {
   console.log("Market address", market.address);
 
   // Add Collections
-  // await collection.addCollection("Mummy", "bafkreigdcymxku7b6o4pcyfqqzf5dieviewhwndrknbggvhk6vokavfxwe");
-  // await collection.addCollection("Punk", "bafybeid3p33trzeklhvblet72wmt2rfnfvgii6ezbvhdix4hc7p2uwuotu");
+  await collection.addCollection("Mummy", "bafkreigdcymxku7b6o4pcyfqqzf5dieviewhwndrknbggvhk6vokavfxwe");
   await collection.addCollection("Pirate", "bafybeifq6clpc672vcln7l5iv4355ze6ludm7opcpldbgkwa7sfu5inysm");
+  // await collection.addCollection("Punk", "bafybeid3p33trzeklhvblet72wmt2rfnfvgii6ezbvhdix4hc7p2uwuotu");
   // await collection.addCollection("Stylish", "bafybeifjiplwfr52wvogoxidckgpq2urq66cjrqfdvfsgn2y3kscxjlcu4");
   await collection.addCollection("Combat", "bafybeico3paszepcemcprmsav47ntzy4cohqiw56m6o7pyi7oslhtf4ro4");
 
@@ -76,7 +76,7 @@ function saveFrontendFiles(contract, name) {
 
   fs.writeFileSync(
     contractsDir + `/${name}-address.json`,
-    JSON.stringify({ address: contract.address }, undefined, 2)
+    JSON.stringify({address: contract.address}, undefined, 2)
   );
 
   const contractArtifact = artifacts.readArtifactSync(name);

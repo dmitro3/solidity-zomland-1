@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { addPendingTransaction, addTransactionError, convertFromYocto, landTypeMap, rmFromMarket, transformLand, } from "../../web3/utils";
+import {
+  addPendingTransaction,
+  convertFromYocto,
+  landTypeMap,
+  transformLand,
+} from "../../web3/utils";
 import { LandContent } from "../../web3/content";
 import { Container, InnerPageWrapper, Wrapper, } from "../../assets/styles/common.style";
 import { List } from "../../assets/styles/common.style";
@@ -11,10 +16,8 @@ import { InnerPageHead } from "../../components/InnerPageHead";
 import { Loader } from "../../components/basic/Loader";
 import { Popup } from "../../components/Popup";
 import { MintLandSection } from "./MintLandSection";
-import { Card } from "../../components/card/Card";
 import { useDispatch, useSelector } from "react-redux";
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
-import { ethers } from 'ethers';
 import { CardLand } from '../../components/card-land/CardLand';
 
 export const Lands = () => {
@@ -178,7 +181,7 @@ export const Lands = () => {
 
         <Popup
           title="Buy More Lands"
-          width="sm:w-[816px]"
+          width={`${!isMicroLand() ? "sm:w-[800px] lg:w-[1060px] max-w-full" : "sm:w-[816px]"}`}
           popupVisible={mintPopupVisible}
           setPopupVisible={setMintPopupVisible}
         >

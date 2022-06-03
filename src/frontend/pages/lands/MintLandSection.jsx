@@ -38,7 +38,7 @@ export const MintLandSection = ({
   };
 
   return (
-    <Row className="justify-center gap-8 flex-wrap">
+    <Row className="justify-center gap-6 flex-wrap">
       {
         Object.keys(allLands).map(landType => {
           if (landType !== 'Micro' || !isMicroLand()) {

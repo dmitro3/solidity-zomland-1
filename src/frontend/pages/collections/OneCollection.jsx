@@ -15,20 +15,23 @@ import { Popup } from "../../components/Popup";
 import { Button } from "../../components/basic/Button";
 import { PlusIcon } from "@heroicons/react/solid";
 import {
-  addPendingTransaction, addTransactionError,
+  addPendingTransaction, addTransactionError, convertFromYocto,
   getMedia,
   transformCollections,
   transformZombie,
 } from "../../web3/utils";
-import { MonsterTopParams } from "../../assets/styles/collection";
+import { MonsterBottomParams, MonsterTopParams } from "../../assets/styles/collection";
 import { Card } from "../../components/card/Card";
 import { Pagination } from "../../components/Pagination";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import infoIcon from "../../assets/images/info.png";
 
-const MonsterParam = ({ title, pct }) => (
+const MonsterParam = ({ title, pct, width }) => (
   <div className="whitespace-nowrap text-center">
-    <span className={`inline-block w-[100px] text-left`}>{title}:</span>
-    <span className="inline-block font-semibold w-[60px] text-sky-200">
+    <span className={`inline-block ${width ? width : "w-[80px]"} text-left`}>
+      {title}:
+    </span>
+    <span className="inline-block font-semibold w-[50px] text-sky-200">
       {pct}%
     </span>
   </div>
@@ -40,6 +43,7 @@ const COLLECTION_ZOMBIES_COUNT = 10;
 export const OneCollection = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const currentUser = useSelector(state => state.user.user);
 
   const { collection_id } = useParams();
   const [isReady, setIsReady] = React.useState(false);
@@ -50,15 +54,18 @@ export const OneCollection = () => {
   const [zombiesPopupVisible, setZombiesPopupVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isMintLoader, setIsMintLoader] = useState(false);
+  const [priceInfoTooltip, setPriceInfoTooltip] = useState(false);
+  const [collectionImage, setCollectionImage] = useState("");
 
   const loadCollection = async () => {
-    async function fetchCollections() {
-      const collectionsObj = await window.contracts.collection.collections(collection_id);
-      const collection = transformCollections(collectionsObj, collection_id);
-      setCollection(collection);
-    }
+    const collectionsObj = await window.contracts.collection.collections(collection_id);
+    const collection = transformCollections(collectionsObj, collection_id);
+    setCollection(collection);
+  };
 
-    fetchCollections();
+  const loadCollectionImage = async () => {
+    const image = await window.contracts.collection.getCollectionImage(collection_id);
+    setCollectionImage(image);
   };
 
   const loadZombies = async (page) => {
@@ -83,6 +90,7 @@ export const OneCollection = () => {
   useEffect(() => {
     loadZombies(currentPage);
     loadCollection();
+    loadCollectionImage();
     setIsReady(true);
   }, []);
 
@@ -158,10 +166,31 @@ export const OneCollection = () => {
     }
   };
 
+  const isEnoughBalance = () => {
+    return convertFromYocto(currentUser.tokenBalance) >= getMintDeposit();
+  };
+
+  const getMintDeposit = () => {
+    let requiredDeposit = 0;
+    zombieCards.filter((zombie) => zombie).map(item => {
+      if (item.cardRarity === 'Common') {
+        requiredDeposit += 50;
+      } else if (item.cardRarity === 'Uncommon') {
+        requiredDeposit += 100;
+      } else if (item.cardRarity === 'Rare') {
+        requiredDeposit += 200;
+      } else {
+        requiredDeposit += 400;
+      }
+    });
+
+    return requiredDeposit;
+  };
+
   return (
     <>
       <InnerPageWrapper>
-        <Header/>
+        <Header />
 
         <Wrapper>
           <Container className="text-white text-center mt-6">
@@ -172,7 +201,8 @@ export const OneCollection = () => {
 
             {isReady ? (
               <>
-                <div className="sm:flex flex-row text-left bg-[#140E38]/95 shadow-md sm:p-12 p-6 rounded-2xl mt-10 mb-12">
+                <div
+                  className="sm:flex flex-row text-left bg-[#140E38]/95 shadow-md sm:p-12 p-6 rounded-2xl mt-10 mb-12">
                   <div className="xl:basis-3/4 md:basis-9/12 2xl:ml-10">
                     <h2 className="text-2xl font-semibold">
                       <Link to="/collections">
@@ -191,10 +221,10 @@ export const OneCollection = () => {
                           onClick={() => showSelectZombiesPopup(index)}
                         >
                           {zombie ? (
-                            <Card noMenu nft={zombie} size="sm"/>
+                            <Card noMenu nft={zombie} size="sm" />
                           ) : (
                             <div>
-                              <PlusIcon className="w-8 h-8 mx-auto mt-20"/>
+                              <PlusIcon className="w-8 h-8 mx-auto mt-20" />
                               <div className="text-center text-sm mt-12">
                                 Select Zombie
                               </div>
@@ -203,30 +233,42 @@ export const OneCollection = () => {
                         </div>
                       ))}
                     </div>
-                    <p className="mt-10 text-sm text-cyan-200">
-                      NOTE: Your zombies will be killed to combine them into
-                      Monster.
+                    <p className="mt-10 text-sm text-cyan-200 font-semibold">
+                      NOTE: Your zombies will be killed to get Monster.{" "}
+                      <a
+                        href="https://dandelion-dash-25e.notion.site/Collections-7ef9dd8d414847a288d992e7f3ca4714"
+                        target="_blank"
+                        className="link"
+                        rel="noreferrer"
+                      >
+                        Read details
+                      </a>
+                      .
                     </p>
                     <p className="text-sm text-cyan-200">
-                      When you start selecting zombies, you will see Monster
-                      Card rarity chances based on selected zombies.
+                      Monster characteristic is sum of zombie characteristic
+                      multiply by modifier that depends on final rarity.
+                    </p>
+                    <p className="text-sm text-cyan-200">
+                      Chance for monster card rarity based on selected zombies
+                      rarity is shown under monster card image.
                     </p>
                   </div>
 
                   <div className="md:basis-3/12 2xl:basis-1/4 sm:ml-10 lg:ml-8 xl:ml-10 2xl:ml-34 2xl:mr-10">
-                    <p className="text-center mb-6 mt-9 font-semibold leading-5">
+                    <p className="text-center mb-6 mt-10 sm:mt-4 lg:mt-9 font-semibold text-2xl leading-5">
                       {collection.title} Monster
                     </p>
                     <div className="relative sm:w-full w-3/4 mx-auto">
-                      {collection.image && (
+                      {collectionImage && (
                         <img
-                          src={getMedia(collection.image)}
+                          src={getMedia(collectionImage)}
                           alt="monster"
                           className="bg-slate-800 w-54 rounded-xl mx-auto border-4 rounded-xl border-gray-500"
                         />
                       )}
 
-                      {countZombieSelected() ? (
+                      {countZombieSelected() > 0 && (
                         <>
                           <MonsterTopParams>
                             <div className="inline-block whitespace-nowrap">
@@ -250,56 +292,90 @@ export const OneCollection = () => {
                               </span>
                             </div>
                           </MonsterTopParams>
+
+                          <MonsterBottomParams>
+                            <div className="xl:flex xl:flex-row">
+                              <div className="2xl:ml-6 ml-2">
+                                <MonsterParam
+                                  title="Common"
+                                  pct={monsterCardRarity("Common")}
+                                />
+                                <MonsterParam
+                                  title="UnCommon"
+                                  pct={monsterCardRarity("Uncommon")}
+                                />
+                              </div>
+                              <div className="2xl:ml-6 ml-2">
+                                <MonsterParam
+                                  width="w-[50px]"
+                                  title="Rare"
+                                  pct={monsterCardRarity("Rare")}
+                                />
+                                <MonsterParam
+                                  title="Epic"
+                                  width="w-[50px]"
+                                  pct={monsterCardRarity("Epic")}
+                                />
+                              </div>
+                            </div>
+                          </MonsterBottomParams>
                         </>
-                      ) : (
-                        ""
                       )}
 
-                      {!isMintLoader ? (
-                        <div className="text-center mt-4">
-                          <Button
-                            size="lg"
-                            noIcon
-                            title="Mint Monster"
-                            disabled={countZombieSelected() < 10}
-                            onClick={mintMonster}
+                      <div className="mt-4 text-center">
+                        Mint Price:{" "}
+                        <b
+                          className={`text-lg ${
+                            isEnoughBalance() ? "" : "text-red-500"
+                          }`}
+                        >
+                          {getMintDeposit()} ZML
+                        </b>
+                        <div className="relative w-6 inline-block ml-2 align-text-bottom">
+                          <img src={infoIcon} alt="info" className="w-6"
+                               onMouseEnter={() => setPriceInfoTooltip(true)}
+                               onClick={() => setPriceInfoTooltip(!priceInfoTooltip)}
+                               onMouseLeave={() => setPriceInfoTooltip(false)}
                           />
-                        </div>
-                      ) : (
-                        <div className="mt-4">
-                          <Loader/>
-                        </div>
-                      )}
 
-                      {countZombieSelected() ? (
-                        <div className="mt-5">
-                          {/*<p className="font-semibold text-center mb-1">Rarity Chance:</p>*/}
-                          <MonsterParam
-                            title="Common"
-                            pct={monsterCardRarity("Common")}
-                          />
-                          <MonsterParam
-                            title="UnCommon"
-                            pct={monsterCardRarity("Uncommon")}
-                          />
-                          <MonsterParam
-                            title="Rare"
-                            pct={monsterCardRarity("Rare")}
-                          />
-                          <MonsterParam
-                            title="Epic"
-                            pct={monsterCardRarity("Epic")}
-                          />
+                          {
+                            priceInfoTooltip && (
+                              <div
+                                className="absolute left-[-84px] bottom-8 text-black bg-white p-4 w-52 rounded-md text-left text-sm shadow-lg">
+                                <b className="block text-center">Price change by selected zombies rarity:</b>
+                                <ul className="mt-2 ml-3">
+                                  <li>Common: +50 ZML</li>
+                                  <li>UnCommon: +100 ZML</li>
+                                  <li>Rare: +200 ZML</li>
+                                  <li>Epic: +400 ZML</li>
+                                </ul>
+                              </div>
+                            )
+                          }
                         </div>
-                      ) : (
-                        ""
-                      )}
+
+                        {!isMintLoader ? (
+                          <div className="text-center mt-2">
+                            <Button
+                              size="lg"
+                              noIcon
+                              title="Mint Monster"
+                              disabled={countZombieSelected() < 10}
+                              onClick={mintMonster}
+                            />
+                          </div>
+                        ) : (
+                          <div className="mt-4">
+                            <Loader />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </>
             ) : (
-              <Loader/>
+              <Loader />
             )}
           </Container>
 
@@ -331,7 +407,7 @@ export const OneCollection = () => {
                         key={zombie.tokenId}
                         onClick={() => selectZombie(zombie)}
                       >
-                        <Card nft={zombie} size="sm" noMenu/>
+                        <Card nft={zombie} size="sm" noMenu />
                       </div>
                     ))}
                 </div>
@@ -353,7 +429,7 @@ export const OneCollection = () => {
           </Popup>
         </Wrapper>
 
-        <Footer/>
+        <Footer />
       </InnerPageWrapper>
     </>
   );
