@@ -47,6 +47,8 @@ interface IZombieNFT is IERC721 {
 }
 
 interface IMonsterNFT is IERC721 {
+    function safeMint(uint[] memory zombiesList) external;
+
     function setMonsterSalePrice(uint, uint) external;
 }
 

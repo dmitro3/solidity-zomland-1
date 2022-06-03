@@ -13,7 +13,7 @@ export const CardDropdown = ({
     {
       title: "Transfer",
       fn: setTransferPopupVisible,
-      icon: <ArrowRightIcon className="h-5 w-5 mr-2 font-semibold"/>,
+      icon: <ArrowRightIcon className="h-5 w-5 mr-2 font-semibold" />,
     }
   ];
 
@@ -21,7 +21,7 @@ export const CardDropdown = ({
     actions.push({
       title: "Sell on Market",
       fn: setSellItems,
-      icon: <CurrencyDollarIcon className="h-5 w-5 mr-2 font-semibold"/>,
+      icon: <CurrencyDollarIcon className="h-5 w-5 mr-2 font-semibold" />,
     });
   }
 
@@ -29,7 +29,7 @@ export const CardDropdown = ({
     actions.push({
       title: "Kill to get ZML",
       fn: setKillItem,
-      icon: <XIcon className="h-5 w-5 mr-2 font-semibold"/>,
+      icon: <XIcon className="h-5 w-5 mr-2 font-semibold" />,
     });
   }
 
@@ -37,7 +37,7 @@ export const CardDropdown = ({
     <Menu as="div" className="relative inline-block text-left z-20">
       <div>
         <Menu.Button className="cursor-pointer hover:text-orange-600">
-          <DotsVerticalIcon className="h-7 w-7 pt-1" aria-hidden="true"/>
+          <DotsVerticalIcon className="h-7 w-7 pt-1" aria-hidden="true" />
         </Menu.Button>
       </div>
 

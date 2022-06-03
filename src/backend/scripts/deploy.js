@@ -49,12 +49,14 @@ async function main() {
   await collection.addCollection("Pirate", "bafybeifq6clpc672vcln7l5iv4355ze6ludm7opcpldbgkwa7sfu5inysm");
   // await collection.addCollection("Punk", "bafybeid3p33trzeklhvblet72wmt2rfnfvgii6ezbvhdix4hc7p2uwuotu");
   // await collection.addCollection("Stylish", "bafybeifjiplwfr52wvogoxidckgpq2urq66cjrqfdvfsgn2y3kscxjlcu4");
-  await collection.addCollection("Combat", "bafybeico3paszepcemcprmsav47ntzy4cohqiw56m6o7pyi7oslhtf4ro4");
+  // await collection.addCollection("Combat", "bafybeico3paszepcemcprmsav47ntzy4cohqiw56m6o7pyi7oslhtf4ro4");
 
   console.log("Collections added");
 
-  // await landNFT.connect(account1).safeMint();
-  // await zombieNFT.connect(account1).safeMint(0);
+  for (let i = 0; i < 5; i++) {
+    await landNFT.connect(account1).safeMint({ value: ethers.utils.parseEther("0.33") });
+    await zombieNFT.connect(account1).safeMint(i);
+  }
 
   // For each contract, pass the deployed contract and name to this function to save a copy of the contract ABI and address to the front end.
   saveFrontendFiles(main, "MainContract");
@@ -76,7 +78,7 @@ function saveFrontendFiles(contract, name) {
 
   fs.writeFileSync(
     contractsDir + `/${name}-address.json`,
-    JSON.stringify({address: contract.address}, undefined, 2)
+    JSON.stringify({ address: contract.address }, undefined, 2)
   );
 
   const contractArtifact = artifacts.readArtifactSync(name);

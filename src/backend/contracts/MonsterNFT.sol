@@ -35,6 +35,8 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     uint brain;
     string nftType;
     address ownerId;
+    uint nextLandDiscovery;
+    uint nextBattle;
   }
 
   modifier onlyMarketContract() {
@@ -91,7 +93,10 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     return super.supportsInterface(_interfaceId);
   }
 
-  function safeMint(uint[] memory zombiesList) public {
+  function safeMint(uint[] memory zombiesList) external {
+    address _tokenContract = IMain(mainContract).getContractTokenFT();
+    require(_tokenContract == msg.sender, "You can't call this method");
+
     uint8 _collectionSize = 10;
     if (zombiesList.length != _collectionSize) {
       revert MonsterMintCountError({message : "You need to send more zombies for mint Monster", required : _collectionSize});
@@ -110,7 +115,9 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     _safeMint(msg.sender, _tokenId);
     _setTokenURI(_tokenId, _uri);
 
-    monsters[_tokenId] = Monster(_tokenId, _rarity, _collectionId, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain, "Monster", msg.sender);
+    monsters[_tokenId] = Monster(
+      _tokenId, _rarity, _collectionId, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain,
+      "Monster", msg.sender, block.timestamp, block.timestamp);
     addMonsterRarity(msg.sender, _tokenId, _rarity);
   }
 

@@ -130,7 +130,7 @@ export const Monsters = () => {
 
   return (
     <InnerPageWrapper>
-      <Header/>
+      <Header />
 
       <Wrapper>
         <Container className="text-white text-center mt-6">
@@ -141,7 +141,7 @@ export const Monsters = () => {
 
           {isReady ? (
             <>
-              <div className="flex justify-between mt-8">
+              <div className="flex justify-between mt-8 z-30">
                 <div className="basis-1/2 text-lg text-left pt-2 pl-1">
                   Available:
                   <span className="ml-2 font-semibold text-orange-500">
@@ -196,7 +196,7 @@ export const Monsters = () => {
               </div>
             </>
           ) : (
-            <Loader/>
+            <Loader />
           )}
         </Container>
 
@@ -228,14 +228,14 @@ export const Monsters = () => {
                 />
               </div>
               <div className="inline-block">
-                <Button title="Kill Monster" onClick={handleKill}/>
+                <Button title="Kill Monster" onClick={handleKill} />
               </div>
             </div>
           )}
         </Popup>
       </Wrapper>
 
-      <Footer/>
+      <Footer />
     </InnerPageWrapper>
   );
 };

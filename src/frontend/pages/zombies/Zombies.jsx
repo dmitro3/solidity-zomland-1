@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  addPendingTransaction, addTransactionError,
-  convertFromYocto,
-  formatId,
-  rmFromMarket, transformCollections, transformLand, transformZombie,
+  addPendingTransaction,
+  addTransactionError,
+  transformCollections,
+  transformLand,
+  transformZombie,
 } from "../../web3/utils";
 import {
   Container,
@@ -23,10 +24,10 @@ import { Card } from "../../components/card/Card";
 import { Loader } from "../../components/basic/Loader";
 import Dropdown from "../../components/basic/Dropdown";
 import { Pagination } from "../../components/Pagination";
-import { Popup } from "../../components/Popup";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserBalance } from '../../web3/api';
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
+import { addForKill, cleanupKillList } from '../../store/sidebarSlice';
 
 const PAGE_LIMIT = "20";
 
@@ -34,6 +35,7 @@ export const Zombies = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
   const sellList = useSelector(state => state.market.sale);
+  const killList = useSelector(state => state.sidebar.kill);
 
   const [isReady, setIsReady] = useState(false);
   const [userZombies, setUserZombies] = useState([]);
@@ -41,10 +43,7 @@ export const Zombies = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userLands, setUserLands] = useState([]);
   const [userClaimCount, setUserClaimCount] = useState(0);
-  const [killTokens, setKillTokens] = useState(0);
   const [mintPopupVisible, setMintPopupVisible] = useState(false);
-  const [killPopupVisible, setKillPopupVisible] = useState(false);
-  const [killItem, setKillItem] = useState(null);
   const [filterRarity, setFilterRarity] = useState("");
   const [filterCollection, setFilterCollection] = useState("");
   const [allCollections, setAllCollections] = useState([]);
@@ -88,7 +87,7 @@ export const Zombies = () => {
 
   const fetchCollections = async () => {
     const collectionsObj = await window.contracts.collection.getAllCollections();
-    const collections = collectionsObj.map((collection, index) => transformCollections(collection, index));
+    const collections = collectionsObj[1].map((collection, index) => transformCollections(collection, index));
     setAllCollections(collections);
   }
 
@@ -102,6 +101,18 @@ export const Zombies = () => {
       }));
       dispatch(cleanupSaleList({ type: "lands" }));
       dispatch(cleanupSaleList({ type: "monsters" }));
+    }
+  };
+
+  const appendToKillList = async (zombie) => {
+    if (
+      !killList["zombies"].filter((exist) => exist.tokenId === zombie.tokenId).length
+    ) {
+      dispatch(addForKill({
+        type: "zombies",
+        item: zombie
+      }));
+      dispatch(cleanupKillList({ type: "monsters" }));
     }
   };
 
@@ -258,34 +269,6 @@ export const Zombies = () => {
     fetchUserZombies(page, filterCollection, filterRarity);
   };
 
-  const showKillPopup = async (item) => {
-    setKillItem(item);
-    setKillTokens(item.killTokens);
-    setKillPopupVisible(true);
-  };
-
-  const handleKill = async () => {
-    if (killItem) {
-      await window.contracts.zombie.killZombie(killItem.tokenId).then(transaction => {
-        addPendingTransaction(dispatch, transaction, "Kill Zombie to get ZML tokens");
-
-        transaction.wait().then(async receipt => {
-          if (receipt.status === 1) {
-            fetchUserZombies(currentPage, filterCollection, filterRarity);
-            setKillPopupVisible(false);
-
-            // Update user balance
-            await updateUserBalance(dispatch, currentUser.accountId);
-          } else {
-            alert('Minting error');
-          }
-        });
-      }).catch(err => {
-        addTransactionError(dispatch, err.message);
-      });
-    }
-  };
-
   const hasLands = userLands.length > 0;
   const hasZombies = userZombiesCount > 0;
 
@@ -303,7 +286,7 @@ export const Zombies = () => {
           {isReady ? (
             <>
               {hasLands ? (
-                <div className="sm:flex justify-between mt-8 relative z-20">
+                <div className="sm:flex justify-between mt-8 relative z-30">
                   <div className="lg:basis-4/12 lg:flex hidden text-lg text-left pt-4 pl-1">
                     Available:
                     <span className="ml-2 font-semibold text-orange-500">
@@ -368,7 +351,7 @@ export const Zombies = () => {
                         handleTransfer={(transferAddress) =>
                           handleTransfer(zombie, transferAddress)
                         }
-                        setKillItem={() => showKillPopup(zombie)}
+                        setKillItem={() => appendToKillList(zombie)}
                       />
                     ))}
                   </List>
@@ -405,41 +388,6 @@ export const Zombies = () => {
           mintInProgressList={mintInProgressList}
         />
 
-        <Popup
-          title="Kill Zombie"
-          popupVisible={killPopupVisible}
-          setPopupVisible={setKillPopupVisible}
-        >
-          {killItem && (
-            <div className="mt-2">
-              <p className="mb-6">
-                Zombie{" "}
-                <span className="text-xl font-semibold">
-                  {formatId(killItem)}
-                </span>{" "}
-                will be killed and you will receive{" "}
-                {killTokens && (
-                  <span className="text-xl font-semibold">
-                    {convertFromYocto(killTokens, 2)} ZML
-                  </span>
-                )}{" "}
-                tokens.
-              </p>
-
-              <div className="mr-3 inline-block">
-                <Button
-                  title="Cancel"
-                  secondary
-                  noIcon
-                  onClick={() => setKillPopupVisible(false)}
-                />
-              </div>
-              <div className="inline-block">
-                <Button title="Kill Zombie" onClick={handleKill} />
-              </div>
-            </div>
-          )}
-        </Popup>
       </Wrapper>
 
       <Footer />

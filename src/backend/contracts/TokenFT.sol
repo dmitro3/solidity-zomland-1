@@ -92,4 +92,11 @@ contract TokenFTContract is ERC20 {
 
   //  function isStakeMonster() external {}
   //  function getStakeMonsterPct() external {}
+
+  function mintMonsterPay(uint payAmount, uint[] memory zombiesList) public {
+    require(payAmount > 0, "Wrong payment amount");
+
+    address _monsterContract = IMain(mainContract).getContractMonsterNFT();
+    IMonsterNFT(_monsterContract).safeMint(zombiesList);
+  }
 }

@@ -235,17 +235,23 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return (_innerListLength, _resultZombies);
   }
 
-  function killZombie(uint _tokenId) public {
+  function killZombies(uint[] memory _tokenList) public {
     address _contractTokenFT = IMain(mainContract).getContractTokenFT();
-    Zombie storage _zombie = zombies[_tokenId];
-    if (_zombie.ownerId != msg.sender) {
-      revert ZombiesKillError({message : "You can't kill this Zombie"});
+    uint _totalKillTokens = 0;
+
+    for (uint _i = 0; _i < _tokenList.length; ++_i) {
+      uint _tokenId = _tokenList[_i];
+      Zombie storage _zombie = zombies[_tokenId];
+      if (_zombie.ownerId != msg.sender) {
+        revert ZombiesKillError({message : "You can't kill this Zombie"});
+      }
+
+      _totalKillTokens += _zombie.killTokens;
+      removeZombieCollectionRarity(msg.sender, _tokenId, _zombie.collection, _zombie.cardRarity);
+      _burn(_tokenId);
     }
 
-    removeZombieCollectionRarity(msg.sender, _tokenId, _zombie.collection, _zombie.cardRarity);
-    _burn(_tokenId);
-
-    ITokenFT(_contractTokenFT).transferOnKill(msg.sender, _zombie.killTokens);
+    ITokenFT(_contractTokenFT).transferOnKill(msg.sender, _totalKillTokens);
   }
 
   function checkAndBurnZombies(address _owner, uint[] memory zombiesList) external returns (uint, uint, uint, uint, uint) {

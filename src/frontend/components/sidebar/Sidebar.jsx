@@ -1,10 +1,13 @@
 import React from "react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/outline";
-import { addPendingTransaction, convertToYocto } from "../../web3/utils";
+import { addPendingTransaction, addTransactionError, convertFromYocto, convertToYocto } from "../../web3/utils";
 import { Button } from "../basic/Button";
 import { SellItem } from "./SellItem";
 import { useDispatch, useSelector } from 'react-redux';
 import { changePrice, cleanupSaleList, removeFromSale } from '../../store/marketSlice';
+import { KillItem } from './KillItem';
+import { cleanupKillList, removeFromKill } from '../../store/sidebarSlice';
+import { updateUserBalance } from '../../web3/api';
 
 export const Sidebar = ({
   isOpen,
@@ -12,6 +15,8 @@ export const Sidebar = ({
 }) => {
   const dispatch = useDispatch();
   const sellList = useSelector(state => state.market.sale);
+  const killList = useSelector(state => state.sidebar.kill);
+  const currentUser = useSelector(state => state.user.user);
 
   const cancelItemSell = (tokenId, type) => {
     dispatch(removeFromSale({
@@ -136,19 +141,73 @@ export const Sidebar = ({
     return `Place ${result} on Market`;
   };
 
-  const isSidebarEnabled = () => {
-    return (
-      sellList["zombies"].length > 0 ||
-      sellList["lands"].length > 0 ||
-      sellList["monsters"].length > 0
-    );
+  const killMyItems = () => {
+    if (killList["zombies"].length) {
+      let idList = killList["zombies"].map(item => item.tokenId);
+      killZombieItems(idList);
+    } else if (killList["monsters"].length) {
+      let idList = killList["monsters"].map(item => item.tokenId);
+      killMonsterItems(idList);
+    }
   };
+
+  const cancelItemKill = (tokenId, type) => {
+    dispatch(removeFromKill({
+      type,
+      tokenId
+    }));
+  };
+
+  const killBtnText = () => {
+    let total = 0;
+    if (killList["zombies"].length > 0) {
+      killList["zombies"].map(zombie => total += parseFloat(zombie.killTokens))
+    } else {
+      killList["monsters"].map(zombie => total += parseFloat(zombie.killTokens))
+    }
+    return `Kill to get ${convertFromYocto(total)} ZML`;
+  };
+
+  const killZombieItems = async (killObject) => {
+    await window.contracts.zombie.killZombies(killObject).then(transaction => {
+      addPendingTransaction(dispatch, transaction, "Kill Zombies to get ZML tokens");
+
+      transaction.wait().then(async receipt => {
+        if (receipt.status === 1) {
+          // Update user balance
+          await updateUserBalance(dispatch, currentUser.accountId);
+          dispatch(cleanupKillList({ type: "zombies" }));
+        } else {
+          alert('Minting error');
+        }
+      });
+    }).catch(err => {
+      addTransactionError(dispatch, err.message);
+    });
+  };
+
+  // const handleKill = async () => {
+
+  // };
+
+  const killMonsterItems = async (killObject) => {
+
+  };
+
+  const isSidebarEnabled = () => {
+    return isSellEnabled() || isKillEnabled();
+  };
+
+  const isSellEnabled = () => sellList["zombies"].length > 0 || sellList["monsters"].length > 0 || sellList["lands"].length > 0;
+
+  const isKillEnabled = () => killList["zombies"].length > 0 || killList["monsters"].length > 0;
+
 
   return (
     <>
       {isSidebarEnabled() && (
         <div
-          className={`top-0 right-0 fixed w-[350px] h-full p-10 ease-in-out duration-300 bg-gray-800 z-30 
+          className={`top-0 right-0 fixed w-[300px] sm:w-[350px] h-full px-2 py-6 sm:p-10 ease-in-out duration-300 bg-gray-800 z-50 
         shadow-3xl border-l-[4px] border-gray-600 ${
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
@@ -163,38 +222,76 @@ export const Sidebar = ({
             }`}
             onClick={() => setIsOpen(!isOpen)}
           >
-            <ChevronDoubleRightIcon className="w-5 h-6 font-semibold"/>
+            <ChevronDoubleRightIcon className="w-5 h-6 font-semibold" />
           </div>
 
-          {Object.keys(sellList).map((key) => (
-            <section key={key}>
-              {sellList[key].length > 0 && (
-                <div className="mb-10">
-                  <h3 className="uppercase text-lg text-center font-semibold mb-4">
-                    Sell {key}
-                  </h3>
-                  <div
-                    className={`overflow-y-auto absolute bottom-32 top-24 right-10 left-10`}
-                  >
-                    {sellList[key].map((item) => (
-                      <SellItem
-                        key={item.tokenId}
-                        item_type={item.cardRarity || item.landType}
-                        nft={item}
-                        cancelSell={() => cancelItemSell(item.tokenId, key)}
-                        setItemPrice={setItemPrice}
-                        id={key}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </section>
-          ))}
+          {isSellEnabled() && (
+            <>
+              {Object.keys(sellList).map((key) => (
+                <section key={key}>
+                  {sellList[key].length > 0 && (
+                    <div className="mb-10">
+                      <h3 className="uppercase text-lg text-center font-semibold mb-4">
+                        Sell {key}
+                      </h3>
+                      <div
+                        className={`overflow-y-auto absolute bottom-32 top-24 right-10 left-10`}
+                      >
+                        {sellList[key].map((item) => (
+                          <SellItem
+                            key={item.tokenId}
+                            item_type={item.cardRarity || item.landType}
+                            nft={item}
+                            cancelSell={() => cancelItemSell(item.tokenId, key)}
+                            setItemPrice={setItemPrice}
+                            id={key}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </section>
+              ))}
 
-          <div className="absolute bottom-10 text-center left-0 right-0">
-            <Button title={sellBtnText()} noIcon onClick={sellMyItems}/>
-          </div>
+              <div className="absolute bottom-10 text-center left-0 right-0">
+                <Button title={sellBtnText()} noIcon onClick={sellMyItems} />
+              </div>
+            </>
+          )}
+
+          {isKillEnabled() && (
+            <>
+              {Object.keys(killList).map((key) => (
+                <section key={key}>
+                  {killList[key].length > 0 && (
+                    <div className="mb-10">
+                      <h3 className="uppercase text-xl text-center font-semibold mb-4">
+                        Kill {key}
+                      </h3>
+                      <div
+                        className={`overflow-y-auto absolute bottom-32 top-24 right-10 left-10`}
+                      >
+                        {killList[key].map((item) => (
+                          <KillItem
+                            key={item.tokenId}
+                            item_type={item.cardRarity || item.landType}
+                            nft={item}
+                            cancelKill={() => cancelItemKill(item.tokenId, key)}
+                            id={key}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </section>
+              ))}
+
+              <div className="absolute bottom-10 text-center left-0 right-0">
+                <Button title={killBtnText()} noIcon onClick={killMyItems} />
+              </div>
+            </>
+          )}
+
         </div>
       )}
     </>
