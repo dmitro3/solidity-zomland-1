@@ -200,39 +200,6 @@ export const Monsters = () => {
           )}
         </Container>
 
-        <Popup
-          title="Kill Monster"
-          popupVisible={killPopupVisible}
-          setPopupVisible={setKillPopupVisible}
-        >
-          {killItem && (
-            <div className="mt-2">
-              <p className="mb-6">
-                Monster{" "}
-                <span className="text-xl font-semibold">
-                  {formatId(killItem)}
-                </span>{" "}
-                will be killed and you will receive{" "}
-                <span className="text-xl font-semibold">
-                  {convertFromYocto(killItem.kill_tokens)} ZML
-                </span>{" "}
-                tokens.
-              </p>
-
-              <div className="mr-3 inline-block">
-                <Button
-                  title="Cancel"
-                  secondary
-                  noIcon
-                  onClick={() => setKillPopupVisible(false)}
-                />
-              </div>
-              <div className="inline-block">
-                <Button title="Kill Monster" onClick={handleKill} />
-              </div>
-            </div>
-          )}
-        </Popup>
       </Wrapper>
 
       <Footer />

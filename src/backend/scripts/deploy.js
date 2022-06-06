@@ -56,7 +56,10 @@ async function main() {
   for (let i = 0; i < 5; i++) {
     await landNFT.connect(account1).safeMint({ value: ethers.utils.parseEther("0.33") });
     await zombieNFT.connect(account1).safeMint(i);
+    console.log('+');
   }
+
+  console.log("Seed data added");
 
   // For each contract, pass the deployed contract and name to this function to save a copy of the contract ABI and address to the front end.
   saveFrontendFiles(main, "MainContract");

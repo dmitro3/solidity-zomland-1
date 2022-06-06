@@ -12,11 +12,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../interfaces/interface.sol";
 import "../abstract/utils.sol";
+import "../abstract/modifiers.sol";
 
   error MonsterMintCountError(string message, uint required);
 
-contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Utils {
-  address internal mainContract;
+contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Utils, Modifiers {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   mapping(uint => Monster) monsters;
@@ -39,15 +39,11 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     uint nextBattle;
   }
 
-  modifier onlyMarketContract() {
-    address _marketContract = IMain(mainContract).getContractMarket();
-    require(_marketContract == msg.sender, "You can't call this method");
-    _;
-  }
-
   constructor(address _mainContract) ERC721("ZomLand", "ZMLM") {
     mainContract = _mainContract;
   }
+
+  // ---------------- Internal & Private methods ---------------
 
   function _baseURI() internal pure override returns (string memory) {
     return "https://ipfs.io/ipfs/";
@@ -83,7 +79,54 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     }
   }
 
-  // ---------------- Public methods ---------------
+  // ---------- External Limited methods -----------
+
+  function safeMint(uint payAmount, uint[] memory _zombiesList, address _owner) external onlyTokenContract returns (uint) {
+    uint8 _collectionSize = 10;
+    if (_zombiesList.length != _collectionSize) {
+      revert MonsterMintCountError({message : "You need to send more zombies for mint Monster", required : _collectionSize});
+    }
+
+    address _contractZombie = IMain(mainContract).getContractZombieNFT();
+    string memory _rarityStr = IZombieNFT(_contractZombie).getRandomRarityByZombies(_zombiesList);
+    MonsterResultMetadata memory _metadata = MonsterResultMetadata(0, 0, 0, 0, 0);
+    (_metadata.health, _metadata.attack, _metadata.brain, _metadata.killTokens, _metadata.collectionId) = IZombieNFT(_contractZombie).checkAndBurnZombies(_owner, _zombiesList, payAmount);
+
+    CardRarity _rarity = rarityFromString(_rarityStr);
+    address _contractCollection = IMain(mainContract).getContractCollection();
+    string memory _uri = ICollection(_contractCollection).getCollectionImage(_metadata.collectionId);
+
+    uint _tokenId = _tokenIdCounter.current();
+    _tokenIdCounter.increment();
+    _safeMint(_owner, _tokenId);
+    _setTokenURI(_tokenId, _uri);
+
+    monsters[_tokenId] = Monster(
+      _tokenId,
+      _rarity,
+      _metadata.collectionId,
+      _metadata.killTokens,
+      0,
+      block.timestamp,
+      _uri,
+      _metadata.health,
+      _metadata.attack,
+      _metadata.brain,
+      "Monster",
+      _owner,
+      block.timestamp,
+      block.timestamp
+    );
+    addMonsterRarity(_owner, _tokenId, _rarity);
+
+    return _tokenId;
+  }
+
+  function setMonsterSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
+    monsters[_tokenId].salePrice = _price;
+  }
+
+  // ---------------- Public & External methods ---------------
 
   function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
     return super.tokenURI(_tokenId);
@@ -91,34 +134,6 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
 
   function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(_interfaceId);
-  }
-
-  function safeMint(uint[] memory zombiesList) external {
-    address _tokenContract = IMain(mainContract).getContractTokenFT();
-    require(_tokenContract == msg.sender, "You can't call this method");
-
-    uint8 _collectionSize = 10;
-    if (zombiesList.length != _collectionSize) {
-      revert MonsterMintCountError({message : "You need to send more zombies for mint Monster", required : _collectionSize});
-    }
-
-    address _contractZombie = IMain(mainContract).getContractZombieNFT();
-    string memory _rarityStr = IZombieNFT(_contractZombie).getRandomRarityByZombies(zombiesList);
-    (uint _health, uint _attack, uint _brain, uint _killTokens, uint _collectionId) = IZombieNFT(_contractZombie).checkAndBurnZombies(msg.sender, zombiesList);
-
-    CardRarity _rarity = rarityFromString(_rarityStr);
-    address _contractCollection = IMain(mainContract).getContractCollection();
-    string memory _uri = ICollection(_contractCollection).getCollectionImage(_collectionId);
-
-    uint _tokenId = _tokenIdCounter.current();
-    _tokenIdCounter.increment();
-    _safeMint(msg.sender, _tokenId);
-    _setTokenURI(_tokenId, _uri);
-
-    monsters[_tokenId] = Monster(
-      _tokenId, _rarity, _collectionId, _killTokens, 0, block.timestamp, _uri, _health, _attack, _brain,
-      "Monster", msg.sender, block.timestamp, block.timestamp);
-    addMonsterRarity(msg.sender, _tokenId, _rarity);
   }
 
   function userMonsters(uint _startIndex, uint8 _count, string memory _rarityFilter) public view returns (uint, Monster[] memory) {
@@ -165,10 +180,6 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
       }
     }
     return (total, _userMonsters);
-  }
-
-  function setMonsterSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
-    monsters[_tokenId].salePrice = _price;
   }
 
 }

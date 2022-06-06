@@ -9,13 +9,13 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../interfaces/interface.sol";
+import "../abstract/modifiers.sol";
 
   error LandsLimitError(string message, uint limit);
   error LandsCallError(string message);
   error LandsSmallLimitError(string message);
 
-contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable {
-  address internal mainContract;
+contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Modifiers {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
@@ -50,18 +50,6 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   mapping(LandType => LandTypeData) public landTypeData;
   mapping(address => bool) accountsWithMicroLand;
   mapping(uint => Land) lands;
-
-  modifier onlyZombieContract() {
-    address zombieContract = IMain(mainContract).getContractZombieNFT();
-    require(zombieContract == msg.sender, "You can't call this method");
-    _;
-  }
-
-  modifier onlyMarketContract() {
-    address _marketContract = IMain(mainContract).getContractMarket();
-    require(_marketContract == msg.sender, "You can't call this method");
-    _;
-  }
 
   constructor(address _mainContract) ERC721("ZomLand", "ZMLL") {
     mainContract = _mainContract;
@@ -100,6 +88,8 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     });
   }
 
+  // ---------------- Internal & Private methods ---------------
+
   function _baseURI() internal pure override returns (string memory) {
     return "https://ipfs.io/ipfs/";
   }
@@ -137,11 +127,6 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     return "Large";
   }
 
-  function landInfo(uint _id) external view returns (address, string memory, uint) {
-    Land storage land = lands[_id];
-    return (land.ownerId, landTypeToString(land.landType), land.countMintedZombies);
-  }
-
   function checkLimits(LandType _landType) internal view {
     uint _maxCount = landTypeData[_landType].limitCount;
     if (_landType == LandType.Micro) {
@@ -156,7 +141,22 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     }
   }
 
-  // ---------------- Public methods ---------------
+  // ---------------- External Limited methods ---------------
+
+  function landSetMintTimestamp(uint _landId) external onlyZombieContract {
+    lands[_landId].lastZombieClaim = block.timestamp;
+  }
+
+  function setLandSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
+    lands[_tokenId].salePrice = _price;
+  }
+
+  // ---------------- Public & External methods ---------------
+
+  function landInfo(uint _id) external view returns (address, string memory, uint) {
+    Land storage land = lands[_id];
+    return (land.ownerId, landTypeToString(land.landType), land.countMintedZombies);
+  }
 
   function getAllLands() public view returns (LandTypeData[] memory) {
     LandTypeData[] memory _lands = new LandTypeData[](4);
@@ -175,10 +175,6 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
       return landTypeData[_landType].zombiesPerDay;
     }
     return 0;
-  }
-
-  function landSetMintTimestamp(uint _landId) external onlyZombieContract {
-    lands[_landId].lastZombieClaim = block.timestamp;
   }
 
   function safeMint() public payable returns (uint) {
@@ -218,10 +214,6 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
 
   function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(_interfaceId);
-  }
-
-  function setLandSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
-    lands[_tokenId].salePrice = _price;
   }
 
   function getMarketItems(uint _startIndex, uint8 _count) public view returns (uint, Land[] memory) {

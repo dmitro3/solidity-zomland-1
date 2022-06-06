@@ -18,6 +18,14 @@ abstract contract Utils {
     ArmorV2
   }
 
+  struct MonsterResultMetadata {
+    uint health;
+    uint attack;
+    uint brain;
+    uint killTokens;
+    uint collectionId;
+  }
+
   function rarityToString(CardRarity _rarity) internal pure returns (string memory) {
     if (_rarity == CardRarity.Common) {
       return "Common";

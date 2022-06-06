@@ -25,7 +25,6 @@ import { Loader } from "../../components/basic/Loader";
 import Dropdown from "../../components/basic/Dropdown";
 import { Pagination } from "../../components/Pagination";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserBalance } from '../../web3/api';
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 import { addForKill, cleanupKillList } from '../../store/sidebarSlice';
 

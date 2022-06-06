@@ -25,6 +25,7 @@ import { Card } from "../../components/card/Card";
 import { Pagination } from "../../components/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import infoIcon from "../../assets/images/info.png";
+import { updateUserBalance } from '../../web3/api';
 
 const MonsterParam = ({ title, pct, width }) => (
   <div className="whitespace-nowrap text-center">
@@ -144,9 +145,7 @@ export const OneCollection = () => {
       const zombieList = zombieCards.filter((zombie) => zombie).map(
         (zombie) => parseInt(zombie.tokenId)
       );
-      const gas = await window.contracts.monster.estimateGas.safeMint(zombieList);
-
-
+      // const gas = await window.contracts.monster.estimateGas.safeMint(zombieList);
       // await window.contracts.token.stake(depositAmount).then(transaction => {
       //   addPendingTransaction(dispatch, transaction, "Deposit ZML to staking");
       //
@@ -168,6 +167,9 @@ export const OneCollection = () => {
 
         transaction.wait().then(receipt => {
           if (receipt.status === 1) {
+            // update user balance
+            updateUserBalance(dispatch, currentUser.accountId);
+
             setIsMintLoader(false);
             navigate("/monsters");
           } else {

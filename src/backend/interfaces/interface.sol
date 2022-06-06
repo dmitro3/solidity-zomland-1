@@ -39,7 +39,7 @@ interface ILandNFT is IERC721 {
 }
 
 interface IZombieNFT is IERC721 {
-    function checkAndBurnZombies(address, uint[] calldata) external returns (uint, uint, uint, uint, uint);
+    function checkAndBurnZombies(address, uint[] calldata, uint) external returns (uint, uint, uint, uint, uint);
 
     function getRandomRarityByZombies(uint[] calldata) external returns (string memory);
 
@@ -47,7 +47,7 @@ interface IZombieNFT is IERC721 {
 }
 
 interface IMonsterNFT is IERC721 {
-    function safeMint(uint[] memory zombiesList) external;
+    function safeMint(uint, uint[] memory, address) external returns (uint);
 
     function setMonsterSalePrice(uint, uint) external;
 }
@@ -58,5 +58,5 @@ interface ITokenFT is IERC20 {
 }
 
 interface IMarket {
-    function getFromMarket(uint _startIndex, uint8 _count, string memory typeNFT) external view returns (uint, uint[] memory);
+    function getFromMarket(uint, uint8, string memory) external view returns (uint, uint[] memory);
 }

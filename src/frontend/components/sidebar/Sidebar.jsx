@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/outline";
 import { addPendingTransaction, addTransactionError, convertFromYocto, convertToYocto } from "../../web3/utils";
 import { Button } from "../basic/Button";
@@ -8,6 +8,7 @@ import { changePrice, cleanupSaleList, removeFromSale } from '../../store/market
 import { KillItem } from './KillItem';
 import { cleanupKillList, removeFromKill } from '../../store/sidebarSlice';
 import { updateUserBalance } from '../../web3/api';
+import { Loader } from '../basic/Loader';
 
 export const Sidebar = ({
   isOpen,
@@ -17,6 +18,7 @@ export const Sidebar = ({
   const sellList = useSelector(state => state.market.sale);
   const killList = useSelector(state => state.sidebar.kill);
   const currentUser = useSelector(state => state.user.user);
+  const [isLoading, setIsLoading] = useState(false);
 
   const cancelItemSell = (tokenId, type) => {
     dispatch(removeFromSale({
@@ -169,10 +171,12 @@ export const Sidebar = ({
   };
 
   const killZombieItems = async (killObject) => {
+    setIsLoading(true);
     await window.contracts.zombie.killZombies(killObject).then(transaction => {
       addPendingTransaction(dispatch, transaction, "Kill Zombies to get ZML tokens");
 
       transaction.wait().then(async receipt => {
+        setIsLoading(false);
         if (receipt.status === 1) {
           // Update user balance
           await updateUserBalance(dispatch, currentUser.accountId);
@@ -183,12 +187,9 @@ export const Sidebar = ({
       });
     }).catch(err => {
       addTransactionError(dispatch, err.message);
+      setIsLoading(false);
     });
   };
-
-  // const handleKill = async () => {
-
-  // };
 
   const killMonsterItems = async (killObject) => {
 
@@ -254,7 +255,11 @@ export const Sidebar = ({
               ))}
 
               <div className="absolute bottom-10 text-center left-0 right-0">
-                <Button title={sellBtnText()} noIcon onClick={sellMyItems} />
+                {!isLoading ? (
+                  <Button title={sellBtnText()} noIcon onClick={sellMyItems} />
+                ) : (
+                  <Loader />
+                )}
               </div>
             </>
           )}
@@ -287,11 +292,15 @@ export const Sidebar = ({
               ))}
 
               <div className="absolute bottom-10 text-center left-0 right-0">
-                <Button title={killBtnText()} noIcon onClick={killMyItems} />
+                {!isLoading ? (
+                  <Button title={killBtnText()} noIcon onClick={killMyItems} />
+                ) : (
+                  <Loader />
+                )}
               </div>
+
             </>
           )}
-
         </div>
       )}
     </>

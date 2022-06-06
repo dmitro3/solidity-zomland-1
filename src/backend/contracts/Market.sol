@@ -4,24 +4,20 @@ pragma solidity ^0.8.12;
 import "hardhat/console.sol";
 import "../interfaces/interface.sol";
 import "../abstract/utils.sol";
+import "../abstract/modifiers.sol";
 
   error MarketError(string message);
 
-contract MarketContract is Utils {
-  address internal mainContract;
+contract MarketContract is Utils, Modifiers {
   uint[] lands;
   uint[] zombies;
   uint[] monsters;
 
-  modifier onlyMarketContract() {
-    address _marketContract = IMain(mainContract).getContractMarket();
-    require(_marketContract == msg.sender, "You can't call this method");
-    _;
-  }
-
   constructor(address _mainContract) {
     mainContract = _mainContract;
   }
+
+  // ---------------- Public & External methods ---------------
 
   function publishOnMarket(uint[] calldata idList, uint[] calldata priceList, string memory typeNFT) public {
     if (string_equal(typeNFT, "land")) {
