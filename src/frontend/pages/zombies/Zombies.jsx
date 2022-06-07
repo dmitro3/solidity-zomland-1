@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   addPendingTransaction,
-  addTransactionError,
+  addTransactionError, rarityOptions,
   transformCollections,
   transformLand,
   transformZombie,
@@ -219,24 +219,6 @@ export const Zombies = () => {
     });
   };
 
-  const rarityOptions = () => {
-    const result = [];
-    const options = ["All Rarities", "Common", "Uncommon", "Rare", "Epic"];
-
-    options.map(option => {
-      result.push({
-        title: option,
-        onClick: () => {
-          const optionValue = option === "All Rarities" ? "" : option;
-          setFilterRarity(optionValue);
-          handleRarityChange(optionValue);
-        },
-      })
-    });
-
-    return result;
-  };
-
   const collectionOptions = () => {
     const collections = Object.keys(allCollections).map((key) => {
       return {
@@ -308,7 +290,7 @@ export const Zombies = () => {
                       <Dropdown
                         title="All Rarities"
                         selected={filterRarity}
-                        options={rarityOptions()}
+                        options={rarityOptions(setFilterRarity)}
                       />
                     </div>
                     <div className="inline-block">

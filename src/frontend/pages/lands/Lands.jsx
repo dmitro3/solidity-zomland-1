@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 import { CardLand } from '../../components/card-land/CardLand';
 import { TransferPopup } from '../../components/TransferPopup';
+import { removeLandFromMarket } from '../../web3/api';
 
 export const Lands = () => {
   const dispatch = useDispatch();
@@ -116,15 +117,9 @@ export const Lands = () => {
     }
   };
 
-  const rmFromMarket = async (tokenId) => {
-    await window.contracts.market.removeFromMarket(tokenId, "land").then(transaction => {
-      setIsReady(false);
-      addPendingTransaction(dispatch, transaction, "Remove Land from market");
-      transaction.wait().then(receipt => {
-        if (receipt.status === 1) {
-          loadUserLands();
-        }
-      });
+  const rmFromMarket = (tokenId) => {
+    removeLandFromMarket(dispatch, tokenId).then(() => {
+      loadUserLands();
     });
   }
 

@@ -83,7 +83,7 @@ export default function App() {
           exact
           path="/"
           element={
-            <Landing/>
+            <Landing />
           }
         />
         {isReady && (
@@ -92,47 +92,52 @@ export default function App() {
               exact
               path="/lands"
               element={
-                <Lands/>
+                <Lands />
               }
             />
             <Route
               exact
               path="/zombies"
               element={
-                <Zombies/>
+                <Zombies />
               }
             />
             <Route
               exact
               path="/collections"
               element={
-                <Collections/>
+                <Collections />
               }
             />
             <Route
               exact
               path="/collections/:collection_id"
               element={
-                <OneCollection/>
+                <OneCollection />
               }
             />
             <Route
               exact
               path="/monsters"
               element={
-                <Monsters/>
+                <Monsters />
               }
             />
             <Route
               exact
               path="/market"
-              element={<Market/>}
+              element={<Market />}
+            />
+            <Route
+              exact
+              path="/market/:section"
+              element={<Market />}
             />
             <Route
               exact
               path="/token"
               element={
-                <Token/>
+                <Token />
               }
             />
           </>
@@ -141,17 +146,17 @@ export default function App() {
         <Route
           exact
           path="/faq"
-          element={<Faq/>}
+          element={<Faq />}
         />
         <Route
           exact
           path="/terms-conditions"
-          element={<Terms/>}
+          element={<Terms />}
         />
         <Route
           exact
           path="/privacy-policy"
-          element={<Privacy/>}
+          element={<Privacy />}
         />
       </Routes>
 
@@ -159,7 +164,7 @@ export default function App() {
         isOpen={sidebarIsOpen}
         setIsOpen={setSidebarIsOpen}
       />
-      <TransactionList/>
+      <TransactionList />
     </BrowserRouter>
   );
 }

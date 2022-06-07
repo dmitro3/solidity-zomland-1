@@ -8,8 +8,7 @@ import "../abstract/modifiers.sol";
 
   error MarketError(string message);
 
-contract MarketContract is Utils {
-  address internal mainContract;
+contract MarketContract is Utils, Modifiers {
   uint[] lands;
   uint[] zombies;
   uint[] monsters;
@@ -76,41 +75,132 @@ contract MarketContract is Utils {
     }
   }
 
-  function getFromMarket(uint _startIndex, uint8 _count, string memory typeNFT) external view returns (uint, uint[] memory) {
-    uint _innerListLength;
-    bool isLand = string_equal(typeNFT, "land");
-    bool isZombie = string_equal(typeNFT, "zombie");
-    bool isMonster = string_equal(typeNFT, "monster");
+  function getLandsFromMarket(uint _startIndex, uint8 _count, string memory filterLandType) external view returns (uint, uint[] memory){
+    uint[] memory source = new uint[](lands.length);
+    uint[] memory _innerList = new uint[](_count);
 
-    if (isLand) {
+    uint _innerListLength;
+    if (bytes(filterLandType).length == 0) {
+      source = lands;
       _innerListLength = lands.length;
-    } else if (isZombie) {
-      _innerListLength = zombies.length;
-    } else if (isMonster) {
-      _innerListLength = monsters.length;
     } else {
-      revert MarketError({message : "Wrong typeNFT param"});
+      address _landContract = IMain(mainContract).getContractLandNFT();
+      uint landsCount = lands.length;
+
+      uint _index = 0;
+      for (uint _i = 0; _i < landsCount; ++_i) {
+        string memory landType = ILandNFT(_landContract).landInfoType(lands[_i]);
+        if (string_equal(landType, filterLandType)) {
+          source[_index] = lands[_i];
+          _index += 1;
+        }
+      }
+      _innerListLength = _index;
     }
 
-    uint _innerIndex = 0;
-    uint[] memory _innerList = new uint[](_count);
+    uint _index = 0;
     uint _endIndex = _startIndex + _count;
-
     for (uint _i = _startIndex; _i < _endIndex; ++_i) {
       if (_innerListLength > _i) {
-        if (isLand) {
-          _innerList[_innerIndex] = lands[_i];
-        } else if (isZombie) {
-          _innerList[_innerIndex] = zombies[_i];
-        } else if (isMonster) {
-          _innerList[_innerIndex] = monsters[_i];
-        }
-        _innerIndex += 1;
+        _innerList[_index] = source[_i];
+        _index += 1;
       }
     }
 
     return (_innerListLength, _innerList);
   }
+
+  function filterZombieMonster(uint[] storage source, string memory nftType, string memory _filterRarity, uint _filterCollection) internal view returns (uint, uint[] memory) {
+    uint _index = 0;
+    uint _itemsCount = source.length;
+    uint[] memory _itemsSource = new uint[](_itemsCount);
+    address _sourceContract = string_equal(nftType, "zombies") ? IMain(mainContract).getContractZombieNFT() : IMain(mainContract).getContractMonsterNFT();
+
+    for (uint _i = 0; _i < _itemsCount; ++_i) {
+      bool canAdd = false;
+      (string memory rarity, uint collection) = string_equal(nftType, "zombies") ? IZombieNFT(_sourceContract).getRarityCollection(source[_i]) : IMonsterNFT(_sourceContract).getRarityCollection(source[_i]);
+      if (bytes(_filterRarity).length != 0 && _filterCollection != 0) {
+        if (string_equal(rarity, _filterRarity) && collection == _filterCollection) {
+          canAdd = true;
+        }
+      } else if (bytes(_filterRarity).length != 0) {
+        if (string_equal(rarity, _filterRarity)) {
+          canAdd = true;
+        }
+      } else if (_filterCollection != 0) {
+        if (collection == _filterCollection) {
+          canAdd = true;
+        }
+      }
+
+      if (canAdd) {
+        _itemsSource[_index] = source[_i];
+        _index += 1;
+      }
+    }
+
+    return (_index, _itemsSource);
+  }
+
+  function getZombiesMonstersFromMarket(uint _startIndex, uint8 _count, string memory nftType, string memory _filterRarity, uint _filterCollection) external view returns (uint, uint[] memory){
+    uint[] storage source = string_equal(nftType, "zombies") ? zombies : monsters;
+    uint[] memory _innerList = new uint[](_count);
+
+    uint _innerListLength;
+    uint[] memory _itemsSource = new uint[](source.length);
+    if (bytes(_filterRarity).length != 0 || _filterCollection != 0) {
+      (_innerListLength, _itemsSource) = filterZombieMonster(source, nftType, _filterRarity, _filterCollection);
+    } else {
+      _itemsSource = source;
+      _innerListLength = source.length;
+    }
+
+    uint _index = 0;
+    uint _endIndex = _startIndex + _count;
+    for (uint _i = _startIndex; _i < _endIndex; ++_i) {
+      if (_innerListLength > _i) {
+        _innerList[_index] = _itemsSource[_i];
+        _index += 1;
+      }
+    }
+
+    return (_innerListLength, _innerList);
+  }
+
+
+  //  function getFromMarket(
+  //    uint _startIndex, uint8 _count, string memory typeNFT, string memory rarity, string memory collection
+  //  ) external view returns (uint, uint[] memory) {
+  //    //    uint _innerListLength;
+  //    //    if (string_equal(typeNFT, "land")) {
+  //    //      _innerListLength = lands.length;
+  //    //    } else if (string_equal(typeNFT, "zombie")) {
+  //    //      _innerListLength = zombies.length;
+  //    //    } else if (string_equal(typeNFT, "monster")) {
+  //    //      _innerListLength = monsters.length;
+  //    //    } else {
+  //    //      revert MarketError({message : "Wrong typeNFT param"});
+  //    //    }
+  //
+  //    uint _innerIndex = 0;
+  //    uint[] memory _innerList = new uint[](_count);
+  //    uint _endIndex = _startIndex + _count;
+  //
+  //    for (uint _i = _startIndex; _i < _endIndex; ++_i) {
+  //      if (_innerListLength > _i) {
+  //        if (string_equal(typeNFT, "land")) {
+  //          _innerList[_innerIndex] = lands[_i];
+  //        } else if (string_equal(typeNFT, "zombie")) {
+  //          _innerList[_innerIndex] = zombies[_i];
+  //        } else if (string_equal(typeNFT, "monster")) {
+  //          _innerList[_innerIndex] = monsters[_i];
+  //        }
+  //        _innerIndex += 1;
+  //      }
+  //    }
+  //
+  //    return (_innerListLength, _innerList);
+  //  }
 
   function buyNFT(uint tokenId, string memory typeNFT) public {
 

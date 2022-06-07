@@ -166,6 +166,10 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     return (land.ownerId, landTypeToString(land.landType), land.countMintedZombies);
   }
 
+  function landInfoType(uint _id) external view returns (string memory) {
+    return landTypeToString(lands[_id].landType);
+  }
+
   function getAllLands() public view returns (LandTypeData[] memory) {
     LandTypeData[] memory _lands = new LandTypeData[](4);
     for (uint8 i = 0; i < 4; ++i) {
@@ -223,11 +227,11 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     return super.supportsInterface(_interfaceId);
   }
 
-  function getMarketItems(uint _startIndex, uint8 _count) public view returns (uint, Land[] memory) {
+  function getMarketItems(uint _startIndex, uint8 _count, string memory filterLandType) public view returns (uint, Land[] memory) {
     Land[] memory _userLands = new Land[](_count);
     address _marketContract = IMain(mainContract).getContractMarket();
 
-    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getFromMarket(_startIndex, _count, "land");
+    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getLandsFromMarket(_startIndex, _count, filterLandType);
     for (uint _i = 0; _i < _count; ++_i) {
       if (_i < total) {
         _userLands[_i] = lands[_saleIdList[_i]];

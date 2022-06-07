@@ -92,7 +92,6 @@ export const Sidebar = ({
   };
 
   const sellLandItems = async (sellObject) => {
-    console.log('sellLandItems')
     await window.contracts.market.publishOnMarket(
       Object.keys(sellObject),
       Object.values(sellObject),

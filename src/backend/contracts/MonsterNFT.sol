@@ -131,6 +131,11 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
 
   // ---------------- Public & External methods ---------------
 
+  function getRarityCollection(uint _id) external view returns (string memory, uint) {
+    Monster storage monster = monsters[_id];
+    return (rarityToString(monster.cardRarity), monster.collection);
+  }
+
   function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
     return super.tokenURI(_tokenId);
   }
@@ -172,11 +177,11 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     return (_innerListLength, _resultMonsters);
   }
 
-  function getMarketItems(uint _startIndex, uint8 _count) public view returns (uint, Monster[] memory) {
+  function getMarketItems(uint _startIndex, uint8 _count, string memory rarity, uint collection) public view returns (uint, Monster[] memory) {
     Monster[] memory _userMonsters = new Monster[](_count);
     address _marketContract = IMain(mainContract).getContractMarket();
 
-    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getFromMarket(_startIndex, _count, "monster");
+    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getZombiesMonstersFromMarket(_startIndex, _count, "monsters", rarity, collection);
     for (uint _i = 0; _i < _count; ++_i) {
       if (_i < total) {
         _userMonsters[_i] = monsters[_saleIdList[_i]];

@@ -3,7 +3,7 @@ import { MonsterContent } from "../../web3/content";
 import {
   addPendingTransaction,
   convertFromYocto,
-  formatId,
+  formatId, rarityOptions,
   rmFromMarket,
   transformMonster,
 } from "../../web3/utils";
@@ -61,23 +61,6 @@ export const Monsters = () => {
     setUserMonsters(monsters);
     setIsReady(true);
   }
-
-  const rarityOptions = () => {
-    const result = [];
-    const options = ["All Rarities", "Common", "Uncommon", "Rare", "Epic"];
-    options.map(option => {
-      result.push({
-        title: option,
-        onClick: () => {
-          const optionValue = option === "All Rarities" ? "" : option;
-          setFilterRarity(optionValue);
-          handleRarityChange(optionValue);
-        },
-      })
-    });
-
-    return result;
-  };
 
   const handleRarityChange = (filterRarity) => {
     setCurrentPage(1);
@@ -154,7 +137,7 @@ export const Monsters = () => {
                     <Dropdown
                       title="Rarity"
                       selected={filterRarity}
-                      options={rarityOptions()}
+                      options={rarityOptions(setFilterRarity)}
                     />
                   </div>
                 </div>

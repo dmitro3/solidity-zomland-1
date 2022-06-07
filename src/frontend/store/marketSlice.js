@@ -29,7 +29,7 @@ const marketSlice = createSlice({
 
     removeFromSale(state, action) {
       state.sale[action.payload.type] = state.sale[action.payload.type].filter(item => item.tokenId !== action.payload.tokenId)
-    }
+    },
   }
 });
 

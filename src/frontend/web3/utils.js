@@ -172,3 +172,35 @@ export const addTransactionError = (dispatch, message) => {
     }));
   }, 5000);
 }
+
+export const rarityOptions = (setFilterRarity) => {
+  const result = [];
+  const options = ["All Rarities", "Common", "Uncommon", "Rare", "Epic"];
+
+  options.map(option => {
+    result.push({
+      title: option,
+      onClick: () => {
+        const optionValue = option === "All Rarities" ? "" : option;
+        setFilterRarity(optionValue);
+      },
+    })
+  });
+
+  return result;
+};
+
+export const landTypeOptions = (setFilterLandType) => {
+  const result = [];
+  ["All Types", "Small", "Medium", "Large"].map(option => {
+    result.push({
+      title: option,
+      onClick: () => {
+        const optionValue = option === "All Types" ? "" : option;
+        setFilterLandType(optionValue);
+      },
+    })
+  });
+
+  return result;
+};
