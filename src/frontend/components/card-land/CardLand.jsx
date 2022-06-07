@@ -15,9 +15,9 @@ export const CardLand = ({
   nft,
   noMenu,
   size,
-  setSellPopupVisible,
   setTransferPopupVisible,
   rmFromMarket,
+  setSellItems,
   handleBuy,
 }) => {
   const showDropdown = nft.landType !== "Micro" && !noMenu && nft.tokenId;
@@ -74,7 +74,7 @@ export const CardLand = ({
                     ) : (
                       <CardLandDropdown
                         setTransferPopupVisible={setTransferPopupVisible}
-                        setSellItems={setSellPopupVisible}
+                        setSellItems={setSellItems}
                       />
                     )}
                   </>

@@ -54,6 +54,8 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
 
     if (_from != NULL_ADDRESS) {
       Monster storage _monster = monsters[_tokenId];
+      _monster.ownerId = _to;
+
       removeMonsterRarity(_from, _tokenId, _monster.cardRarity);
       addMonsterRarity(_to, _tokenId, _monster.cardRarity);
     }
@@ -122,7 +124,8 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     return _tokenId;
   }
 
-  function setMonsterSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
+  function setMarketSalePrice(uint _tokenId, uint _price, address ownerId) external onlyMarketContract {
+    require(monsters[_tokenId].ownerId == ownerId, "You can't change price for this NFT");
     monsters[_tokenId].salePrice = _price;
   }
 

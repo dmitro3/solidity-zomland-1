@@ -68,29 +68,7 @@ export const statusColorBorderMap = (status) => {
   return result;
 };
 
-export const rmFromMarket = async (contract, item) => {
-  let contract_method = "";
-
-  switch (item.nftType) {
-    case "Land":
-      contract_method = "remove_lands_from_market";
-      break;
-    case "Zombie":
-      contract_method = "remove_zombies_from_market";
-      break;
-    case "Monster":
-      contract_method = "remove_monsters_from_market";
-      break;
-    default:
-  }
-
-  await contract[contract_method]({
-    token_list: [item.tokenId],
-  });
-};
-
 export const transformLand = (land) => {
-
   return {
     tokenId: parseInt(land.tokenId).toString(),
     landType: landTypeMap[land.landType],
@@ -101,6 +79,7 @@ export const transformLand = (land) => {
     nftType: land.nftType,
     ownerId: land.ownerId,
     discoverEvents: parseInt(land.discoverEvents),
+    countMintedZombies: parseInt(land.countMintedZombies),
   };
 };
 

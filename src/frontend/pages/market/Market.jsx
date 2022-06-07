@@ -28,7 +28,7 @@ export const Market = () => {
   const [isReady, setIsReady] = useState(false);
   const [items, setItems] = useState([]);
   const [itemsCount, setItemsCount] = useState(0);
-  const [active, setActive] = useState("Lands");
+  const [active, setActive] = useState("Zombies");
 
   const showMarket = async (name) => {
     setIsReady(false);
@@ -53,7 +53,7 @@ export const Market = () => {
   };
 
   useEffect(() => {
-    showMarket("Lands");
+    showMarket("Zombies");
   }, []);
 
   const handleBuy = async (item) => {
@@ -81,7 +81,7 @@ export const Market = () => {
 
   return (
     <InnerPageWrapper>
-      <Header/>
+      <Header />
 
       <Wrapper>
         <Container className="text-white text-center mt-6">
@@ -93,16 +93,16 @@ export const Market = () => {
             <ButtonGroup
               items={[
                 {
-                  title: "Lands",
-                  onClick: () =>
-                    showMarket("Lands"),
-                  active: active === "Lands",
-                },
-                {
                   title: "Zombies",
                   onClick: () =>
                     showMarket("Zombies"),
                   active: active === "Zombies",
+                },
+                {
+                  title: "Lands",
+                  onClick: () =>
+                    showMarket("Lands"),
+                  active: active === "Lands",
                 },
                 {
                   title: "Monsters",
@@ -143,14 +143,14 @@ export const Market = () => {
                   )}
                 </List>
               ) : (
-                <Loader/>
+                <Loader />
               )}
             </ListWrapper>
           </div>
         </Container>
       </Wrapper>
 
-      <Footer/>
+      <Footer />
     </InnerPageWrapper>
   );
 };

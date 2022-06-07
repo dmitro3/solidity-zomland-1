@@ -74,6 +74,7 @@ export const Sidebar = ({
   };
 
   const sellZombieItems = async (sellObject) => {
+    console.log('sellZombieItems')
     await window.contracts.market.publishOnMarket(
       Object.keys(sellObject),
       Object.values(sellObject),
@@ -91,6 +92,7 @@ export const Sidebar = ({
   };
 
   const sellLandItems = async (sellObject) => {
+    console.log('sellLandItems')
     await window.contracts.market.publishOnMarket(
       Object.keys(sellObject),
       Object.values(sellObject),
@@ -108,6 +110,7 @@ export const Sidebar = ({
   };
 
   const sellMonsterItems = async (sellObject) => {
+    console.log('sellMonsterItems')
     await window.contracts.market.publishOnMarket(
       Object.keys(sellObject),
       Object.values(sellObject),

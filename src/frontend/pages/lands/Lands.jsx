@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  addPendingTransaction,
+  addPendingTransaction, addTransactionError,
   convertFromYocto,
   landTypeMap,
   transformLand,
@@ -19,6 +19,7 @@ import { MintLandSection } from "./MintLandSection";
 import { useDispatch, useSelector } from "react-redux";
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 import { CardLand } from '../../components/card-land/CardLand';
+import { TransferPopup } from '../../components/TransferPopup';
 
 export const Lands = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,8 @@ export const Lands = () => {
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
   const [mintPopupVisible, setMintPopupVisible] = useState(false);
+  const [transferItem, setTransferItem] = useState();
+  const [transferPopupVisible, setTransferPopupVisible] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -69,20 +72,25 @@ export const Lands = () => {
     return result;
   };
 
-  const handleTransfer = async (land, transferAddress) => {
-    await window.contracts.land.transferFrom(
-      currentUser.accountId,
-      transferAddress,
-      land.tokenId
-    ).then(transaction => {
-      addPendingTransaction(dispatch, transaction, "Transfer Land NFT");
-      transaction.wait().then(receipt => {
-        if (receipt.status === 1) {
-          setIsReady(false);
-          loadUserLands();
-        }
+  const handleTransfer = async (transferAddress) => {
+    try {
+      await window.contracts.land.transferFrom(
+        currentUser.accountId,
+        transferAddress,
+        transferItem.tokenId
+      ).then(transaction => {
+        addPendingTransaction(dispatch, transaction, "Transfer Land NFT");
+        transaction.wait().then(receipt => {
+          if (receipt.status === 1) {
+            setIsReady(false);
+            setTransferPopupVisible(false);
+            loadUserLands();
+          }
+        });
       });
-    });
+    } catch (e) {
+      addTransactionError(dispatch, e.message);
+    }
   };
 
   const watchMintTransaction = (tx) => {
@@ -107,6 +115,18 @@ export const Lands = () => {
       dispatch(cleanupSaleList({ type: "monsters" }));
     }
   };
+
+  const rmFromMarket = async (tokenId) => {
+    await window.contracts.market.removeFromMarket(tokenId, "land").then(transaction => {
+      setIsReady(false);
+      addPendingTransaction(dispatch, transaction, "Remove Land from market");
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          loadUserLands();
+        }
+      });
+    });
+  }
 
   const showMintPopup = async () => {
     setMintPopupVisible(true);
@@ -145,16 +165,12 @@ export const Lands = () => {
                     <CardLand
                       nft={land}
                       key={index}
-                      sellItems={sellList["lands"]}
                       setSellItems={() => appendToSellList(land)}
-                      rmFromMarket={async () => {
-                        setIsReady(false);
-                        // await rmFromMarket(window.contracts['land'], land);
-                        setIsReady(true);
+                      setTransferPopupVisible={() => {
+                        setTransferItem(land);
+                        setTransferPopupVisible(true);
                       }}
-                      handleTransfer={(transferAddress) =>
-                        handleTransfer(land, transferAddress)
-                      }
+                      rmFromMarket={() => rmFromMarket(land.tokenId)}
                     />
                   ))
                 ) : (
@@ -178,6 +194,13 @@ export const Lands = () => {
             )}
           </ListWrapper>
         </Container>
+
+        <TransferPopup
+          nft={transferItem}
+          popupVisible={transferPopupVisible}
+          setPopupVisible={setTransferPopupVisible}
+          handleTransfer={(transferAddress) => handleTransfer(transferAddress)}
+        />
 
         <Popup
           title="Buy More Lands"

@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { CurrencyDollarIcon, DotsVerticalIcon, ExternalLinkIcon } from "@heroicons/react/outline";
+import { CurrencyDollarIcon, DotsVerticalIcon } from "@heroicons/react/outline";
 import { Menu, Transition } from "@headlessui/react";
 import { ArrowRightIcon } from "@heroicons/react/solid";
 
@@ -7,8 +7,8 @@ export const CardLandDropdown = ({
   setTransferPopupVisible,
   setSellItems,
   rmFromMarket,
-  viewOnParas,
 }) => {
+
   const actions = [
     {
       title: "Transfer",
@@ -19,7 +19,7 @@ export const CardLandDropdown = ({
 
   if (setSellItems) {
     actions.push({
-      title: "Sell on Paras",
+      title: "Sell on Market",
       fn: setSellItems,
       icon: <CurrencyDollarIcon className="h-5 w-5 mr-2 font-semibold" />,
     });
@@ -30,14 +30,6 @@ export const CardLandDropdown = ({
       title: "Cancel Sell",
       fn: rmFromMarket,
       icon: <CurrencyDollarIcon className="h-5 w-5 mr-2 font-semibold" />,
-    });
-  }
-
-  if (viewOnParas) {
-    actions.push({
-      title: "View on Paras",
-      fn: viewOnParas,
-      icon: <ExternalLinkIcon className="h-5 w-5 mr-2 font-semibold" />,
     });
   }
 

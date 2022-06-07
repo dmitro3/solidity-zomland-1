@@ -57,6 +57,8 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
 
     if (_from != NULL_ADDRESS) {
       Zombie storage _zombie = zombies[_tokenId];
+      _zombie.ownerId = _to;
+
       removeZombieCollectionRarity(_from, _tokenId, _zombie.collection, _zombie.cardRarity);
       addZombieCollectionRarity(_to, _tokenId, _zombie.collection, _zombie.cardRarity);
     }
@@ -182,7 +184,8 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return (_metadata.health, _metadata.attack, _metadata.brain, _metadata.killTokens, _metadata.collectionId);
   }
 
-  function setZombieSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
+  function setMarketSalePrice(uint _tokenId, uint _price, address ownerId) external onlyMarketContract {
+    require(zombies[_tokenId].ownerId == ownerId, "You can't change price for this NFT");
     zombies[_tokenId].salePrice = _price;
   }
 

@@ -10,12 +10,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../interfaces/interface.sol";
 import "../abstract/modifiers.sol";
+import "../abstract/utils.sol";
 
   error LandsLimitError(string message, uint limit);
   error LandsCallError(string message);
   error LandsSmallLimitError(string message);
 
-contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Modifiers {
+contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Utils, Modifiers {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
@@ -96,6 +97,11 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
 
   function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721, ERC721Enumerable) {
     super._beforeTokenTransfer(_from, _to, _tokenId);
+
+    if (_from != NULL_ADDRESS) {
+      Land storage _land = lands[_tokenId];
+      _land.ownerId = _to;
+    }
   }
 
   function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
@@ -145,9 +151,11 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
 
   function landSetMintTimestamp(uint _landId) external onlyZombieContract {
     lands[_landId].lastZombieClaim = block.timestamp;
+    lands[_landId].countMintedZombies += 1;
   }
 
-  function setLandSalePrice(uint _tokenId, uint _price) external onlyMarketContract {
+  function setMarketSalePrice(uint _tokenId, uint _price, address ownerId) external onlyMarketContract {
+    require(lands[_tokenId].ownerId == ownerId, "You can't change price for this NFT");
     lands[_tokenId].salePrice = _price;
   }
 
@@ -162,7 +170,6 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     LandTypeData[] memory _lands = new LandTypeData[](4);
     for (uint8 i = 0; i < 4; ++i) {
       _lands[i] = landTypeData[landTypeIndex[i]];
-      console.log("_lands", i);
     }
 
     return _lands;
