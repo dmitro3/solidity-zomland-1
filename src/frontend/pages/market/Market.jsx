@@ -55,10 +55,12 @@ export const Market = () => {
   const showMarket = async (currentSection, rarity, collection, landType, page = 1) => {
     setIsReady(false);
 
-    let saleItems = [];
-    let saleItemsCount = 0;
+    let saleItems;
+    let saleItemsCount;
     const callContract = currentSection.slice(0, -1);
     const start_index = (page - 1) * PAGE_LIMIT;
+
+    console.log(currentSection)
 
     if (currentSection === "lands") {
       let lands = await window.contracts[callContract].getMarketItems(
@@ -68,17 +70,19 @@ export const Market = () => {
       );
       saleItems = lands[1].filter(ln => ln.landType).map(land => transformLand(land));
       saleItemsCount = lands[0];
-    } else if (currentSection === "zombies") {
-      let zombies = await window.contracts[callContract].getMarketItems(
+    } else {
+      let items = await window.contracts[callContract].getMarketItems(
         start_index,
         PAGE_LIMIT,
         rarity || "",
-        parseInt(collection) || 0,
+        collection || "",
       );
-      saleItems = zombies[1].filter(zm => zm.nftType).map(zombie => transformZombie(zombie));
-      saleItemsCount = zombies[0];
-    } else {
-
+      if (currentSection === "zombies") {
+        saleItems = items[1].filter(zm => zm.nftType).map(zombie => transformZombie(zombie));
+      } else {
+        saleItems = items[1].filter(mn => mn.nftType).map(monster => transformMonster(monster));
+      }
+      saleItemsCount = items[0];
     }
 
     setItems(saleItems);

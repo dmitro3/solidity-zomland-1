@@ -56,7 +56,7 @@ export const Monsters = () => {
     setCurrentPage(parseInt(page));
     setFilterRarity(rarity);
 
-    fetchUserMonsters(currentPage, filterRarity);
+    fetchUserMonsters(page, filterRarity);
   }, [currentUser]);
 
   useEffect(() => {
@@ -64,6 +64,7 @@ export const Monsters = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
       setCurrentPage(1);
       fetchUserMonsters(1, filterRarity);
+      navigate(buildUrl(1, filterRarity));
     }
   }, [filterRarity]);
 
