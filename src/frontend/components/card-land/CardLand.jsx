@@ -5,11 +5,14 @@ import {
   Rarity,
   InfoSmallWrapper,
   CardFront,
+  InfoBaseWrapper,
 } from "../../assets/styles/card";
 import { CardLandDropdown } from "./CardLandDropdown";
 import { Price } from "../Price";
 import { formatLandId, getMedia } from '../../web3/utils';
 import { Counter } from '../Counter';
+import { Button } from '../basic/Button';
+import { Col, Row } from '../../assets/styles/common.style';
 
 export const CardLand = ({
   nft,
@@ -20,8 +23,6 @@ export const CardLand = ({
   setSellItems,
   handleBuy,
 }) => {
-  const showDropdown = nft.landType !== "Micro" && !noMenu && nft.tokenId;
-
   const classMapping = {
     xsm: "x-small",
     sm: "small",
@@ -52,10 +53,6 @@ export const CardLand = ({
                   {nft.landType}
                 </Rarity>
 
-                {/*{nft.salePrice && size !== "sm" && !handleBuy && (*/}
-                {/*  <Price title={nft.salePrice} />*/}
-                {/*)}*/}
-
                 {nft.landType === "Micro" && nft.tokenId && (
                   <Counter from={nft.countMintedZombies || 0} to={30} />
                 )}
@@ -64,40 +61,61 @@ export const CardLand = ({
                   <Price title={nft.salePrice} handleBuy={handleBuy} />
                 )}
 
-                {showDropdown && (
-                  <>
-                    {nft.salePrice ? (
-                      <CardLandDropdown
-                        setTransferPopupVisible={setTransferPopupVisible}
-                        handleBuy={handleBuy}
-                        rmFromMarket={rmFromMarket}
-                      />
-                    ) : (
-                      <CardLandDropdown
-                        setTransferPopupVisible={setTransferPopupVisible}
-                        setSellItems={setSellItems}
-                      />
-                    )}
-                  </>
+                {nft.tokenId && !noMenu && !nft.salePrice && (
+                  <CardLandDropdown
+                    setTransferPopupVisible={setTransferPopupVisible}
+                    setSellItems={setSellItems}
+                  />
                 )}
               </div>
             </div>
 
             {nft.tokenId ? (
               <>
-                <InfoSmallWrapper>
-                  <div className="font-semibold">
-                    {formatLandId(nft.landType, nft.tokenId, size)}
-                  </div>
+                <InfoSmallWrapper withBtn={handleBuy || nft.salePrice}>
+                  <Row className="items-center font-semibold">
+                    <Col>
+                      <div className="pb-1">
+                        {formatLandId(nft.landType, nft.tokenId, size)}
+                      </div>
+                      <Row>
+                        {handleBuy ? (
+                          <Button
+                            title={
+                              <>
+                                <span className="mr-1">Buy for</span>
+                                {nft.salePrice} {process.env.TOKEN_SYMBOL}
+                              </>
+                            }
+                            className="mt-2"
+                            size="xs"
+                            noIcon
+                            onClick={handleBuy}
+                          />
+                        ) : (
+                          nft.salePrice && size !== "sm" && (
+                            <Button
+                              title="Remove from Market"
+                              size="xs"
+                              className="mt-2"
+                              noIcon
+                              secondary
+                              onClick={rmFromMarket}
+                            />
+                          )
+                        )}
+                      </Row>
+                    </Col>
+                  </Row>
                 </InfoSmallWrapper>
               </>
             ) : (
-              <InfoSmallWrapper>
+              <InfoBaseWrapper>
                 <div>
                   {nft.zombiePerDay} zombie
                   {nft.zombiePerDay > 1 ? "s" : ""} / day
                 </div>
-              </InfoSmallWrapper>
+              </InfoBaseWrapper>
             )}
           </CardFront>
         </CardInner>

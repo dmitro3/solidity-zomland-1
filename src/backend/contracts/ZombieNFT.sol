@@ -320,7 +320,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return (_innerList, _innerIndex, _innerListLength);
   }
 
-  function killZombies(uint[] memory _tokenList) public {
+  function killNftList(uint[] memory _tokenList) public {
     address _contractTokenFT = IMain(mainContract).getContractTokenFT();
     uint _totalKillTokens = 0;
 

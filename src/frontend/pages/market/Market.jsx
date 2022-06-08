@@ -26,7 +26,7 @@ import { ButtonGroup } from "../../components/ButtonGroup";
 import { Card } from "../../components/card/Card";
 import { useDispatch, useSelector } from 'react-redux';
 import { CardLand } from '../../components/card-land/CardLand';
-import { removeFromMarket, removeLandFromMarket } from '../../web3/api';
+import { removeFromMarket } from '../../web3/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Pagination } from '../../components/Pagination';
 import Dropdown from '../../components/basic/Dropdown';

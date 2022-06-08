@@ -14,6 +14,7 @@ import "../interfaces/interface.sol";
 import "../abstract/utils.sol";
 import "../abstract/modifiers.sol";
 
+  error MonsterKillError(string message);
   error MonsterMintCountError(string message, uint required);
 
 contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Utils, Modifiers {
@@ -130,6 +131,25 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
   }
 
   // ---------------- Public & External methods ---------------
+
+  function killNftList(uint[] memory _tokenList) public {
+    address _contractTokenFT = IMain(mainContract).getContractTokenFT();
+    uint _totalKillTokens = 0;
+
+    for (uint _i = 0; _i < _tokenList.length; ++_i) {
+      uint _tokenId = _tokenList[_i];
+      Monster storage _monster = monsters[_tokenId];
+      if (_monster.ownerId != msg.sender) {
+        revert MonsterKillError({message : "You can't kill this Monster"});
+      }
+
+      _totalKillTokens += _monster.killTokens;
+      removeMonsterRarity(msg.sender, _tokenId, _monster.cardRarity);
+      _burn(_tokenId);
+    }
+
+    ITokenFT(_contractTokenFT).transferOnKill(msg.sender, _totalKillTokens);
+  }
 
   function getRarityCollection(uint _id) external view returns (string memory, uint) {
     Monster storage monster = monsters[_id];

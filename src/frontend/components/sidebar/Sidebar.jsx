@@ -52,73 +52,37 @@ export const Sidebar = ({
     if (sellList["zombies"].length) {
       const [isError, sellObject] = createSaleObject(sellList["zombies"]);
       if (!isError) {
-        sellZombieItems(sellObject);
+        handleSellItems(sellObject, "zombie");
       } else {
         alert("Please, provide sale price for all Zombies");
       }
     } else if (sellList["lands"].length) {
       const [isError, sellObject] = createSaleObject(sellList["lands"]);
       if (!isError) {
-        sellLandItems(sellObject);
+        handleSellItems(sellObject, "land");
       } else {
         alert("Please, provide sale price for all Lands");
       }
     } else if (sellList["monsters"].length) {
       const [isError, sellObject] = createSaleObject(sellList["monsters"]);
       if (!isError) {
-        sellMonsterItems(sellObject);
+        handleSellItems(sellObject, "monster");
       } else {
         alert("Please, provide sale price for all Monsters");
       }
     }
   };
 
-  const sellZombieItems = async (sellObject) => {
-    console.log('sellZombieItems')
+  const handleSellItems = async (sellObject, nftType) => {
     await window.contracts.market.publishOnMarket(
       Object.keys(sellObject),
       Object.values(sellObject),
-      "zombie"
+      nftType
     ).then(transaction => {
-      addPendingTransaction(dispatch, transaction, "Sell Zombies");
+      addPendingTransaction(dispatch, transaction, `Sell ${nftType}s`);
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
-          dispatch(cleanupSaleList({ type: "zombies" }));
-          // Todo: Replace it to update component
-          document.location.reload();
-        }
-      });
-    });
-  };
-
-  const sellLandItems = async (sellObject) => {
-    await window.contracts.market.publishOnMarket(
-      Object.keys(sellObject),
-      Object.values(sellObject),
-      "land"
-    ).then(transaction => {
-      addPendingTransaction(dispatch, transaction, "Sell Lands");
-      transaction.wait().then(receipt => {
-        if (receipt.status === 1) {
-          dispatch(cleanupSaleList({ type: "lands" }));
-          // Todo: Replace it to update component
-          document.location.reload();
-        }
-      });
-    });
-  };
-
-  const sellMonsterItems = async (sellObject) => {
-    console.log('sellMonsterItems')
-    await window.contracts.market.publishOnMarket(
-      Object.keys(sellObject),
-      Object.values(sellObject),
-      "monster"
-    ).then(transaction => {
-      addPendingTransaction(dispatch, transaction, "Sell Monsters");
-      transaction.wait().then(receipt => {
-        if (receipt.status === 1) {
-          dispatch(cleanupSaleList({ type: "monsters" }));
+          dispatch(cleanupSaleList({ type: `${nftType}s` }));
           // Todo: Replace it to update component
           document.location.reload();
         }
@@ -148,10 +112,10 @@ export const Sidebar = ({
   const killMyItems = () => {
     if (killList["zombies"].length) {
       let idList = killList["zombies"].map(item => item.tokenId);
-      killZombieItems(idList);
+      handleKillItems(idList, "zombie");
     } else if (killList["monsters"].length) {
       let idList = killList["monsters"].map(item => item.tokenId);
-      killMonsterItems(idList);
+      handleKillItems(idList, "monster");
     }
   };
 
@@ -172,29 +136,25 @@ export const Sidebar = ({
     return `Kill to get ${convertFromYocto(total)} ZML`;
   };
 
-  const killZombieItems = async (killObject) => {
+  const handleKillItems = async (killObject, nftType) => {
     setIsLoading(true);
-    await window.contracts.zombie.killZombies(killObject).then(transaction => {
-      addPendingTransaction(dispatch, transaction, "Kill Zombies to get ZML tokens");
+    await window.contracts[nftType].killNftList(killObject).then(transaction => {
+      addPendingTransaction(dispatch, transaction, `Kill ${nftType}s to get ZML tokens`);
 
       transaction.wait().then(async receipt => {
         setIsLoading(false);
         if (receipt.status === 1) {
           // Update user balance
           await updateUserBalance(dispatch, currentUser.accountId);
-          dispatch(cleanupKillList({ type: "zombies" }));
+          dispatch(cleanupKillList({ type: `${nftType}s` }));
         } else {
-          alert('Minting error');
+          alert('Kill error');
         }
       });
     }).catch(err => {
       addTransactionError(dispatch, err.message);
       setIsLoading(false);
     });
-  };
-
-  const killMonsterItems = async (killObject) => {
-
   };
 
   const isSidebarEnabled = () => {

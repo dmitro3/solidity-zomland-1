@@ -5,28 +5,24 @@ export const CardInner = styled.div.attrs(() => ({
   className: `relative h-full w-full text-center`,
 }))``;
 
-export const InfoSmallWrapper = styled.div.attrs(() => ({
-  className:
-    `absolute flex drop-shadow-md items-center justify-center rounded-md w-full bottom-0 text-base py-3`
+export const InfoBaseWrapper = styled.div.attrs(() => ({
+  className: `absolute flex drop-shadow-md items-center justify-center rounded-md w-full bottom-0 py-3 font-semibold`
 }))`
-  background: linear-gradient(
-    180deg,
-    rgba(12, 6, 53, 0.3) 0%,
-    rgba(12, 6, 53, 1) 75%
-  );
-`;
-
-export const InfoWrapper = styled.div.attrs(() => ({
-  className:
-    "absolute flex drop-shadow-md justify-center rounded-md w-full bottom-0 font-semibold py-3 z-10",
-}))`
-  transform:  translateY(${(props) => (props.withBtn ? "222px" : "172px")});
   background: linear-gradient(
     180deg,
     rgba(12, 6, 53, 0.4) 0%,
     rgba(15, 8, 65, 0.8) 25%,
     rgba(12, 6, 53, 1) 100%
   );
+`;
+
+export const InfoSmallWrapper = styled(InfoBaseWrapper)`
+  transform:  translateY(${(props) => (props.withBtn ? "52px" : "4px")});
+  transition: 0.3s 2s;
+`;
+
+export const InfoWrapper = styled(InfoBaseWrapper)`
+  transform:  translateY(${(props) => (props.withBtn ? "222px" : "172px")});
   transition: 0.3s 2s;
 `;
 
@@ -44,6 +40,11 @@ export const FlipCard = styled.div`
   &:hover ${InfoWrapper} {
     transition: 0.2s 0.2s;
     transform: translateY(0);
+  }
+  
+  &:hover ${InfoSmallWrapper} {
+    transition: 0.2s 0.2s;
+    transform: translateY(4px);
   }
 `;
 
@@ -69,7 +70,3 @@ export const Rarity = styled.div.attrs((props) => ({
     ${statusColorTextMap(props.type)}
   `,
 }))``;
-
-export const CardBack = styled(CardFront)`
-  transform: rotateY(180deg);
-`;
