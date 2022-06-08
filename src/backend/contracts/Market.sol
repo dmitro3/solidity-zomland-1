@@ -12,66 +12,106 @@ contract MarketContract is Utils, Modifiers {
   uint[] lands;
   uint[] zombies;
   uint[] monsters;
+  HistoryItem[] marketHistory;
+  mapping(string => uint) public currentSaleIndex;
+  uint public constant ITEMS_LIMIT = 5;
+
+  struct HistoryItem {
+    address fromUser;
+    address toUser;
+    string nftType;
+    uint price;
+    uint tokenId;
+    uint timestamp;
+  }
 
   constructor(address _mainContract) {
     mainContract = _mainContract;
+    currentSaleIndex["land"] = 0;
+    currentSaleIndex["zombie"] = 0;
+    currentSaleIndex["monster"] = 0;
   }
 
   // ---------------- Public & External methods ---------------
 
   function publishOnMarket(uint[] calldata idList, uint[] calldata priceList, string memory typeNFT) public {
+    address _sourceContract;
+    uint[] storage _source;
     if (string_equal(typeNFT, "land")) {
-      address _landContract = IMain(mainContract).getContractLandNFT();
-      for (uint _i = 0; _i < idList.length; _i++) {
-        (uint _index, bool _exist) = Utils.indexOf(lands, idList[_i]);
-        if (!_exist) {
-          ILandNFT(_landContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
-          lands.push(idList[_i]);
-        }
-      }
+      _sourceContract = IMain(mainContract).getContractLandNFT();
+      _source = lands;
     } else if (string_equal(typeNFT, "zombie")) {
-      address _zombieContract = IMain(mainContract).getContractZombieNFT();
-      for (uint _i = 0; _i < idList.length; _i++) {
-        IZombieNFT(_zombieContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
-        zombies.push(idList[_i]);
-      }
+      _sourceContract = IMain(mainContract).getContractZombieNFT();
+      _source = zombies;
     } else if (string_equal(typeNFT, "monster")) {
-      address _monsterContract = IMain(mainContract).getContractMonsterNFT();
-      for (uint _i = 0; _i < idList.length; _i++) {
-        IMonsterNFT(_monsterContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
-        monsters.push(idList[_i]);
-      }
+      _sourceContract = IMain(mainContract).getContractMonsterNFT();
+      _source = monsters;
     } else {
       revert MarketError({message : "Wrong typeNFT param"});
     }
 
+    for (uint _i = 0; _i < idList.length; _i++) {
+      bool _exist = Utils.has(_source, idList[_i]);
+      if (!_exist) {
+        if (string_equal(typeNFT, "land")) {
+          ILandNFT(_sourceContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
+          if (_source.length > currentSaleIndex[typeNFT]) {
+            ILandNFT(_sourceContract).setMarketSalePrice(_source[currentSaleIndex[typeNFT]], 0, msg.sender);
+          }
+        } else if (string_equal(typeNFT, "zombie")) {
+          IZombieNFT(_sourceContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
+          if (_source.length > currentSaleIndex[typeNFT]) {
+            IZombieNFT(_sourceContract).setMarketSalePrice(_source[currentSaleIndex[typeNFT]], 0, msg.sender);
+          }
+        } else if (string_equal(typeNFT, "monster")) {
+          IMonsterNFT(_sourceContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
+          if (_source.length > currentSaleIndex[typeNFT]) {
+            IMonsterNFT(_sourceContract).setMarketSalePrice(_source[currentSaleIndex[typeNFT]], 0, msg.sender);
+          }
+        }
+
+        if (_source.length > currentSaleIndex[typeNFT]) {
+          _source[currentSaleIndex[typeNFT]] = idList[_i];
+        } else {
+          _source.push(idList[_i]);
+        }
+        currentSaleIndex[typeNFT] += 1;
+        if (currentSaleIndex[typeNFT] >= ITEMS_LIMIT) {
+          currentSaleIndex[typeNFT] = 0;
+        }
+      }
+    }
   }
 
   function removeFromMarket(uint tokenId, string memory typeNFT) public {
+    uint[] storage _source;
+    address _sourceContract;
+
     if (string_equal(typeNFT, "land")) {
-      (uint _index, bool _exist) = Utils.indexOf(lands, tokenId);
-      if (_exist) {
-        address _landContract = IMain(mainContract).getContractLandNFT();
-        ILandNFT(_landContract).setMarketSalePrice(tokenId, 0, msg.sender);
-        lands[_index] = lands[lands.length - 1];
-        lands.pop();
-      }
+      _source = lands;
+      _sourceContract = IMain(mainContract).getContractLandNFT();
     } else if (string_equal(typeNFT, "zombie")) {
-      (uint _index, bool _exist) = Utils.indexOf(zombies, tokenId);
-      if (_exist) {
-        address _zombieContract = IMain(mainContract).getContractZombieNFT();
-        IZombieNFT(_zombieContract).setMarketSalePrice(tokenId, 0, msg.sender);
-        zombies[_index] = zombies[zombies.length - 1];
-        zombies.pop();
-      }
+      _source = zombies;
+      _sourceContract = IMain(mainContract).getContractZombieNFT();
     } else if (string_equal(typeNFT, "monster")) {
-      (uint _index, bool _exist) = Utils.indexOf(monsters, tokenId);
-      if (_exist) {
-        address _monsterContract = IMain(mainContract).getContractMonsterNFT();
-        IMonsterNFT(_monsterContract).setMarketSalePrice(tokenId, 0, msg.sender);
-        monsters[_index] = monsters[monsters.length - 1];
-        monsters.pop();
+      _source = monsters;
+      _sourceContract = IMain(mainContract).getContractMonsterNFT();
+    } else {
+      revert MarketError({message : "Wrong typeNFT param"});
+    }
+
+    (uint _index, bool _exist) = Utils.indexOf(_source, tokenId);
+    if (_exist) {
+      if (string_equal(typeNFT, "land")) {
+        ILandNFT(_sourceContract).setMarketSalePrice(tokenId, 0, msg.sender);
+      } else if (string_equal(typeNFT, "zombie")) {
+        IZombieNFT(_sourceContract).setMarketSalePrice(tokenId, 0, msg.sender);
+      } else if (string_equal(typeNFT, "monster")) {
+        IMonsterNFT(_sourceContract).setMarketSalePrice(tokenId, 0, msg.sender);
       }
+
+      _source[_index] = _source[_source.length - 1];
+      _source.pop();
     }
   }
 
@@ -167,43 +207,9 @@ contract MarketContract is Utils, Modifiers {
     return (_innerListLength, _innerList);
   }
 
-
-  //  function getFromMarket(
-  //    uint _startIndex, uint8 _count, string memory typeNFT, string memory rarity, string memory collection
-  //  ) external view returns (uint, uint[] memory) {
-  //    //    uint _innerListLength;
-  //    //    if (string_equal(typeNFT, "land")) {
-  //    //      _innerListLength = lands.length;
-  //    //    } else if (string_equal(typeNFT, "zombie")) {
-  //    //      _innerListLength = zombies.length;
-  //    //    } else if (string_equal(typeNFT, "monster")) {
-  //    //      _innerListLength = monsters.length;
-  //    //    } else {
-  //    //      revert MarketError({message : "Wrong typeNFT param"});
-  //    //    }
-  //
-  //    uint _innerIndex = 0;
-  //    uint[] memory _innerList = new uint[](_count);
-  //    uint _endIndex = _startIndex + _count;
-  //
-  //    for (uint _i = _startIndex; _i < _endIndex; ++_i) {
-  //      if (_innerListLength > _i) {
-  //        if (string_equal(typeNFT, "land")) {
-  //          _innerList[_innerIndex] = lands[_i];
-  //        } else if (string_equal(typeNFT, "zombie")) {
-  //          _innerList[_innerIndex] = zombies[_i];
-  //        } else if (string_equal(typeNFT, "monster")) {
-  //          _innerList[_innerIndex] = monsters[_i];
-  //        }
-  //        _innerIndex += 1;
-  //      }
-  //    }
-  //
-  //    return (_innerListLength, _innerList);
-  //  }
-
   function buyNFT(uint tokenId, string memory typeNFT) public {
 
+    // Add history
   }
 
 }
