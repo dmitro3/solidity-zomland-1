@@ -78,6 +78,8 @@ export const Zombies = () => {
   }, [currentUser]);
 
   async function fetchUserZombies(currentPage, rarity, collection) {
+    console.log('currentPage', currentPage);
+
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
     const collectionFilter = collection !== "" ? parseInt(collection) + 1 : 0;
     const zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
@@ -119,8 +121,8 @@ export const Zombies = () => {
     }
   };
 
-  const buildUrl = (filterRarity, filterCollection) => {
-    let url = `/zombies?page=${currentPage}`;
+  const buildUrl = (page, filterRarity, filterCollection) => {
+    let url = `/zombies?page=${page}`;
     if (filterRarity) url = `${url}&rarity=${filterRarity}`;
     if (filterCollection) url = `${url}&collection=${filterCollection}`;
     return url;
@@ -150,17 +152,20 @@ export const Zombies = () => {
     setUserLands(userLands);
   }
 
-  useEffect(() => navigate(buildUrl(filterRarity, filterCollection)), [currentPage]);
+  useEffect(() => {
+    console.log('+++');
+    navigate(buildUrl(currentPage, filterRarity, filterCollection));
+  }, [currentPage]);
 
   useEffect(() => {
     if (isReady) {
       window.scrollTo({ top: 0, behavior: "smooth" });
       setCurrentPage(1);
       fetchUserZombies(1, filterRarity, filterCollection);
-      navigate(buildUrl(filterRarity, filterCollection));
+      navigate(buildUrl(1, filterRarity, filterCollection));
     }
   }, [filterRarity, filterCollection]);
-  
+
   const handleMint = async (landId) => {
     mintInProgressList.push(landId);
     setMintInProgressList([...mintInProgressList]);
@@ -215,7 +220,6 @@ export const Zombies = () => {
 
   const onPageChanged = (page) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-
     setCurrentPage(page);
     fetchUserZombies(page, filterRarity, filterCollection);
   };

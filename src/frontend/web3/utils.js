@@ -182,7 +182,6 @@ export const rarityOptions = (setFilterRarity) => {
       title: option,
       onClick: () => {
         const optionValue = option === "All Rarities" ? "" : option;
-        console.log('optionValue', optionValue);
         setFilterRarity(optionValue);
       },
     })
