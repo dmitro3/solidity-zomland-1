@@ -110,7 +110,7 @@ contract MarketContract is Utils, Modifiers {
     return (_innerListLength, _innerList);
   }
 
-  function filterZombieMonster(uint[] storage source, string memory nftType, string memory _filterRarity, uint _filterCollection) internal view returns (uint, uint[] memory) {
+  function filterZombieMonster(uint[] storage source, string memory nftType, string memory _filterRarity, string memory _filterCollection) internal view returns (uint, uint[] memory) {
     uint _index = 0;
     uint _itemsCount = source.length;
     uint[] memory _itemsSource = new uint[](_itemsCount);
@@ -119,16 +119,16 @@ contract MarketContract is Utils, Modifiers {
     for (uint _i = 0; _i < _itemsCount; ++_i) {
       bool canAdd = false;
       (string memory rarity, uint collection) = string_equal(nftType, "zombies") ? IZombieNFT(_sourceContract).getRarityCollection(source[_i]) : IMonsterNFT(_sourceContract).getRarityCollection(source[_i]);
-      if (bytes(_filterRarity).length != 0 && _filterCollection != 0) {
-        if (string_equal(rarity, _filterRarity) && collection == _filterCollection) {
+      if (bytes(_filterRarity).length != 0 && bytes(_filterCollection).length != 0) {
+        if (string_equal(rarity, _filterRarity) && string_equal(Strings.toString(collection), _filterCollection)) {
           canAdd = true;
         }
       } else if (bytes(_filterRarity).length != 0) {
         if (string_equal(rarity, _filterRarity)) {
           canAdd = true;
         }
-      } else if (_filterCollection != 0) {
-        if (collection == _filterCollection) {
+      } else if (bytes(_filterCollection).length != 0) {
+        if (string_equal(Strings.toString(collection), _filterCollection)) {
           canAdd = true;
         }
       }
@@ -142,13 +142,13 @@ contract MarketContract is Utils, Modifiers {
     return (_index, _itemsSource);
   }
 
-  function getZombiesMonstersFromMarket(uint _startIndex, uint8 _count, string memory nftType, string memory _filterRarity, uint _filterCollection) external view returns (uint, uint[] memory){
+  function getZombiesMonstersFromMarket(uint _startIndex, uint8 _count, string memory nftType, string memory _filterRarity, string memory _filterCollection) external view returns (uint, uint[] memory){
     uint[] storage source = string_equal(nftType, "zombies") ? zombies : monsters;
     uint[] memory _innerList = new uint[](_count);
 
     uint _innerListLength;
     uint[] memory _itemsSource = new uint[](source.length);
-    if (bytes(_filterRarity).length != 0 || _filterCollection != 0) {
+    if (bytes(_filterRarity).length != 0 || bytes(_filterCollection).length != 0) {
       (_innerListLength, _itemsSource) = filterZombieMonster(source, nftType, _filterRarity, _filterCollection);
     } else {
       _itemsSource = source;

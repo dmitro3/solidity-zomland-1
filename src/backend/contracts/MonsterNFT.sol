@@ -177,7 +177,7 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     return (_innerListLength, _resultMonsters);
   }
 
-  function getMarketItems(uint _startIndex, uint8 _count, string memory rarity, uint collection) public view returns (uint, Monster[] memory) {
+  function getMarketItems(uint _startIndex, uint8 _count, string memory rarity, string memory collection) public view returns (uint, Monster[] memory) {
     Monster[] memory _userMonsters = new Monster[](_count);
     address _marketContract = IMain(mainContract).getContractMarket();
 

@@ -66,5 +66,5 @@ interface ITokenFT is IERC20 {
 interface IMarket {
   function getLandsFromMarket(uint, uint8, string memory) external view returns (uint, uint[] memory);
 
-  function getZombiesMonstersFromMarket(uint, uint8, string memory, string memory, uint) external view returns (uint, uint[] memory);
+  function getZombiesMonstersFromMarket(uint, uint8, string memory, string memory, string memory) external view returns (uint, uint[] memory);
 }

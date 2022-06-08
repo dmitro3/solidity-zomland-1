@@ -341,7 +341,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return _result;
   }
 
-  function getMarketItems(uint _startIndex, uint8 _count, string memory rarity, uint collection) public view returns (uint, Zombie[] memory) {
+  function getMarketItems(uint _startIndex, uint8 _count, string memory rarity, string memory collection) public view returns (uint, Zombie[] memory) {
     Zombie[] memory _userZombies = new Zombie[](_count);
     address _marketContract = IMain(mainContract).getContractMarket();
 

@@ -9,7 +9,7 @@ import "../abstract/modifiers.sol";
 
 contract CollectionContract is Ownable, Modifiers {
   string public collectionIpfsHash;
-  mapping(string => Collection) public collections;
+  mapping(uint => Collection) public collections;
   uint public collectionCount;
 
   struct Collection {
@@ -31,8 +31,8 @@ contract CollectionContract is Ownable, Modifiers {
   // ---------------- External Limited methods ---------------
 
   function addCollection(string memory _title, string memory _image) public onlyOwner {
+    collections[collectionCount] = Collection(_title, _image);
     collectionCount += 1;
-    collections[Strings.toString(collectionCount)] = Collection(_title, _image);
   }
 
   // ---------------- Public & External methods ---------------
@@ -40,7 +40,7 @@ contract CollectionContract is Ownable, Modifiers {
   function getCollectionAndZombie(uint8 _shift) external view returns (uint, string memory){
     uint _collectionIndex = randomNumber(collectionCount, _shift) + 1;
 
-    Collection storage _collection = collections[Strings.toString(_collectionIndex)];
+    Collection storage _collection = collections[_collectionIndex];
     uint _num = randomNumber(999, _shift + 10) + 1;
     string memory _image = string.concat(_collection.image, "/", Strings.toString(_num), ".png");
     return (_collectionIndex, _image);
@@ -49,7 +49,7 @@ contract CollectionContract is Ownable, Modifiers {
   function getAllCollections() external view returns (string memory, Collection[] memory) {
     Collection[] memory _resultCollections = new Collection[](collectionCount);
     for (uint _i = 0; _i < collectionCount; ++_i) {
-      _resultCollections[_i] = collections[Strings.toString(_i + 1)];
+      _resultCollections[_i] = collections[_i];
     }
     return (collectionIpfsHash, _resultCollections);
   }
@@ -59,7 +59,7 @@ contract CollectionContract is Ownable, Modifiers {
   }
 
   function getCollectionImage(uint collectionId) external view returns (string memory){
-    return string.concat(collectionIpfsHash, "/", collections[Strings.toString(collectionId)].title, "-1.png");
+    return string.concat(collectionIpfsHash, "/", collections[collectionId].title, "-1.png");
   }
 
 }
