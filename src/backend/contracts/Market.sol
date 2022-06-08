@@ -207,7 +207,22 @@ contract MarketContract is Utils, Modifiers {
     return (_innerListLength, _innerList);
   }
 
-  function buyNFT(uint tokenId, string memory typeNFT) public {
+  function buyNFT(uint tokenId, string memory typeNFT) payable public {
+    uint[] storage _source;
+    address _sourceContract;
+
+    if (string_equal(typeNFT, "land")) {
+      _source = lands;
+      _sourceContract = IMain(mainContract).getContractLandNFT();
+    } else if (string_equal(typeNFT, "zombie")) {
+      _source = zombies;
+      _sourceContract = IMain(mainContract).getContractZombieNFT();
+    } else if (string_equal(typeNFT, "monster")) {
+      _source = monsters;
+      _sourceContract = IMain(mainContract).getContractMonsterNFT();
+    } else {
+      revert MarketError({message : "Wrong typeNFT param"});
+    }
 
     // Add history
   }
