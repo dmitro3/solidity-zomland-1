@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MonsterContent } from "../../web3/content";
 import {
-  addPendingTransaction,
-  convertFromYocto,
-  formatId, rarityOptions,
-  rmFromMarket,
+  rarityOptions,
   transformMonster,
 } from "../../web3/utils";
 import {
@@ -21,39 +18,57 @@ import { Card } from "../../components/card/Card";
 import { Loader } from "../../components/basic/Loader";
 import Dropdown from "../../components/basic/Dropdown";
 import { Pagination } from "../../components/Pagination";
-import { Button } from "../../components/basic/Button";
-import { Popup } from "../../components/Popup";
 import { useDispatch, useSelector } from 'react-redux';
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { removeFromMarket, transferNFT } from '../../web3/api';
+import { addForKill, cleanupKillList } from '../../store/sidebarSlice';
+import { TransferPopup } from '../../components/TransferPopup';
 
-const PAGE_LIMIT = "10";
+const PAGE_LIMIT = "20";
 
 export const Monsters = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
   const sellList = useSelector(state => state.market.sale);
+  const killList = useSelector(state => state.sidebar.kill);
 
   const [isReady, setIsReady] = useState(false);
   const [userMonsters, setUserMonsters] = useState([]);
   const [userMonstersCount, setUserMonstersCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterRarity, setFilterRarity] = useState("");
-  const [killItem, setKillItem] = useState(null);
-  const [killPopupVisible, setKillPopupVisible] = useState(false);
+  const [transferItem, setTransferItem] = useState({});
+  const [transferPopupVisible, setTransferPopupVisible] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = JSON.parse(searchParams.has("page"))
+      ? searchParams.get("page")
+      : currentPage;
+    const rarity = JSON.parse(searchParams.has("rarity"))
+      ? searchParams.get("rarity")
+      : filterRarity;
+
+    setCurrentPage(parseInt(page));
+    setFilterRarity(rarity);
+
     fetchUserMonsters(currentPage, filterRarity);
   }, [currentUser]);
 
   useEffect(() => {
-    setCurrentPage(1);
-    fetchUserMonsters(1, filterRarity);
+    if (isReady) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setCurrentPage(1);
+      fetchUserMonsters(1, filterRarity);
+    }
   }, [filterRarity]);
 
   async function fetchUserMonsters(currentPage, rarity) {
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
-    setIsReady(false);
-
     const monstersObj = await window.contracts.monster.userMonsters(startIndex, PAGE_LIMIT, rarity || "");
     const monsters = monstersObj[1].filter(monster => monster.nftType).map(monster => transformMonster(monster));
     setUserMonstersCount(parseInt(monstersObj[0]));
@@ -62,41 +77,36 @@ export const Monsters = () => {
     setIsReady(true);
   }
 
-  const handleRarityChange = (filterRarity) => {
-    setCurrentPage(1);
-    fetchUserMonsters(1, filterRarity);
-  }
-
   const onPageChanged = (page) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setCurrentPage(page);
     fetchUserMonsters(page, filterRarity);
   };
 
-  const handleTransfer = async (monster, transferAddress) => {
-    await window.contracts.monster.transferFrom(
-      currentUser.accountId,
-      transferAddress,
-      monster.tokenId
-    ).then(transaction => {
-      addPendingTransaction(dispatch, transaction, "Transfer Monster NFT");
-      transaction.wait().then(receipt => {
-        if (receipt.status === 1) {
-          setIsReady(false);
-          fetchUserMonsters(currentPage, filterRarity);
-        }
-      });
+  const buildUrl = (page, filterRarity) => {
+    let url = `/monsters?page=${page}`;
+    if (filterRarity) url = `${url}&rarity=${filterRarity}`;
+    return url;
+  };
+
+  useEffect(() => {
+    navigate(buildUrl(currentPage, filterRarity));
+  }, [currentPage]);
+
+  const handleTransfer = async (transferAddress) => {
+    transferNFT(dispatch, currentUser, transferAddress, transferItem.tokenId, transferItem.nftType).then(() => {
+      setIsReady(false);
+      fetchUserMonsters(currentPage, filterRarity);
+      setTransferPopupVisible(false);
     });
   };
 
-  const showKillPopup = (item) => {
-    setKillItem(item);
-    setKillPopupVisible(true);
-  };
-
-  const handleKill = async () => {
-
-  };
+  const rmFromMarket = (tokenId) => {
+    removeFromMarket(dispatch, tokenId, "monster").then(() => {
+      setIsReady(false);
+      fetchUserMonsters(currentPage, filterRarity);
+    });
+  }
 
   const appendToSellList = (monster) => {
     if (
@@ -108,6 +118,18 @@ export const Monsters = () => {
       }));
       dispatch(cleanupSaleList({ type: "lands" }));
       dispatch(cleanupSaleList({ type: "zombies" }));
+    }
+  };
+
+  const appendToKillList = async (monster) => {
+    if (
+      !killList["monsters"].filter((exist) => exist.tokenId === monster.tokenId).length
+    ) {
+      dispatch(addForKill({
+        type: "monsters",
+        item: monster
+      }));
+      dispatch(cleanupKillList({ type: "zombies" }));
     }
   };
 
@@ -153,13 +175,14 @@ export const Monsters = () => {
                         setSellItems={() => appendToSellList(monster)}
                         rmFromMarket={async () => {
                           setIsReady(false);
-                          // await rmFromMarket(monsterContract, monster);
+                          await rmFromMarket(monster.tokenId);
                           setIsReady(true);
                         }}
-                        handleTransfer={(transferAddress) =>
-                          handleTransfer(monster, transferAddress)
-                        }
-                        setKillItem={() => showKillPopup(monster)}
+                        setTransferPopupVisible={() => {
+                          setTransferItem(monster);
+                          setTransferPopupVisible(true);
+                        }}
+                        setKillItem={() => appendToKillList(monster)}
                       />
                     ))}
                   </List>
@@ -181,6 +204,13 @@ export const Monsters = () => {
             <Loader />
           )}
         </Container>
+
+        <TransferPopup
+          nft={transferItem}
+          popupVisible={transferPopupVisible}
+          setPopupVisible={setTransferPopupVisible}
+          handleTransfer={(transferAddress) => handleTransfer(transferAddress)}
+        />
 
       </Wrapper>
 

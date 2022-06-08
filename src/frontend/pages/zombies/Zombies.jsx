@@ -78,8 +78,6 @@ export const Zombies = () => {
   }, [currentUser]);
 
   async function fetchUserZombies(currentPage, rarity, collection) {
-    console.log('currentPage', currentPage);
-
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
     const collectionFilter = collection !== "" ? parseInt(collection) + 1 : 0;
     const zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
@@ -153,7 +151,6 @@ export const Zombies = () => {
   }
 
   useEffect(() => {
-    console.log('+++');
     navigate(buildUrl(currentPage, filterRarity, filterCollection));
   }, [currentPage]);
 
