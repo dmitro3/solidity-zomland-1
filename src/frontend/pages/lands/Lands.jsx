@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 import { CardLand } from '../../components/card-land/CardLand';
 import { TransferPopup } from '../../components/TransferPopup';
-import { removeLandFromMarket } from '../../web3/api';
+import { removeFromMarket, transferNFT } from '../../web3/api';
 
 export const Lands = () => {
   const dispatch = useDispatch();
@@ -30,7 +30,7 @@ export const Lands = () => {
   const [allLands, setAllLands] = useState({});
   const [userLands, setUserLands] = useState([]);
   const [mintPopupVisible, setMintPopupVisible] = useState(false);
-  const [transferItem, setTransferItem] = useState();
+  const [transferItem, setTransferItem] = useState({});
   const [transferPopupVisible, setTransferPopupVisible] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
@@ -74,29 +74,15 @@ export const Lands = () => {
   };
 
   const handleTransfer = async (transferAddress) => {
-    try {
-      await window.contracts.land.transferFrom(
-        currentUser.accountId,
-        transferAddress,
-        transferItem.tokenId
-      ).then(transaction => {
-        addPendingTransaction(dispatch, transaction, "Transfer Land NFT");
-        transaction.wait().then(receipt => {
-          if (receipt.status === 1) {
-            setIsReady(false);
-            setTransferPopupVisible(false);
-            loadUserLands();
-          }
-        });
-      });
-    } catch (e) {
-      addTransactionError(dispatch, e.message);
-    }
+    transferNFT(dispatch, currentUser, transferAddress, transferItem.tokenId, transferItem.nftType).then(() => {
+      setIsReady(false);
+      loadUserLands();
+      setTransferPopupVisible(false);
+    });
   };
 
   const watchMintTransaction = (tx) => {
     addPendingTransaction(dispatch, tx, tx.message);
-
     tx.wait().then(receipt => {
       if (receipt.status === 1) {
         loadUserLands();
@@ -118,7 +104,7 @@ export const Lands = () => {
   };
 
   const rmFromMarket = (tokenId) => {
-    removeLandFromMarket(dispatch, tokenId).then(() => {
+    removeFromMarket(dispatch, tokenId, "land").then(() => {
       loadUserLands();
     });
   }

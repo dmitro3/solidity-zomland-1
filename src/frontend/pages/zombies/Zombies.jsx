@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   addPendingTransaction,
-  addTransactionError, rarityOptions,
+  addTransactionError, collectionOptions, rarityOptions,
   transformCollections,
   transformLand,
   transformZombie,
@@ -27,6 +27,8 @@ import { Pagination } from "../../components/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 import { addForKill, cleanupKillList } from '../../store/sidebarSlice';
+import { TransferPopup } from '../../components/TransferPopup';
+import { removeFromMarket, transferNFT } from '../../web3/api';
 
 const PAGE_LIMIT = "20";
 
@@ -47,6 +49,8 @@ export const Zombies = () => {
   const [filterCollection, setFilterCollection] = useState("");
   const [allCollections, setAllCollections] = useState([]);
   const [mintInProgressList, setMintInProgressList] = useState([]);
+  const [transferItem, setTransferItem] = useState({});
+  const [transferPopupVisible, setTransferPopupVisible] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,11 +73,11 @@ export const Zombies = () => {
 
     fetchCollections().then(() => {
       fetchUserLands();
-      fetchUserZombies(page, collection, rarity);
+      fetchUserZombies(page, rarity, collection);
     });
   }, [currentUser]);
 
-  async function fetchUserZombies(currentPage, collection, rarity) {
+  async function fetchUserZombies(currentPage, rarity, collection) {
     const startIndex = (currentPage - 1) * PAGE_LIMIT;
     const collectionFilter = collection !== "" ? parseInt(collection) + 1 : 0;
     const zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
@@ -115,7 +119,7 @@ export const Zombies = () => {
     }
   };
 
-  const buildUrl = (filterCollection, filterRarity) => {
+  const buildUrl = (filterRarity, filterCollection) => {
     let url = `/zombies?page=${currentPage}`;
     if (filterRarity) url = `${url}&rarity=${filterRarity}`;
     if (filterCollection) url = `${url}&collection=${filterCollection}`;
@@ -146,29 +150,24 @@ export const Zombies = () => {
     setUserLands(userLands);
   }
 
-  useEffect(() => navigate(buildUrl(filterCollection, filterRarity)), [currentPage]);
+  useEffect(() => navigate(buildUrl(filterRarity, filterCollection)), [currentPage]);
 
-  const handleCollectionChange = (filterCollection) => {
-    setCurrentPage(1);
-    setFilterRarity("");
-    fetchUserZombies(1, filterCollection, "");
-    navigate(buildUrl(filterCollection, ""));
-  }
-
-  const handleRarityChange = (filterRarity) => {
-    setCurrentPage(1);
-    setFilterCollection("");
-    fetchUserZombies(1, "", filterRarity);
-    navigate(buildUrl("", filterRarity));
-  }
-
+  useEffect(() => {
+    if (isReady) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setCurrentPage(1);
+      fetchUserZombies(1, filterRarity, filterCollection);
+      navigate(buildUrl(filterRarity, filterCollection));
+    }
+  }, [filterRarity, filterCollection]);
+  
   const handleMint = async (landId) => {
     mintInProgressList.push(landId);
     setMintInProgressList([...mintInProgressList]);
 
     const gas = await window.contracts.zombie.estimateGas.safeMint(landId);
     await window.contracts.zombie.safeMint(landId, {
-      gasLimit: parseInt(gas * 1.5)
+      gasLimit: parseInt(gas * 1.2)
     }).then(transaction => {
       addPendingTransaction(dispatch, transaction, "Minting Zombies");
 
@@ -176,7 +175,7 @@ export const Zombies = () => {
         if (receipt.status === 1) {
           fetchUserLands();
           setCurrentPage(1);
-          fetchUserZombies(1, filterCollection, filterRarity);
+          fetchUserZombies(1, filterRarity, filterCollection);
         } else {
           alert('Minting error');
         }
@@ -199,55 +198,26 @@ export const Zombies = () => {
     }
   }
 
-  const showMintZombiesBlock = () => {
-    setMintPopupVisible(true);
-  };
-
-  const handleTransfer = async (zombie, transferAddress) => {
-    await window.contracts.zombie.transferFrom(
-      currentUser.accountId,
-      transferAddress,
-      zombie.tokenId
-    ).then(transaction => {
-      addPendingTransaction(dispatch, transaction, "Transfer Zombie NFT");
-      transaction.wait().then(receipt => {
-        if (receipt.status === 1) {
-          setIsReady(false);
-          fetchUserZombies(currentPage, filterCollection, filterRarity);
-        }
-      });
+  const handleTransfer = async (transferAddress) => {
+    transferNFT(dispatch, currentUser, transferAddress, transferItem.tokenId, transferItem.nftType).then(() => {
+      setIsReady(false);
+      fetchUserZombies(currentPage, filterRarity, filterCollection);
+      setTransferPopupVisible(false);
     });
   };
 
-  const collectionOptions = () => {
-    const collections = Object.keys(allCollections).map((key) => {
-      return {
-        title: allCollections[key].title,
-        onClick: () => {
-          const selectedCollection = allCollections[key].id;
-          setFilterCollection(selectedCollection);
-          handleCollectionChange(selectedCollection);
-        },
-      };
+  const rmFromMarket = (tokenId) => {
+    removeFromMarket(dispatch, tokenId, "zombie").then(() => {
+      setIsReady(false);
+      fetchUserZombies(currentPage, filterRarity, filterCollection);
     });
-
-    return [
-      {
-        title: "All Collections",
-        onClick: () => {
-          setFilterCollection("");
-          handleCollectionChange("");
-        },
-      },
-      ...collections,
-    ];
-  };
+  }
 
   const onPageChanged = (page) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     setCurrentPage(page);
-    fetchUserZombies(page, filterCollection, filterRarity);
+    fetchUserZombies(page, filterRarity, filterCollection);
   };
 
   const hasLands = userLands.length > 0;
@@ -282,7 +252,7 @@ export const Zombies = () => {
                     size="lg"
                     noIcon
                     readonly={userClaimCount === 0}
-                    onClick={showMintZombiesBlock}
+                    onClick={() => setMintPopupVisible(true)}
                   />
 
                   <div className="lg:basis-4/12 basis-full z-10 sm:text-right ml-2 mt-3 sm:mt-0">
@@ -301,7 +271,7 @@ export const Zombies = () => {
                             ? allCollections[filterCollection]?.title
                             : null
                         }
-                        options={collectionOptions()}
+                        options={collectionOptions(allCollections, setFilterCollection)}
                       />
                     </div>
                   </div>
@@ -322,16 +292,16 @@ export const Zombies = () => {
                       <Card
                         nft={zombie}
                         key={index}
-                        sellItems={sellList["zombies"]}
                         setSellItems={() => appendToSellList(zombie)}
                         rmFromMarket={async () => {
                           setIsReady(false);
-                          // await rmFromMarket(contract, zombie);
+                          await rmFromMarket(zombie.tokenId);
                           setIsReady(true);
                         }}
-                        handleTransfer={(transferAddress) =>
-                          handleTransfer(zombie, transferAddress)
-                        }
+                        setTransferPopupVisible={() => {
+                          setTransferItem(zombie);
+                          setTransferPopupVisible(true);
+                        }}
                         setKillItem={() => appendToKillList(zombie)}
                       />
                     ))}
@@ -360,6 +330,13 @@ export const Zombies = () => {
             <Loader />
           )}
         </Container>
+
+        <TransferPopup
+          nft={transferItem}
+          popupVisible={transferPopupVisible}
+          setPopupVisible={setTransferPopupVisible}
+          handleTransfer={(transferAddress) => handleTransfer(transferAddress)}
+        />
 
         <MintZombiePopup
           mintPopupVisible={mintPopupVisible}

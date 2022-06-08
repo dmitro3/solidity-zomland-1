@@ -54,9 +54,15 @@ abstract contract Utils {
     return uint(keccak256(abi.encodePacked(_shift, msg.sender, block.difficulty, block.timestamp, uint(1)))) % _max;
   }
 
+  function has(uint[] memory self, uint value) public pure returns (bool) {
+    uint length = self.length;
+    for (uint i = 0; i < length; ++i) if (self[i] == value) return true;
+    return false;
+  }
+
   function indexOf(uint[] memory self, uint value) public pure returns (uint, bool) {
     uint length = self.length;
-    for (uint i = 0; i < length; i++) if (self[i] == value) return (i, true);
+    for (uint i = 0; i < length; ++i) if (self[i] == value) return (i, true);
     return (0, false);
   }
 
@@ -65,7 +71,7 @@ abstract contract Utils {
     bytes memory b = bytes(_b);
     uint minLength = a.length;
     if (b.length < minLength) minLength = b.length;
-    for (uint i = 0; i < minLength; i ++)
+    for (uint i = 0; i < minLength; ++i)
       if (a[i] < b[i])
         return - 1;
       else if (a[i] > b[i])

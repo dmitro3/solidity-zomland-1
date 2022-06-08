@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
+  collectionOptions,
+  isOwner,
   landTypeOptions,
   rarityOptions,
   transformCollections,
@@ -24,7 +26,7 @@ import { ButtonGroup } from "../../components/ButtonGroup";
 import { Card } from "../../components/card/Card";
 import { useDispatch, useSelector } from 'react-redux';
 import { CardLand } from '../../components/card-land/CardLand';
-import { removeLandFromMarket } from '../../web3/api';
+import { removeFromMarket, removeLandFromMarket } from '../../web3/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Pagination } from '../../components/Pagination';
 import Dropdown from '../../components/basic/Dropdown';
@@ -79,24 +81,6 @@ export const Market = () => {
 
     }
 
-    // const saleResults = await window.contracts[getCurrentContract()].getMarketItems(
-    //   start_index,
-    //   PAGE_LIMIT,
-    //   rarity || "",
-    //   collection || ""
-    // );
-    // console.log(saleResults);
-    //
-    // let saleItems;
-    // if (name === "Lands") {
-    //   saleItems = saleResults[1].filter(item => item.nftType).map(item => transformLand(item));
-    // } else if (name === "Zombies") {
-    //   saleItems = saleResults[1].filter(item => item.nftType).map(item => transformZombie(item));
-    // } else {
-    //   saleItems = saleResults[1].filter(item => item.nftType).map(item => transformMonster(item));
-    // }
-    // console.log('saleItems', saleItems);
-
     setItems(saleItems);
     setItemsCount(parseInt(saleItemsCount));
     navigate(buildUrl(currentSection, rarity, collection, landType, page));
@@ -145,22 +129,6 @@ export const Market = () => {
     setAllCollections(collections);
   }
 
-  const collectionOptions = () => {
-    const collections = Object.keys(allCollections).map((key) => {
-      return {
-        title: allCollections[key].title,
-        onClick: () => setFilterCollection(key),
-      };
-    });
-    return [
-      {
-        title: "All",
-        onClick: () => setFilterCollection(null),
-      },
-      ...collections,
-    ];
-  };
-
   const buildUrl = (section, rarity, collection, landType, page = 1) => {
     let url = `/market/${section}?page=${page}`;
     if (section === "lands") {
@@ -208,15 +176,11 @@ export const Market = () => {
     setIsReady(true);
   };
 
-  const rmLandFromMarket = (tokenId) => {
-    removeLandFromMarket(dispatch, tokenId).then(() => {
-      showMarket(getCurrentSection(), null, null, filterLandType, currentPage);
+  const rmFromMarket = (token) => {
+    removeFromMarket(dispatch, token.tokenId, token.nftType).then(() => {
+      setIsReady(false);
+      showMarket(getCurrentSection(), filterRarity, filterCollection, filterLandType, currentPage);
     });
-  }
-
-
-  const isOwner = (nftOwner) => {
-    return currentUser.accountId.toLowerCase() === nftOwner.toLowerCase();
   }
 
   return (
@@ -314,7 +278,7 @@ export const Market = () => {
                                 ? allCollections[filterCollection]?.title
                                 : null
                             }
-                            options={collectionOptions()}
+                            options={collectionOptions(allCollections, setFilterCollection)}
                           />
                         </div>
                       </>
@@ -334,12 +298,12 @@ export const Market = () => {
                           <>
                             {items.map((item, index) => (
                               <div key={index}>
-                                {isOwner(item.ownerId) ? (
+                                {isOwner(currentUser, item.ownerId) ? (
                                   <CardLand
                                     nft={item}
                                     rmFromMarket={async () => {
                                       setIsReady(false);
-                                      await rmLandFromMarket(item.tokenId);
+                                      await rmFromMarket(item);
                                       setIsReady(true);
                                     }}
                                   />
@@ -356,12 +320,12 @@ export const Market = () => {
                           <>
                             {items.map((item, index) => (
                               <div key={index}>
-                                {isOwner(item.ownerId) ? (
+                                {isOwner(currentUser, item.ownerId) ? (
                                   <Card
                                     nft={item}
                                     rmFromMarket={async () => {
                                       setIsReady(false);
-                                      // await rmFromMarket(contract, item);
+                                      await rmFromMarket(item);
                                       setIsReady(true);
                                     }}
                                   />
@@ -377,7 +341,7 @@ export const Market = () => {
                         )}
                       </>
                     ) : (
-                      <div>No {section} on sale.</div>
+                      <div>No {filterLandType} {filterRarity} {section} on sale.</div>
                     )}
                   </List>
 

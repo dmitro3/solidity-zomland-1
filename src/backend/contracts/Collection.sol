@@ -38,7 +38,7 @@ contract CollectionContract is Ownable, Modifiers {
   // ---------------- Public & External methods ---------------
 
   function getCollectionAndZombie(uint8 _shift) external view returns (uint, string memory){
-    uint _collectionIndex = randomNumber(collectionCount, _shift) + 1;
+    uint _collectionIndex = randomNumber(collectionCount, _shift);
 
     Collection storage _collection = collections[_collectionIndex];
     uint _num = randomNumber(999, _shift + 10) + 1;

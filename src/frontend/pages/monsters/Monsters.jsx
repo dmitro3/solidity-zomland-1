@@ -150,7 +150,6 @@ export const Monsters = () => {
                       <Card
                         nft={monster}
                         key={index}
-                        sellItems={sellList["monsters"]}
                         setSellItems={() => appendToSellList(monster)}
                         rmFromMarket={async () => {
                           setIsReady(false);

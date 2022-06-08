@@ -12,7 +12,7 @@ import CollectionAbi from "../contractsData/CollectionContract.json";
 import MarketAddress from "../contractsData/MarketContract-address.json";
 import MarketAbi from "../contractsData/MarketContract.json";
 import { setUserAccountId, setUserBalance } from '../store/userSlice';
-import { addPendingTransaction } from './utils';
+import { addPendingTransaction, addTransactionError } from './utils';
 
 export const web3Handler = () => {
   return new Promise(async (resolve, reject) => {
@@ -96,15 +96,40 @@ export const updateUserAccount = async (dispatch, account) => {
   await updateUserBalance(dispatch, account);
 }
 
-export const removeLandFromMarket = async (dispatch, tokenId) => {
+export const removeFromMarket = async (dispatch, tokenId, nftType) => {
   return new Promise(async (resolve) => {
-    await window.contracts.market.removeFromMarket(tokenId, "land").then(transaction => {
-      addPendingTransaction(dispatch, transaction, "Remove Land from market");
-      transaction.wait().then(receipt => {
-        if (receipt.status === 1) {
-          resolve();
-        }
+    try {
+      await window.contracts.market.removeFromMarket(tokenId, nftType.toLowerCase()).then(transaction => {
+        addPendingTransaction(dispatch, transaction, `Remove ${nftType} from market`);
+        transaction.wait().then(receipt => {
+          if (receipt.status === 1) {
+            resolve();
+          }
+        });
       });
-    });
-  })
+    } catch (e) {
+      addTransactionError(dispatch, e.message);
+    }
+  });
+}
+
+export const transferNFT = async (dispatch, currentUser, transferAddress, tokenId, nftType) => {
+  return new Promise(async (resolve) => {
+    try {
+      await window.contracts[nftType.toLowerCase()].transferFrom(
+        currentUser.accountId,
+        transferAddress,
+        tokenId
+      ).then(transaction => {
+        addPendingTransaction(dispatch, transaction, `Transfer ${nftType} NFT`);
+        transaction.wait().then(receipt => {
+          if (receipt.status === 1) {
+            resolve();
+          }
+        });
+      });
+    } catch (e) {
+      addTransactionError(dispatch, e.message);
+    }
+  });
 }

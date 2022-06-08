@@ -182,6 +182,7 @@ export const rarityOptions = (setFilterRarity) => {
       title: option,
       onClick: () => {
         const optionValue = option === "All Rarities" ? "" : option;
+        console.log('optionValue', optionValue);
         setFilterRarity(optionValue);
       },
     })
@@ -189,6 +190,32 @@ export const rarityOptions = (setFilterRarity) => {
 
   return result;
 };
+
+export const collectionOptions = (allCollections, setFilterCollection) => {
+  const collections = Object.keys(allCollections).map((key) => {
+    return {
+      title: allCollections[key].title,
+      onClick: () => {
+        const selectedCollection = allCollections[key].id;
+        setFilterCollection(selectedCollection);
+      },
+    };
+  });
+
+  return [
+    {
+      title: "All Collections",
+      onClick: () => {
+        setFilterCollection("");
+      },
+    },
+    ...collections,
+  ];
+};
+
+export const isOwner = (currentUser, nftOwner) => {
+  return currentUser.accountId.toLowerCase() === nftOwner.toLowerCase();
+}
 
 export const landTypeOptions = (setFilterLandType) => {
   const result = [];

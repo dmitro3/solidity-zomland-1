@@ -261,43 +261,63 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
   function userZombies(uint _startIndex, uint8 _count, uint _collectionFilter, string memory _rarityFilter) public view returns (uint, Zombie[] memory) {
     uint[] memory _innerList = new uint[](_count);
     uint _endIndex = _startIndex + _count;
-    uint _innerListLength;
-    uint _innerIndex = 0;
+    uint _totalListLength;
+    uint _innerIndex;
 
-    if (_collectionFilter != 0) {
+    if (_collectionFilter != 0 && bytes(_rarityFilter).length != 0) {
+      (_innerList, _innerIndex, _totalListLength) = filterCollectionRarity(_collectionFilter, _rarityFilter, _startIndex, _endIndex);
+    } else if (_collectionFilter != 0) {
       uint[] memory collectionList = userCollectionZombie[msg.sender][_collectionFilter - 1];
-      _innerListLength = collectionList.length;
-      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
-        if (_innerListLength > _i) {
-          _innerList[_innerIndex] = collectionList[_i];
-          _innerIndex += 1;
-        }
-      }
+      (_innerList, _innerIndex, _totalListLength) = mapByList(collectionList, collectionList.length, _startIndex, _endIndex);
     } else if (bytes(_rarityFilter).length != 0) {
-      CardRarity _rarity = rarityFromString(_rarityFilter);
-      uint[] memory rarityList = userRarityZombie[msg.sender][_rarity];
-      _innerListLength = rarityList.length;
-      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
-        if (_innerListLength > _i) {
-          _innerList[_innerIndex] = rarityList[_i];
-          _innerIndex += 1;
-        }
-      }
+      uint[] memory rarityList = userRarityZombie[msg.sender][rarityFromString(_rarityFilter)];
+      (_innerList, _innerIndex, _totalListLength) = mapByList(rarityList, rarityList.length, _startIndex, _endIndex);
     } else {
-      _innerListLength = super.balanceOf(msg.sender);
+      _totalListLength = super.balanceOf(msg.sender);
       for (uint _i = _startIndex; _i < _endIndex; ++_i) {
-        if (_innerListLength > _i) {
+        if (_totalListLength > _i) {
           _innerList[_innerIndex] = super.tokenOfOwnerByIndex(msg.sender, _i);
           _innerIndex += 1;
         }
       }
     }
 
-    Zombie[] memory _resultZombies = new Zombie[](_innerListLength);
+    Zombie[] memory _resultZombies = new Zombie[](_innerIndex);
     for (uint _i = 0; _i < _innerIndex; ++_i) {
       _resultZombies[_i] = zombies[_innerList[_i]];
     }
-    return (_innerListLength, _resultZombies);
+    return (_totalListLength, _resultZombies);
+  }
+
+  function filterCollectionRarity(uint _collectionFilter, string memory _rarityFilter, uint _startIndex, uint _endIndex) internal view returns (uint[] memory, uint, uint){
+    uint[] memory collectionList = userCollectionZombie[msg.sender][_collectionFilter - 1];
+    uint[] memory rarityList = userRarityZombie[msg.sender][rarityFromString(_rarityFilter)];
+
+    uint _innerIndex = 0;
+    uint collectionLength = collectionList.length;
+    uint[] memory collectionRarityList = new uint[](collectionLength);
+    for (uint _i = 0; _i < collectionLength; ++_i) {
+      if (Utils.has(rarityList, collectionList[_i])) {
+        collectionRarityList[_innerIndex] = collectionList[_i];
+        _innerIndex += 1;
+      }
+    }
+
+    return mapByList(collectionRarityList, _innerIndex, _startIndex, _endIndex);
+  }
+
+  function mapByList(uint[] memory source, uint _innerListLength, uint _startIndex, uint _endIndex) private view returns (uint[] memory, uint, uint){
+    uint _innerIndex = 0;
+    uint[] memory _innerList = new uint[](_endIndex - _startIndex);
+
+    for (uint _i = _startIndex; _i < _endIndex; ++_i) {
+      if (_innerListLength > _i) {
+        _innerList[_innerIndex] = source[_i];
+        _innerIndex += 1;
+      }
+    }
+
+    return (_innerList, _innerIndex, _innerListLength);
   }
 
   function killZombies(uint[] memory _tokenList) public {

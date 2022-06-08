@@ -69,6 +69,7 @@ export const CardLand = ({
                     {nft.salePrice ? (
                       <CardLandDropdown
                         setTransferPopupVisible={setTransferPopupVisible}
+                        handleBuy={handleBuy}
                         rmFromMarket={rmFromMarket}
                       />
                     ) : (

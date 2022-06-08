@@ -7,15 +7,18 @@ export const CardLandDropdown = ({
   setTransferPopupVisible,
   setSellItems,
   rmFromMarket,
+  handleBuy,
 }) => {
 
-  const actions = [
-    {
+  const actions = [];
+
+  if (setTransferPopupVisible) {
+    actions.push({
       title: "Transfer",
       fn: setTransferPopupVisible,
       icon: <ArrowRightIcon className="h-5 w-5 mr-2 font-semibold" />,
-    }
-  ];
+    });
+  }
 
   if (setSellItems) {
     actions.push({
@@ -29,6 +32,14 @@ export const CardLandDropdown = ({
     actions.push({
       title: "Cancel Sell",
       fn: rmFromMarket,
+      icon: <CurrencyDollarIcon className="h-5 w-5 mr-2 font-semibold" />,
+    });
+  }
+
+  if (handleBuy) {
+    actions.push({
+      title: "Buy Land",
+      fn: handleBuy,
       icon: <CurrencyDollarIcon className="h-5 w-5 mr-2 font-semibold" />,
     });
   }
