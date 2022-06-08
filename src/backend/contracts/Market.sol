@@ -214,17 +214,28 @@ contract MarketContract is Utils, Modifiers {
     if (string_equal(typeNFT, "land")) {
       _source = lands;
       _sourceContract = IMain(mainContract).getContractLandNFT();
+      //...
     } else if (string_equal(typeNFT, "zombie")) {
       _source = zombies;
       _sourceContract = IMain(mainContract).getContractZombieNFT();
+      IZombieNFT(_sourceContract).buyToken(tokenId, msg.value, msg.sender);
     } else if (string_equal(typeNFT, "monster")) {
       _source = monsters;
       _sourceContract = IMain(mainContract).getContractMonsterNFT();
+      //...
     } else {
       revert MarketError({message : "Wrong typeNFT param"});
     }
 
+    // remove from market
+    (uint _index, bool _exist) = Utils.indexOf(_source, tokenId);
+    if (_exist) {
+      _source[_index] = _source[_source.length - 1];
+      _source.pop();
+    }
+
     // Add history
+
   }
 
 }

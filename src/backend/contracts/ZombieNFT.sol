@@ -189,6 +189,15 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     zombies[_tokenId].salePrice = _price;
   }
 
+  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract {
+    Zombie storage zombie = zombies[_id];
+    require(zombie.salePrice == _payAmount, "Wrong payment amount");
+    require(zombie.ownerId != _newOwner, "Can't sell for the same account");
+
+    zombie.ownerId = _newOwner;
+    zombie.salePrice = 0;
+  }
+
   // ---------------- Public & External methods ---------------
 
   function getRarityCollection(uint _id) external view returns (string memory, uint) {
@@ -306,7 +315,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return mapByList(collectionRarityList, _innerIndex, _startIndex, _endIndex);
   }
 
-  function mapByList(uint[] memory source, uint _innerListLength, uint _startIndex, uint _endIndex) private view returns (uint[] memory, uint, uint){
+  function mapByList(uint[] memory source, uint _innerListLength, uint _startIndex, uint _endIndex) private pure returns (uint[] memory, uint, uint){
     uint _innerIndex = 0;
     uint[] memory _innerList = new uint[](_endIndex - _startIndex);
 

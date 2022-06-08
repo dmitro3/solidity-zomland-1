@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  addPendingTransaction,
   collectionOptions,
   isOwner,
   landTypeOptions,
@@ -32,6 +33,7 @@ import { Pagination } from '../../components/Pagination';
 import Dropdown from '../../components/basic/Dropdown';
 
 import MarketHistoryPopup from './MarketHistoryPopup';
+import { ethers } from 'ethers';
 
 export const Market = () => {
   const { section } = useParams();
@@ -59,8 +61,6 @@ export const Market = () => {
     let saleItemsCount;
     const callContract = currentSection.slice(0, -1);
     const start_index = (page - 1) * PAGE_LIMIT;
-
-    console.log(currentSection)
 
     if (currentSection === "lands") {
       let lands = await window.contracts[callContract].getMarketItems(
@@ -163,6 +163,20 @@ export const Market = () => {
 
   const handleBuy = async (item) => {
     setIsReady(false);
+
+    console.log(item);
+
+    await window.contracts.market.buyNFT(item.tokenId, item.nftType.toLowerCase(), {
+      value: item.price.toString()
+    }).then(transaction => {
+      addPendingTransaction(dispatch, transaction, `Buy ${item.nftType}`);
+      transaction.wait().then(receipt => {
+        if (receipt.status === 1) {
+          console.log('+');
+        }
+      });
+    });
+
     // let GAS = convertToTera("100");
     // let DEPOSIT = convertToYocto(item.salePrice);
     //
