@@ -214,7 +214,7 @@ contract MarketContract is Utils, Modifiers {
     if (string_equal(typeNFT, "land")) {
       _source = lands;
       _sourceContract = IMain(mainContract).getContractLandNFT();
-      //...
+      ILandNFT(_sourceContract).buyToken(tokenId, msg.value, msg.sender);
     } else if (string_equal(typeNFT, "zombie")) {
       _source = zombies;
       _sourceContract = IMain(mainContract).getContractZombieNFT();
@@ -222,7 +222,7 @@ contract MarketContract is Utils, Modifiers {
     } else if (string_equal(typeNFT, "monster")) {
       _source = monsters;
       _sourceContract = IMain(mainContract).getContractMonsterNFT();
-      //...
+      IMonsterNFT(_sourceContract).buyToken(tokenId, msg.value, msg.sender);
     } else {
       revert MarketError({message : "Wrong typeNFT param"});
     }
@@ -235,7 +235,7 @@ contract MarketContract is Utils, Modifiers {
     }
 
     // Add history
-
+    //    marketHistory[] = HistoryItem();
   }
 
 }

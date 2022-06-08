@@ -159,6 +159,15 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     lands[_tokenId].salePrice = _price;
   }
 
+  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract {
+    Land storage land = lands[_id];
+    require(land.salePrice == _payAmount, "Wrong payment amount");
+    require(land.ownerId != _newOwner, "Can't sell for the same account");
+
+    land.ownerId = _newOwner;
+    land.salePrice = 0;
+  }
+
   // ---------------- Public & External methods ---------------
 
   function landInfo(uint _id) external view returns (address, string memory, uint) {

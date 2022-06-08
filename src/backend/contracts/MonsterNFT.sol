@@ -130,6 +130,15 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     monsters[_tokenId].salePrice = _price;
   }
 
+  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract {
+    Monster storage monster = monsters[_id];
+    require(monster.salePrice == _payAmount, "Wrong payment amount");
+    require(monster.ownerId != _newOwner, "Can't sell for the same account");
+
+    monster.ownerId = _newOwner;
+    monster.salePrice = 0;
+  }
+
   // ---------------- Public & External methods ---------------
 
   function killNftList(uint[] memory _tokenList) public {

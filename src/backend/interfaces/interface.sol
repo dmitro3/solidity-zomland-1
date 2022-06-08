@@ -38,6 +38,8 @@ interface ILandNFT is IERC721 {
   function landSetMintTimestamp(uint) external;
 
   function setMarketSalePrice(uint, uint, address) external;
+
+  function buyToken(uint, uint, address) external;
 }
 
 interface IZombieNFT is IERC721 {
@@ -58,6 +60,8 @@ interface IMonsterNFT is IERC721 {
   function setMarketSalePrice(uint, uint, address) external;
 
   function getRarityCollection(uint) external view returns (string memory, uint);
+
+  function buyToken(uint, uint, address) external;
 }
 
 
