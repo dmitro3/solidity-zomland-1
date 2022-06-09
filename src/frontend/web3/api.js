@@ -69,6 +69,12 @@ export const web3Handler = () => {
   });
 };
 
+export const checkNetwork = async () => {
+  const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+  console.log('chainId', chainId);
+  return chainId === process.env.CHAIN_ID;
+}
+
 // export const FIREBASE_CONFIG = {
 //   apiKey: process.env.FIREBASE_API_KEY,
 //   authDomain: process.env.FIREBASE_AUTH_DOMAIN,

@@ -35,9 +35,10 @@ export const Button = ({
     <>
       <Btn
         animated={animated}
-        className={`border-2 rounded-lg font-semibold uppercase text-white group transition ease-in-out duration-200 ${
+        className={`border-2 font-semibold uppercase text-white group transition ease-in-out duration-200 ${
           disabled && "grayscale cursor-default opacity-40"
         } 
+        ${size === "xxs" ? "rounded-md" : "rounded-lg"}
         ${
           readonly && "grayscale opacity-70"
         }

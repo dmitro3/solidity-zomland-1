@@ -5,9 +5,11 @@
   "license": "MIT",
   "scripts": {
     "deploy": "npx hardhat run src/backend/scripts/deploy.js --network localhost",
+    "deploy:dev:bsc": "npx hardhat run src/backend/scripts/deploy.js --network bsc_testnet",
     "deploy:dev:meter": "npx hardhat run src/backend/scripts/deploy.js --network meter_testnet",
     "deploy:dev:oasis": "npx hardhat run src/backend/scripts/deploy.js --network emerald_testnet",
     "start": "rm -rf ./dist && rm -rf .parcel-cache && NODE_ENV=local parcel src/index.html --open",
+    "start:bsc": "rm -rf ./dist && rm -rf .parcel-cache && NODE_ENV=local.bsc parcel src/index.html --open",
     "console": "npx hardhat console --network localhost",
     "local": "npx hardhat node",
     "build": "rm -rf ./dist && NODE_ENV=production parcel build src/index.html --public-url ./",

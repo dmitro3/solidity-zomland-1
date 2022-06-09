@@ -13,14 +13,17 @@ import {
   Collections,
   OneCollection,
 } from "./pages";
-import { Sidebar } from "./components/sidebar/Sidebar";
 import {
   web3Handler,
-  isMetamaskInstalled, updateUserAccount,
+  isMetamaskInstalled,
+  updateUserAccount,
+  checkNetwork,
 } from "./web3/api";
+import { Sidebar } from "./components/sidebar/Sidebar";
 import { TransactionList } from "./components/TransactionList";
 import { useDispatch, useSelector } from "react-redux";
 import { addTransactionError } from './web3/utils';
+import { setIsChainError } from './store/chainSlice';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -30,15 +33,22 @@ export default function App() {
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
 
   window.web3Login = () => {
+
+    // Check network
+    if (isMetamaskInstalled()) {
+      checkNetwork().then(isCorrect => {
+        dispatch(setIsChainError({ isError: !isCorrect }));
+      });
+
+      window.ethereum.on("chainChanged", () => {
+        window.location.reload();
+      });
+    }
+
     web3Handler()
       .then(
         async ({ account }) => {
           await updateUserAccount(dispatch, account);
-
-          window.ethereum.on("chainChanged", (chainId) => {
-            console.log("chainChanged", chainId);
-            window.location.reload();
-          });
 
           window.ethereum.on("accountsChanged", (accounts) => {
             console.log("accountsChanged", accounts);
@@ -77,7 +87,6 @@ export default function App() {
 
   return (
     <BrowserRouter>
-
       <Routes>
         <Route
           exact

@@ -12,6 +12,8 @@ import leaderboard_icon from "../assets/images/leaderboard.png";
 
 export const Header = () => {
   const currentUser = useSelector(state => state.user.user);
+  const chainStatus = useSelector(state => state.chain.network);
+
   const [scroll, setScroll] = useState(false);
   const [isMobileOpened, setIsMobileOpened] = useState(false);
 
@@ -48,13 +50,48 @@ export const Header = () => {
     });
   }, []);
 
+  const switchNetworkToCorrect = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: process.env.CHAIN_ID }],
+      });
+    } catch (switchError) {
+      if (switchError.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: process.env.CHAIN_ID,
+              chainName: process.env.CHAIN_NAME,
+              rpcUrls: process.env.CHAIN_RPC_URL,
+              blockExplorerUrls: [process.env.EXPLORER_URL],
+              nativeCurrency: {
+                symbol: process.env.TOKEN_SYMBOL,
+                decimals: process.env.TOKEN_DECIMALS
+              }
+            }]
+        });
+      }
+    }
+  }
+
   return (
     <div
       className={`sticky top-0 z-40 py-5 transition ease-in-out duration-300 ${
         scroll ? "bg-main/95" : ""
       }`}
     >
-      <Container>
+
+      {chainStatus.isError && (
+        <div className="py-2 bg-red-800 text-center fixed top-0 left-0 right-0 text-sm">
+          {chainStatus.isError} <b>Game Network</b> doesn't match to network selected in wallet.
+          Learn how to <a className="underline" target="_blank" href="https://dappradar.com/blog/guide-on-how-to-switch-network-in-metamask">change network in wallet</a>{" "}
+          or click <Button title="Change Network" size="xxs" noIcon className="ml-1" onClick={() => switchNetworkToCorrect()} />
+        </div>
+      )}
+
+      <Container className={`${chainStatus.isError ? "pt-8" : ""}`}>
         <Row className="justify-between">
           <Link to="/" className="flex flex-row hover:text-indigo-50">
             <img
