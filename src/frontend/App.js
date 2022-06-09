@@ -24,6 +24,7 @@ import { TransactionList } from "./components/TransactionList";
 import { useDispatch, useSelector } from "react-redux";
 import { addTransactionError } from './web3/utils';
 import { setIsChainError } from './store/chainSlice';
+import { Leaderboard } from './pages/Leaderboard';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -148,6 +149,11 @@ export default function App() {
               element={
                 <Token />
               }
+            />
+            <Route
+              exact
+              path="/leaderboard"
+              element={<Leaderboard />}
             />
           </>
         )}

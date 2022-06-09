@@ -39,6 +39,7 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.4",
     "file-loader": "^6.2.0",
+    "firebase": "^9.8.2",
     "hardhat": "^2.8.4",
     "html-loader": "^3.1.0",
     "parcel": "2.3.2",

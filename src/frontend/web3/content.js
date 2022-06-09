@@ -641,3 +641,8 @@ export const PrivacyContent = {
   </div>
   `,
 };
+
+export const LeaderboardContent = {
+  title: "Leaderboard",
+  desc: "TOP-20 ZomLand players",
+};

@@ -29,6 +29,7 @@ import { addForSale, cleanupSaleList } from '../../store/marketSlice';
 import { addForKill, cleanupKillList } from '../../store/sidebarSlice';
 import { TransferPopup } from '../../components/TransferPopup';
 import { removeFromMarket, transferNFT } from '../../web3/api';
+import { Api } from '../../db/api';
 
 const PAGE_LIMIT = "20";
 
@@ -86,6 +87,12 @@ export const Zombies = () => {
 
     setUserZombies(zombies);
     setIsReady(true);
+
+    // update leaderboard
+    if (!collection && !rarity) {
+      let api = new Api();
+      api.setUserLeaderboardCount(currentUser.accountId, 'zombies', parseInt(zombiesObj[0]));
+    }
   }
 
   const fetchCollections = async () => {

@@ -23,6 +23,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
   mapping(uint => Zombie) zombies;
   mapping(address => mapping(uint => uint[])) userCollectionZombie;
   mapping(address => mapping(CardRarity => uint[])) userRarityZombie;
+  uint killedZombies;
 
   struct Zombie {
     uint tokenId;
@@ -69,6 +70,8 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     Zombie storage _zombie = zombies[_tokenId];
     removeZombieCollectionRarity(msg.sender, _tokenId, _zombie.collection, _zombie.cardRarity);
     removeZombieFromMarket(_tokenId);
+    killedZombies += 1;
+
     super._burn(_tokenId);
   }
 
@@ -399,6 +402,10 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
       }
     }
     return (total, _userZombies);
+  }
+
+  function leaderboardStats() public view returns (uint, uint){
+    return (_tokenIdCounter.current(), killedZombies);
   }
 
 }

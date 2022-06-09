@@ -22,6 +22,7 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
   Counters.Counter private _tokenIdCounter;
   mapping(uint => Monster) monsters;
   mapping(address => mapping(CardRarity => uint[])) userRarityMonster;
+  uint killedMonsters;
 
   struct Monster {
     uint tokenId;
@@ -67,6 +68,8 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     Monster storage _monster = monsters[_tokenId];
     removeMonsterRarity(msg.sender, _tokenId, _monster.cardRarity);
     removeMonsterFromMarket(_tokenId);
+    killedMonsters += 1;
+
     super._burn(_tokenId);
   }
 
@@ -237,6 +240,10 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
       }
     }
     return (total, _userMonsters);
+  }
+
+  function leaderboardStats() public view returns (uint, uint){
+    return (_tokenIdCounter.current(), killedMonsters);
   }
 
 }

@@ -24,6 +24,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { removeFromMarket, transferNFT } from '../../web3/api';
 import { addForKill, cleanupKillList } from '../../store/sidebarSlice';
 import { TransferPopup } from '../../components/TransferPopup';
+import { Api } from '../../db/api';
 
 const PAGE_LIMIT = "20";
 
@@ -76,6 +77,12 @@ export const Monsters = () => {
 
     setUserMonsters(monsters);
     setIsReady(true);
+
+    // update leaderboard
+    if (!rarity) {
+      let api = new Api();
+      api.setUserLeaderboardCount(currentUser.accountId, 'monsters', parseInt(monstersObj[0]));
+    }
   }
 
   const onPageChanged = (page) => {

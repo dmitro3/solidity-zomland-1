@@ -31,15 +31,12 @@ import { removeFromMarket } from '../../web3/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Pagination } from '../../components/Pagination';
 import Dropdown from '../../components/basic/Dropdown';
-
 import MarketHistoryPopup from './MarketHistoryPopup';
-import { ethers } from 'ethers';
 
 export const Market = () => {
   const { section } = useParams();
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.user);
-
 
   const [isReady, setIsReady] = useState(false);
   const [items, setItems] = useState([]);
