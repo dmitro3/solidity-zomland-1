@@ -64,11 +64,11 @@ export const Header = () => {
             {
               chainId: process.env.CHAIN_ID,
               chainName: process.env.CHAIN_NAME,
-              rpcUrls: process.env.CHAIN_RPC_URL,
+              rpcUrls: process.env.CHAIN_RPC_URL.split(','),
               blockExplorerUrls: [process.env.EXPLORER_URL],
               nativeCurrency: {
                 symbol: process.env.TOKEN_SYMBOL,
-                decimals: process.env.TOKEN_DECIMALS
+                decimals: parseInt(process.env.TOKEN_DECIMALS)
               }
             }]
         });
@@ -86,7 +86,8 @@ export const Header = () => {
       {chainStatus.isError && (
         <div className="py-2 bg-red-800 text-center fixed top-0 left-0 right-0 text-sm">
           {chainStatus.isError} <b>Game Network</b> doesn't match to network selected in wallet.
-          Learn how to <a className="underline" target="_blank" href="https://dappradar.com/blog/guide-on-how-to-switch-network-in-metamask">change network in wallet</a>{" "}
+          Learn how to <a className="underline" target="_blank" href="https://dappradar.com/blog/guide-on-how-to-switch-network-in-metamask">change network in
+          wallet</a>{" "}
           or click <Button title="Change Network" size="xxs" noIcon className="ml-1" onClick={() => switchNetworkToCorrect()} />
         </div>
       )}
