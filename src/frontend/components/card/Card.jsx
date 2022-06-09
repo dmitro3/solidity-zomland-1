@@ -78,10 +78,10 @@ export const Card = ({
               </div>
 
               {nft.tokenId && (
-                <InfoWrapper withBtn={handleBuy || nft.salePrice}>
+                <InfoWrapper withBtn={size !== "sm" && (handleBuy || nft.salePrice)}>
                   <Row className="items-center">
                     <Col className="gap-1">
-                      <div className="mb-2">{formatId(nft)}</div>
+                      <div className={`mb-2 ${size === "sm" ? "text-sm" : ""}`}>{formatId(nft)}</div>
                       <CharacteristicRow
                         icon={attack_icon}
                         title="Attack"

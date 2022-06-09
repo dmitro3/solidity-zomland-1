@@ -9,12 +9,15 @@ import "../abstract/modifiers.sol";
   error MarketError(string message);
 
 contract MarketContract is Utils, Modifiers {
+  uint public constant ITEMS_LIMIT = 5;
+  uint public constant HISTORY_LIMIT = 5;
+
   uint[] lands;
   uint[] zombies;
   uint[] monsters;
-  HistoryItem[] marketHistory;
+  uint historySaleIndex;
+  mapping(uint => HistoryItem) public  marketHistory;
   mapping(string => uint) public currentSaleIndex;
-  uint public constant ITEMS_LIMIT = 5;
 
   struct HistoryItem {
     address fromUser;
@@ -31,6 +34,34 @@ contract MarketContract is Utils, Modifiers {
     currentSaleIndex["zombie"] = 0;
     currentSaleIndex["monster"] = 0;
   }
+
+  // ---------------- Internal & Private methods ---------------
+
+  function removeFromMarketInternal(uint _tokenId, uint[] storage _source) internal {
+    (uint _index, bool _exist) = Utils.indexOf(_source, _tokenId);
+    if (_exist) {
+      _source[_index] = _source[_source.length - 1];
+      _source.pop();
+    }
+  }
+
+  // ---------------- External Limited methods ---------------
+
+  function removeFromMarketExternal(uint tokenId, string memory typeNFT) external onlyNFTContract {
+    uint[] storage _source;
+    if (string_equal(typeNFT, "land")) {
+      _source = lands;
+    } else if (string_equal(typeNFT, "zombie")) {
+      _source = zombies;
+    } else if (string_equal(typeNFT, "monster")) {
+      _source = monsters;
+    } else {
+      revert MarketError({message : "Wrong typeNFT param"});
+    }
+
+    removeFromMarketInternal(tokenId, _source);
+  }
+
 
   // ---------------- Public & External methods ---------------
 
@@ -53,28 +84,15 @@ contract MarketContract is Utils, Modifiers {
     for (uint _i = 0; _i < idList.length; _i++) {
       bool _exist = Utils.has(_source, idList[_i]);
       if (!_exist) {
-        if (string_equal(typeNFT, "land")) {
-          ILandNFT(_sourceContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
-          if (_source.length > currentSaleIndex[typeNFT]) {
-            ILandNFT(_sourceContract).setMarketSalePrice(_source[currentSaleIndex[typeNFT]], 0, msg.sender);
-          }
-        } else if (string_equal(typeNFT, "zombie")) {
-          IZombieNFT(_sourceContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
-          if (_source.length > currentSaleIndex[typeNFT]) {
-            IZombieNFT(_sourceContract).setMarketSalePrice(_source[currentSaleIndex[typeNFT]], 0, msg.sender);
-          }
-        } else if (string_equal(typeNFT, "monster")) {
-          IMonsterNFT(_sourceContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
-          if (_source.length > currentSaleIndex[typeNFT]) {
-            IMonsterNFT(_sourceContract).setMarketSalePrice(_source[currentSaleIndex[typeNFT]], 0, msg.sender);
-          }
-        }
+        INFT(_sourceContract).setMarketSalePrice(idList[_i], priceList[_i], msg.sender);
 
         if (_source.length > currentSaleIndex[typeNFT]) {
+          INFT(_sourceContract).setMarketSalePrice(_source[currentSaleIndex[typeNFT]], 0, msg.sender);
           _source[currentSaleIndex[typeNFT]] = idList[_i];
         } else {
           _source.push(idList[_i]);
         }
+
         currentSaleIndex[typeNFT] += 1;
         if (currentSaleIndex[typeNFT] >= ITEMS_LIMIT) {
           currentSaleIndex[typeNFT] = 0;
@@ -100,19 +118,8 @@ contract MarketContract is Utils, Modifiers {
       revert MarketError({message : "Wrong typeNFT param"});
     }
 
-    (uint _index, bool _exist) = Utils.indexOf(_source, tokenId);
-    if (_exist) {
-      if (string_equal(typeNFT, "land")) {
-        ILandNFT(_sourceContract).setMarketSalePrice(tokenId, 0, msg.sender);
-      } else if (string_equal(typeNFT, "zombie")) {
-        IZombieNFT(_sourceContract).setMarketSalePrice(tokenId, 0, msg.sender);
-      } else if (string_equal(typeNFT, "monster")) {
-        IMonsterNFT(_sourceContract).setMarketSalePrice(tokenId, 0, msg.sender);
-      }
-
-      _source[_index] = _source[_source.length - 1];
-      _source.pop();
-    }
+    INFT(_sourceContract).setMarketSalePrice(tokenId, 0, msg.sender);
+    removeFromMarketInternal(tokenId, _source);
   }
 
   function getLandsFromMarket(uint _startIndex, uint8 _count, string memory filterLandType) external view returns (uint, uint[] memory){
@@ -214,18 +221,21 @@ contract MarketContract is Utils, Modifiers {
     if (string_equal(typeNFT, "land")) {
       _source = lands;
       _sourceContract = IMain(mainContract).getContractLandNFT();
-      ILandNFT(_sourceContract).buyToken(tokenId, msg.value, msg.sender);
     } else if (string_equal(typeNFT, "zombie")) {
       _source = zombies;
       _sourceContract = IMain(mainContract).getContractZombieNFT();
-      IZombieNFT(_sourceContract).buyToken(tokenId, msg.value, msg.sender);
     } else if (string_equal(typeNFT, "monster")) {
       _source = monsters;
       _sourceContract = IMain(mainContract).getContractMonsterNFT();
-      IMonsterNFT(_sourceContract).buyToken(tokenId, msg.value, msg.sender);
     } else {
       revert MarketError({message : "Wrong typeNFT param"});
     }
+
+    address _seller = INFT(_sourceContract).buyToken(tokenId, msg.value, msg.sender);
+
+    // send tokens (except 0.5% fee)
+    uint restAmount = msg.value - msg.value / 1000 * 5;
+    payable(_seller).transfer(restAmount);
 
     // remove from market
     (uint _index, bool _exist) = Utils.indexOf(_source, tokenId);
@@ -235,7 +245,18 @@ contract MarketContract is Utils, Modifiers {
     }
 
     // Add history
-    //    marketHistory[] = HistoryItem();
+    marketHistory[historySaleIndex] = HistoryItem(
+      _seller,
+      msg.sender,
+      typeNFT,
+      msg.value,
+      tokenId,
+      block.timestamp
+    );
+    historySaleIndex += 1;
+    if (historySaleIndex >= HISTORY_LIMIT) {
+      historySaleIndex = 0;
+    }
   }
 
 }

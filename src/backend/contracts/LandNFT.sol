@@ -99,6 +99,7 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     super._beforeTokenTransfer(_from, _to, _tokenId);
 
     if (_from != NULL_ADDRESS) {
+      removeLandFromMarket(_tokenId);
       Land storage _land = lands[_tokenId];
       _land.ownerId = _to;
     }
@@ -106,6 +107,12 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
 
   function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
     super._burn(_tokenId);
+    removeLandFromMarket(_tokenId);
+  }
+
+  function removeLandFromMarket(uint _tokenId) internal {
+    address _marketContract = IMain(mainContract).getContractMarket();
+    IMarket(_marketContract).removeFromMarketExternal(_tokenId, "land");
   }
 
   // small=0, medium=5, large=9
@@ -159,13 +166,20 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     lands[_tokenId].salePrice = _price;
   }
 
-  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract {
+  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract returns (address) {
     Land storage land = lands[_id];
+    require(land.salePrice > 0, "Wrong payment amount");
     require(land.salePrice == _payAmount, "Wrong payment amount");
     require(land.ownerId != _newOwner, "Can't sell for the same account");
 
+    address _seller = land.ownerId;
     land.ownerId = _newOwner;
     land.salePrice = 0;
+
+    // Transfer NFT
+    _transfer(_seller, _newOwner, _id);
+
+    return _seller;
   }
 
   // ---------------- Public & External methods ---------------

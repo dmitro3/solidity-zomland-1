@@ -20,7 +20,7 @@ import Dropdown from "../../components/basic/Dropdown";
 import { Pagination } from "../../components/Pagination";
 import { useDispatch, useSelector } from 'react-redux';
 import { addForSale, cleanupSaleList } from '../../store/marketSlice';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { removeFromMarket, transferNFT } from '../../web3/api';
 import { addForKill, cleanupKillList } from '../../store/sidebarSlice';
 import { TransferPopup } from '../../components/TransferPopup';
@@ -188,7 +188,15 @@ export const Monsters = () => {
                     ))}
                   </List>
                 ) : (
-                  <div>You don't have {filterRarity} Monsters.</div>
+                  <div>
+                    You don't have {filterRarity} Monsters.
+                    {!filterRarity && (
+                      <p>To get your first Monster you can complete <Link className="link" to="/collections">Collection</Link>{" "}
+                        or buy it in the{" "}
+                        <Link className="link" to="/market/monsters">Market</Link>.
+                      </p>
+                    )}
+                  </div>
                 )}
               </ListWrapper>
 

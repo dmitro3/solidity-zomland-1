@@ -37,4 +37,12 @@ abstract contract Modifiers {
     _;
   }
 
+  modifier onlyNFTContract() {
+    address monsterContract = IMain(mainContract).getContractMonsterNFT();
+    address zombieContract = IMain(mainContract).getContractZombieNFT();
+    address landContract = IMain(mainContract).getContractLandNFT();
+    require(zombieContract == msg.sender || monsterContract == msg.sender || landContract == msg.sender, "You can't call this method");
+    _;
+  }
+
 }

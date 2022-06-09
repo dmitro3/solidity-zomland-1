@@ -27,8 +27,13 @@ interface ICollection {
   function getCollectionImage(uint) external returns (string memory);
 }
 
+interface INFT {
+  function buyToken(uint, uint, address) external returns (address);
 
-interface ILandNFT is IERC721 {
+  function setMarketSalePrice(uint, uint, address) external;
+}
+
+interface ILandNFT is IERC721, INFT {
   function landInfo(uint) external view returns (address, string memory, uint);
 
   function landInfoType(uint) external view returns (string memory);
@@ -36,32 +41,22 @@ interface ILandNFT is IERC721 {
   function getLandMintZombiesCount(uint) external view returns (uint8);
 
   function landSetMintTimestamp(uint) external;
-
-  function setMarketSalePrice(uint, uint, address) external;
-
-  function buyToken(uint, uint, address) external;
 }
 
-interface IZombieNFT is IERC721 {
+interface IZombieNFT is IERC721, INFT {
   function checkAndBurnZombies(address, uint[] calldata, uint) external returns (uint, uint, uint, uint, uint);
 
   function getRandomRarityByZombies(uint[] calldata) external returns (string memory);
 
-  function setMarketSalePrice(uint, uint, address) external;
-
   function getRarityCollection(uint) external view returns (string memory, uint);
 
-  function buyToken(uint, uint, address) external;
 }
 
-interface IMonsterNFT is IERC721 {
+interface IMonsterNFT is IERC721, INFT {
   function safeMint(uint, uint[] memory, address) external returns (uint);
-
-  function setMarketSalePrice(uint, uint, address) external;
 
   function getRarityCollection(uint) external view returns (string memory, uint);
 
-  function buyToken(uint, uint, address) external;
 }
 
 
@@ -70,6 +65,8 @@ interface ITokenFT is IERC20 {
 }
 
 interface IMarket {
+  function removeFromMarketExternal(uint, string memory) external;
+
   function getLandsFromMarket(uint, uint8, string memory) external view returns (uint, uint[] memory);
 
   function getZombiesMonstersFromMarket(uint, uint8, string memory, string memory, string memory) external view returns (uint, uint[] memory);

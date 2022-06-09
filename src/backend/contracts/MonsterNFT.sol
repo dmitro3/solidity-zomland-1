@@ -57,6 +57,7 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
       Monster storage _monster = monsters[_tokenId];
       _monster.ownerId = _to;
 
+      removeMonsterFromMarket(_tokenId);
       removeMonsterRarity(_from, _tokenId, _monster.cardRarity);
       addMonsterRarity(_to, _tokenId, _monster.cardRarity);
     }
@@ -65,8 +66,13 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
   function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
     Monster storage _monster = monsters[_tokenId];
     removeMonsterRarity(msg.sender, _tokenId, _monster.cardRarity);
-
+    removeMonsterFromMarket(_tokenId);
     super._burn(_tokenId);
+  }
+
+  function removeMonsterFromMarket(uint _tokenId) internal {
+    address _marketContract = IMain(mainContract).getContractMarket();
+    IMarket(_marketContract).removeFromMarketExternal(_tokenId, "monster");
   }
 
   function addMonsterRarity(address _owner, uint _tokenId, CardRarity _rarity) private {
@@ -130,13 +136,20 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     monsters[_tokenId].salePrice = _price;
   }
 
-  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract {
+  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract returns (address) {
     Monster storage monster = monsters[_id];
+    require(monster.salePrice > 0, "Wrong payment amount");
     require(monster.salePrice == _payAmount, "Wrong payment amount");
     require(monster.ownerId != _newOwner, "Can't sell for the same account");
 
+    address _seller = monster.ownerId;
     monster.ownerId = _newOwner;
     monster.salePrice = 0;
+
+    // Transfer NFT
+    _transfer(_seller, _newOwner, _id);
+
+    return _seller;
   }
 
   // ---------------- Public & External methods ---------------
@@ -153,7 +166,6 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
       }
 
       _totalKillTokens += _monster.killTokens;
-      removeMonsterRarity(msg.sender, _tokenId, _monster.cardRarity);
       _burn(_tokenId);
     }
 

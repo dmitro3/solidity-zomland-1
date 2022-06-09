@@ -59,6 +59,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
       Zombie storage _zombie = zombies[_tokenId];
       _zombie.ownerId = _to;
 
+      removeZombieFromMarket(_tokenId);
       removeZombieCollectionRarity(_from, _tokenId, _zombie.collection, _zombie.cardRarity);
       addZombieCollectionRarity(_to, _tokenId, _zombie.collection, _zombie.cardRarity);
     }
@@ -67,8 +68,13 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
   function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
     Zombie storage _zombie = zombies[_tokenId];
     removeZombieCollectionRarity(msg.sender, _tokenId, _zombie.collection, _zombie.cardRarity);
-
+    removeZombieFromMarket(_tokenId);
     super._burn(_tokenId);
+  }
+
+  function removeZombieFromMarket(uint _tokenId) internal {
+    address _marketContract = IMain(mainContract).getContractMarket();
+    IMarket(_marketContract).removeFromMarketExternal(_tokenId, "zombie");
   }
 
   function randomNumberByRarity(uint _max, uint8 _shift, CardRarity _rarity) internal view returns (uint) {
@@ -166,8 +172,6 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
         revert MonsterMintError({message : "You don't own this zombie", tokenId : _zombie.tokenId});
       } else {
         _totalPayForMint += getRarityTokenPrice(_zombie.cardRarity);
-        console.log("_totalPayForMint", _totalPayForMint);
-
         _metadata.health += _zombie.health;
         _metadata.attack += _zombie.attack;
         _metadata.brain += _zombie.brain;
@@ -189,13 +193,20 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     zombies[_tokenId].salePrice = _price;
   }
 
-  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract {
+  function buyToken(uint _id, uint _payAmount, address _newOwner) external onlyMarketContract returns (address) {
     Zombie storage zombie = zombies[_id];
+    require(zombie.salePrice > 0, "Wrong payment amount");
     require(zombie.salePrice == _payAmount, "Wrong payment amount");
     require(zombie.ownerId != _newOwner, "Can't sell for the same account");
 
+    address _seller = zombie.ownerId;
     zombie.ownerId = _newOwner;
     zombie.salePrice = 0;
+
+    // Transfer NFT
+    _transfer(_seller, _newOwner, _id);
+
+    return _seller;
   }
 
   // ---------------- Public & External methods ---------------
@@ -341,7 +352,6 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
       }
 
       _totalKillTokens += _zombie.killTokens;
-      removeZombieCollectionRarity(msg.sender, _tokenId, _zombie.collection, _zombie.cardRarity);
       _burn(_tokenId);
     }
 

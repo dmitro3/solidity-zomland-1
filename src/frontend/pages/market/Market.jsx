@@ -162,36 +162,17 @@ export const Market = () => {
 
 
   const handleBuy = async (item) => {
-    setIsReady(false);
-
-    console.log(item);
-
     await window.contracts.market.buyNFT(item.tokenId, item.nftType.toLowerCase(), {
       value: item.price.toString()
     }).then(transaction => {
+      setIsReady(false);
       addPendingTransaction(dispatch, transaction, `Buy ${item.nftType}`);
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
-          console.log('+');
+          showMarket(getCurrentSection(), filterRarity, filterCollection, filterLandType, currentPage);
         }
       });
     });
-
-    // let GAS = convertToTera("100");
-    // let DEPOSIT = convertToYocto(item.salePrice);
-    //
-    // await contract
-    //   .transfer_nft_on_market(
-    //     {
-    //       nftType: item.nftType,
-    //       tokenId: item.tokenId,
-    //     },
-    //     GAS,
-    //     DEPOSIT
-    //   )
-    //   .catch((err) => console.log(err));
-
-    setIsReady(true);
   };
 
   const rmFromMarket = (token) => {
