@@ -212,13 +212,13 @@ export const OneCollection = () => {
     let requiredDeposit = 0;
     zombieCards.filter((zombie) => zombie).map(item => {
       if (item.cardRarity === 'Common') {
-        requiredDeposit += 5;
+        requiredDeposit += 50;
       } else if (item.cardRarity === 'Uncommon') {
-        requiredDeposit += 10;
+        requiredDeposit += 100;
       } else if (item.cardRarity === 'Rare') {
-        requiredDeposit += 20;
+        requiredDeposit += 200;
       } else {
-        requiredDeposit += 40;
+        requiredDeposit += 400;
       }
     });
 

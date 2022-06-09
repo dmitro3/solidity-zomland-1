@@ -152,13 +152,13 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
 
   function getRarityTokenPrice(CardRarity cardRarity) internal pure returns (uint){
     if (cardRarity == CardRarity.Common) {
-      return 5 * 1e18;
+      return 50 * 1e18;
     } else if (cardRarity == CardRarity.Uncommon) {
-      return 10 * 1e18;
+      return 100 * 1e18;
     } else if (cardRarity == CardRarity.Rare) {
-      return 20 * 1e18;
+      return 200 * 1e18;
     }
-    return 40 * 1e18;
+    return 400 * 1e18;
   }
 
   // ---------------- External Limited methods ---------------
