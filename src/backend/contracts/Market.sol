@@ -9,14 +9,14 @@ import "../abstract/modifiers.sol";
   error MarketError(string message);
 
 contract MarketContract is Utils, Modifiers {
-  uint public constant ITEMS_LIMIT = 5;
-  uint public constant HISTORY_LIMIT = 5;
+  uint public constant ITEMS_LIMIT = 500;
+  uint public constant HISTORY_LIMIT = 50;
 
   uint[] lands;
   uint[] zombies;
   uint[] monsters;
   uint historySaleIndex;
-  mapping(uint => HistoryItem) public  marketHistory;
+  mapping(uint => HistoryItem) public marketHistory;
   mapping(string => uint) public currentSaleIndex;
 
   struct HistoryItem {
@@ -257,6 +257,14 @@ contract MarketContract is Utils, Modifiers {
     if (historySaleIndex >= HISTORY_LIMIT) {
       historySaleIndex = 0;
     }
+  }
+
+  function getSaleHistory() public view returns (uint, HistoryItem[] memory) {
+    HistoryItem[] memory history = new HistoryItem[](HISTORY_LIMIT);
+    for (uint _i = 0; _i < HISTORY_LIMIT; ++_i) {
+      history[_i] = marketHistory[_i];
+    }
+    return (historySaleIndex, history);
   }
 
 }

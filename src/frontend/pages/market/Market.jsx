@@ -6,7 +6,7 @@ import {
   landTypeOptions,
   rarityOptions,
   transformCollections,
-  transformLand,
+  transformLand, transformMarketHistory,
   transformMonster,
   transformZombie,
 } from "../../web3/utils";

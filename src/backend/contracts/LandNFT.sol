@@ -184,6 +184,14 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
 
   // ---------------- Public & External methods ---------------
 
+  function getListById(uint[] memory _listId) public view returns (Land[] memory) {
+    Land[] memory result = new Land[](_listId.length);
+    for (uint _i = 0; _i < _listId.length; ++_i) {
+      result[_i] = lands[_listId[_i]];
+    }
+    return result;
+  }
+
   function landInfo(uint _id) external view returns (address, string memory, uint) {
     Land storage land = lands[_id];
     return (land.ownerId, landTypeToString(land.landType), land.countMintedZombies);

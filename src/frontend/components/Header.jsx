@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import logo from "../assets/images/logo.png";
 import { Container, Link, Row } from "../assets/styles/common.style";
-import { convertFromYocto } from "../web3/utils";
+import { convertFromYocto, shortAddress } from "../web3/utils";
 import { Button } from "./basic/Button";
 import { SocialLinks } from "./SocialLinks";
 import { NavLinks } from "./header/NavLinks";
@@ -123,7 +123,7 @@ export const Header = () => {
                   <div className="w-40 xl:w-48 hover:text-indigo-200">
                     <Link to="/token">
                       <p className="truncate font-semibold">
-                        {currentUser.accountId.slice(0, 5) + '...' + currentUser.accountId.slice(38, 42)}
+                        {shortAddress(currentUser.accountId)}
                       </p>
                       {currentUser.tokenBalance !== null && (
                         <span className="font-bold text-orange-500 text-xl">

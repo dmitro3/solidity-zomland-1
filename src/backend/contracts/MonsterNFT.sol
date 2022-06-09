@@ -154,6 +154,14 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
 
   // ---------------- Public & External methods ---------------
 
+  function getListById(uint[] memory _listId) public view returns (Monster[] memory) {
+    Monster[] memory result = new Monster[](_listId.length);
+    for (uint _i = 0; _i < _listId.length; ++_i) {
+      result[_i] = monsters[_listId[_i]];
+    }
+    return result;
+  }
+
   function killNftList(uint[] memory _tokenList) public {
     address _contractTokenFT = IMain(mainContract).getContractTokenFT();
     uint _totalKillTokens = 0;

@@ -71,7 +71,7 @@ export const statusColorBorderMap = (status) => {
 export const transformLand = (land) => {
   return {
     tokenId: parseInt(land.tokenId).toString(),
-    landType: landTypeMap[land.landType],
+    landType: landTypeMap[parseInt(land.landType)],
     lastZombieClaim: parseInt(land.lastZombieClaim),
     salePrice: parseInt(land.salePrice) ? convertFromYocto(land.salePrice, 3) : null,
     price: parseInt(land.salePrice) || null,
@@ -125,6 +125,21 @@ export const transformCollections = (coll, index) => {
     id: parseInt(index).toString(),
     title: coll.title,
     image: coll.image,
+  };
+};
+
+export const shortAddress = (address) => {
+  return address.slice(0, 5) + '...' + address.slice(38, 42);
+}
+
+export const transformMarketHistory = (history) => {
+  return {
+    tokenId: parseInt(history.tokenId),
+    fromUser: shortAddress(history.fromUser),
+    toUser: shortAddress(history.toUser),
+    price: convertFromYocto(history.price, 3),
+    nftType: history.nftType,
+    timestamp: parseInt(history.timestamp),
   };
 };
 

@@ -211,6 +211,14 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
 
   // ---------------- Public & External methods ---------------
 
+  function getListById(uint[] memory _listId) public view returns (Zombie[] memory) {
+    Zombie[] memory result = new Zombie[](_listId.length);
+    for (uint _i = 0; _i < _listId.length; ++_i) {
+      result[_i] = zombies[_listId[_i]];
+    }
+    return result;
+  }
+
   function getRarityCollection(uint _id) external view returns (string memory, uint) {
     Zombie storage zombie = zombies[_id];
     return (rarityToString(zombie.cardRarity), zombie.collection);

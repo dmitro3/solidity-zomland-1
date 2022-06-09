@@ -1,32 +1,32 @@
 export const HomeContent = {
-    play_to_earn: {
-        title: "Play-To-Earn NFT Collectible Game",
-        desc: `ZomLand is an interactive P2E NFT card game with exciting gameplay and a lot of funs. You take on leader's role of the army of zombies and monsters to battle with other users all over the world.`,
-    },
-    how_to_play: {
-        title: "How To Play",
-        desc: `You need <a href="${process.env.WALLET_URL}" target="_blank">${process.env.TOKEN_NAME} Wallet</a> and some ${process.env.TOKEN_NAME} tokens balance to play the game to cover blockchain transaction commissions, storage and in-game purchases.`,
-    },
-    login_using_near: {
-        title: `Login using ${process.env.TOKEN_NAME}`,
-        desc: `Create a new <a href="${process.env.WALLET_URL}" target="_blank">${process.env.TOKEN_NAME} Wallet</a> and following step-by-step guide. Once you've done, you can log into ZomLand using this account.`,
-    },
-    mint_or_buy: {
-        title: "Mint or buy Land",
-        desc: `<a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" target="_blank">Lands</a> used for mint zombies every day (the number of zombies depends on the type of land). Read more about <a href="https://app.gitbook.com/o/ZNvVSLIdUSvTsBdpbdXF/s/vEVc4XwpzA4fPbfWMYl3/game-overview/lands" target="_blank">land types, prices and limits</a>.`,
-    },
-    catch_zombiez: {
-        title: "Catch Zombies",
-        desc: `Zombies can be
+  play_to_earn: {
+    title: "Play-To-Earn NFT Collectible Game",
+    desc: `ZomLand is an interactive P2E NFT card game with exciting gameplay and a lot of funs. You take on leader's role of the army of zombies and monsters to battle with other users all over the world.`,
+  },
+  how_to_play: {
+    title: "How To Play",
+    desc: `You need <a href="${process.env.WALLET_URL}" target="_blank">${process.env.TOKEN_NAME} Wallet</a> and some ${process.env.TOKEN_NAME} tokens balance to play the game to cover blockchain transaction commissions, storage and in-game purchases.`,
+  },
+  login_using_near: {
+    title: `Login using ${process.env.TOKEN_NAME}`,
+    desc: `Create a new <a href="${process.env.WALLET_URL}" target="_blank">${process.env.TOKEN_NAME} Wallet</a> and following step-by-step guide. Once you've done, you can log into ZomLand using this account.`,
+  },
+  mint_or_buy: {
+    title: "Mint or buy Land",
+    desc: `<a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" target="_blank">Lands</a> used for mint zombies every day (the number of zombies depends on the type of land). Read more about <a href="https://app.gitbook.com/o/ZNvVSLIdUSvTsBdpbdXF/s/vEVc4XwpzA4fPbfWMYl3/game-overview/lands" target="_blank">land types, prices and limits</a>.`,
+  },
+  catch_zombiez: {
+    title: "Catch Zombies",
+    desc: `Zombies can be
     <a href="https://dandelion-dash-25e.notion.site/Market-8f465bc4d5bb4b0fae36a2bffe3795cc" target="_blank">sold in the market</a>,
     sent to another player,
     destroyed to get <a href="https://dandelion-dash-25e.notion.site/ZML-Token-3aec17461a7b4df79a3abc62750b421c" target="_blank">ZML tokens</a>
     added to the <a href="https://dandelion-dash-25e.notion.site/Collections-7ef9dd8d414847a288d992e7f3ca4714" target="_blank">Collections</a>
     to mint a <a href="https://dandelion-dash-25e.notion.site/Monsters-09efe65232ec4b01b143a1a63c61bf47" target="_blank">Monster</a>.`,
-    },
-    mint_land: {
-        title: "Lands",
-        desc: `
+  },
+  mint_land: {
+    title: "Lands",
+    desc: `
     <ul class="sm:ml-4 mb-5 list-disc flex flex-col gap-3">
       <li>
         <div class="text-lg font-semibold">Micro: 1 zombie/day.</div>
@@ -50,10 +50,10 @@ export const HomeContent = {
       </li>
     </ul>
     <a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" target="_blank">Read more about Lands</a>`,
-    },
-    mint_zombie: {
-        title: "Zombies",
-        desc: `
+  },
+  mint_zombie: {
+    title: "Zombies",
+    desc: `
     Zombies is your numerous army that will lead to achieve your goals. 
     Each zombie has it's own characteristics of health, attack, speed and intellect that affect its price and used to create a 
     Monster - strong and cool zombie with additional features. 
@@ -73,116 +73,116 @@ export const HomeContent = {
       </li>
     </ul>
     <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6" target="_blank">Read more about Zombies</a>`,
-    },
-    mint_monster: {
-        title: "Monsters",
-        desc: `
+  },
+  mint_monster: {
+    title: "Monsters",
+    desc: `
     <p class="mb-4">
     Monsters can be sent to explore your Lands (you may find valuable artefacts or come across monster hunters there), used to fight other players, 
     increase the profitability of ZML stacking and receive airdrops and other bonuses.
     </p>
     <a href="https://dandelion-dash-25e.notion.site/Monsters-09efe65232ec4b01b143a1a63c61bf47" target="_blank">Read more about Monsters</a>`,
-    },
-    roadmap: {
-        title: "Roadmap",
-        desc: `We started development process this year and now we have a clear vision
+  },
+  roadmap: {
+    title: "Roadmap",
+    desc: `We started development process this year and now we have a clear vision
      how to make ZomLand the best NFT game ever.`,
-        sections: [
-            {
-                date: "Q1, 2022",
-                title: "ZomLand Idea",
-                desc: "Prepare codebase, game logic and roadmap. Create website landing. Start social media promotions. Start working with strategic partners and advisors",
-                type: "past",
-            },
-            {
-                date: "Q2, 2022",
-                title: "ZomLand V1",
-                desc: "Start Ambassador program and Testnet. Launch ZomLand V1. Support NEAR and Eth-compatible networks.",
-                type: "soon",
-            },
-            {
-                date: "Q3, 2022",
-                title: "ZomLand V2",
-                desc: "Interactive gaming: Battle Arena & Land Discovery.",
-                type: "incomming",
-            },
-            {
-                date: "Q4, 2022",
-                title: "Sales & Listing",
-                desc: "We'll announce Private Sale round for ambassadors and early investors and Public Sale round for everyone. Listing ZML on exchanges ",
-                type: "incomming",
-            },
-        ],
-    },
-    tokenomics: {
-        title: "Tokenomic",
-        description: "Total Supply: 1.000.000.000",
-    },
-    contact_us: {
-        title: "Contact Us",
-        desc: "Please feel free to join to our community in social networks and stay up-to-date for the latest anouncements or incomming events.",
-    },
+    sections: [
+      {
+        date: "Q1, 2022",
+        title: "ZomLand Idea",
+        desc: "Prepare codebase, game logic and roadmap. Create website landing. Start social media promotions. Start working with strategic partners and advisors",
+        type: "past",
+      },
+      {
+        date: "Q2, 2022",
+        title: "ZomLand V1",
+        desc: "Start Ambassador program and Testnet. Launch ZomLand V1. Support NEAR and Eth-compatible networks.",
+        type: "soon",
+      },
+      {
+        date: "Q3, 2022",
+        title: "ZomLand V2",
+        desc: "Interactive gaming: Battle Arena & Land Discovery.",
+        type: "incomming",
+      },
+      {
+        date: "Q4, 2022",
+        title: "Sales & Listing",
+        desc: "We'll announce Private Sale round for ambassadors and early investors and Public Sale round for everyone. Listing ZML on exchanges ",
+        type: "incomming",
+      },
+    ],
+  },
+  tokenomics: {
+    title: "Tokenomic",
+    description: "Total Supply: 1.000.000.000",
+  },
+  contact_us: {
+    title: "Contact Us",
+    desc: "Please feel free to join to our community in social networks and stay up-to-date for the latest announcements or incoming events.",
+  },
 };
 
 export const LandContent = {
-    title: "My Lands",
-    description: `Lands used for minting zombies every day. Your Monster can discover Lands and have a chance to find some goods. 
+  title: "My Lands",
+  description: `Lands used for minting zombies every day. Your Monster can discover Lands and have a chance to find some goods. 
     <a href="https://dandelion-dash-25e.notion.site/Lands-600806d8c2bc464f83bb2a205722fb85" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
-    no_lands: "You don't have Lands",
-    no_lands_details:
-        "But you can mint Micro Land for free or buy Medium and Large lands",
+  no_lands: "You don't have Lands",
+  no_lands_details:
+    "But you can mint Micro Land for free or buy Medium and Large lands",
 };
 
 export const ZombieContent = {
-    title: "My Zombies",
-    description: `Zombies is your numerous army that will lead to achieve your goals. Each zombie has it's own characteristics of health, attack, intellect and speed.
+  title: "My Zombies",
+  description: `Zombies is your numerous army that will lead to achieve your goals. Each zombie has it's own characteristics of health, attack, intellect and speed.
   <a href="https://dandelion-dash-25e.notion.site/Zombies-7785dcc7ca5141fe9512038c61bf02d6" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
-    mint_zombie_from_land: "Select land you want to mint zombies for:",
-    no_zombies: "You have no Zombies",
-    no_lands_details:
-        "To mint zombies you need some Lands. Mint new one in Lands page and return to get zombies from this land.",
+  mint_zombie_from_land: "Select land you want to mint zombies for:",
+  no_zombies: "You have no Zombies",
+  no_lands_details:
+    "To mint zombies you need some Lands. Mint new one in Lands page and return to get zombies from this land.",
 };
 
 export const MonsterContent = {
-    title: "My Monsters",
-    description: `Monster - strong, cool and powerful zombie that have additional features: discover lands, participate in battles and get additional rewards.
+  title: "My Monsters",
+  description: `Monster - strong, cool and powerful zombie that have additional features: discover lands, participate in battles and get additional rewards.
   <a href="https://dandelion-dash-25e.notion.site/Monsters-09efe65232ec4b01b143a1a63c61bf47" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
-    no_monsters: "You have no Monsters",
+  no_monsters: "You have no Monsters",
 };
 
 export const CollectionContent = {
-    title: "Collections",
-    description: `Your zombies can be combined to Collection and exchanged to the Monster. 
+  title: "Collections",
+  description: `Your zombies can be combined to Collection and exchanged to the Monster. 
   <a href="https://dandelion-dash-25e.notion.site/Collections-7ef9dd8d414847a288d992e7f3ca4714" target="_blank" class="link whitespace-nowrap">Read more</a>.`,
 };
 
 export const MarketContent = {
-    title: "Market",
-    description: `You can buy/sell Lands, Zombies and Monsters in the Market. Market using ${process.env.TOKEN_NAME} token and have 0,5% fee.`,
+  title: "Market",
+  description: `You can buy/sell Lands, Zombies and Monsters in the Market. Market using ${process.env.TOKEN_NAME} token and have 0,5% fee of transactions.`,
 };
 
 export const ContactUsContent = {
-    title: "Contact Us",
-    description: `You can contact with us using this page.`,
+  title: "Contact Us",
+  description: `You can contact with us using this page.`,
 };
 
 export const FAQContent = {
-    title: "Frequently Asked Questions",
-    description: `This section contains all basic question that you can have when start using our 
+  title: "Frequently Asked Questions",
+  description: `This section contains all basic question that you can have when start using our 
   Play-To-Earn NFT Collectible Game.`,
 };
 // Please read all of the information below in detail, there are inherent risks with Cryptocurrency,
 //   NFTs and tokenomics. Know your limits and don't risk more than you are willing to lose.
 
 export const TokenContent = {
-    title: "ZML Staking",
-    description: `Earn passive income by staking your tokens. 
+  title: "ZML Staking",
+  description: `Earn passive income by staking your tokens. 
   Increase your rewards by adding Monster card: higher card rarity level will give you better staking percent!`,
 };
 
 export const TermsContent = {
-    title: "Terms & Conditions",
-    description: `
+  title: "Terms & Conditions",
+  description: `
   <div class="flex flex-col gap-4 px-4">
     <p class="mt-1">
         The site ZomLand.com is a web browser application that provides users with the opportunity to collect and showcase digital blockchain collectibles containing content solely for entertainment purposes from “ZomLand” web & blockchain application based on ${process.env.TOKEN_NAME} Blockchain. 
@@ -402,8 +402,8 @@ export const TermsContent = {
 };
 
 export const PrivacyContent = {
-    title: "Privacy Policy",
-    description: `
+  title: "Privacy Policy",
+  description: `
   <div class="flex flex-col gap-4 px-4">
   <p class="mt-1">
     AtomicLab, (hereafter “the Company”, “we”, “us” or “our”) is committed to protecting the privacy and security of the personal information that is provided 
