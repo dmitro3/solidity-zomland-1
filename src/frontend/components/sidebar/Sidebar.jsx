@@ -74,6 +74,7 @@ export const Sidebar = ({
   };
 
   const handleSellItems = async (sellObject, nftType) => {
+    setIsLoading(true);
     await window.contracts.market.publishOnMarket(
       Object.keys(sellObject),
       Object.values(sellObject),

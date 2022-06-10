@@ -96,6 +96,9 @@ export const Zombies = () => {
   }
 
   const fetchCollections = async () => {
+    // const xxx = await window.contracts.zombie.getNext();
+    // console.log(xxx)
+
     const collectionsObj = await window.contracts.collection.getAllCollections();
     const collections = collectionsObj[1].map((collection, index) => transformCollections(collection, index));
     setAllCollections(collections);
@@ -145,6 +148,8 @@ export const Zombies = () => {
         if (land.landType === 0) {
           totalZombiesToMint += 1;
         } else if (land.landType === 1) {
+          totalZombiesToMint += 2;
+        } else if (land.landType === 2) {
           totalZombiesToMint += 4;
         } else {
           totalZombiesToMint += 8;

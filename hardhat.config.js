@@ -42,15 +42,11 @@ module.exports = {
       accounts: process.env.METER_MAINNET_PRIVATE_KEY !== undefined ? [process.env.METER_MAINNET_PRIVATE_KEY] : [],
     },
     bsc_testnet: {
-      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
-      chainId: 97,
-      gasPrice: 20000000000,
-      accounts: { mnemonic: process.env.BSC_TESTNET_PRIVATE_KEY || "" }
+      url: "https://speedy-nodes-nyc.moralis.io/18b96875dba26752e869bbfb/bsc/testnet",
+      accounts: process.env.BSC_TESTNET_PRIVATE_KEY !== undefined ? [process.env.BSC_TESTNET_PRIVATE_KEY] : [],
     },
     bsc_mainnet: {
       url: "https://bsc-dataseed.binance.org/",
-      chainId: 56,
-      gasPrice: 20000000000,
       accounts: { mnemonic: process.env.BSC_MAINNET_PRIVATE_KEY || "" }
     },
     emerald_testnet: {

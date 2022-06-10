@@ -26,6 +26,8 @@ contract ZombieNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerable
   mapping(uint => Zombie) zombies;
   mapping(address => mapping(uint => uint[])) userCollectionZombie;
   mapping(address => mapping(CardRarity => uint[])) userRarityZombie;
+  // TODO: TMP
+  //  uint mintZombies;
 
   struct Zombie {
     uint tokenId;
@@ -234,6 +236,9 @@ contract ZombieNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerable
           block.timestamp
         );
 
+        // TODO: TMP
+        //        mintZombies += 1;
+
         addZombieCollectionRarity(msg.sender, _tokenId, _meta.collectionId, _rarity);
       }
       ILandNFT(_landContract).landSetMintTimestamp(_landId);
@@ -241,6 +246,11 @@ contract ZombieNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerable
       revert ZombiesMintError({message : "You can't mint on this Land, wait 24 hours!"});
     }
   }
+
+  // TODO: TMP
+  //  function getNext() public view returns (uint){
+  //    return mintZombies + 1;
+  //  }
 
   function userZombies(uint _startIndex, uint8 _count, uint _collectionFilter, string memory _rarityFilter) public view returns (uint, Zombie[] memory) {
     uint[] memory _innerList = new uint[](_count);

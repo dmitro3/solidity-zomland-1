@@ -61,7 +61,7 @@ export const CardLand = ({
                   <Price title={nft.salePrice} handleBuy={handleBuy} />
                 )}
 
-                {nft.tokenId && !noMenu && !nft.salePrice && (
+                {nft.tokenId && !noMenu && !nft.salePrice && nft.landType !== "Micro" && (
                   <CardLandDropdown
                     setTransferPopupVisible={setTransferPopupVisible}
                     setSellItems={setSellItems}

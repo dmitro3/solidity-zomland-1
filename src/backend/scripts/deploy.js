@@ -66,11 +66,10 @@ async function main() {
     market.address,
   );
 
-
   console.log("Main address", main.address);
   console.log("LandNFT address", landNFT.address);
   console.log("ZombieNFT address", zombieNFT.address);
-  console.log("zombieNFTHelper address", zombieNFTHelper.address);
+  console.log("ZombieNFTHelper address", zombieNFTHelper.address);
   console.log("MonsterNFT address", monsterNFT.address);
   console.log("Collection address", collection.address);
   console.log("TokenFT address", tokenFT.address);
@@ -79,19 +78,18 @@ async function main() {
   // Add Collections
   await collection.addCollection("Mummy", "bafkreigdcymxku7b6o4pcyfqqzf5dieviewhwndrknbggvhk6vokavfxwe");
   await collection.addCollection("Pirate", "bafybeifq6clpc672vcln7l5iv4355ze6ludm7opcpldbgkwa7sfu5inysm");
-  // await collection.addCollection("Punk", "bafybeid3p33trzeklhvblet72wmt2rfnfvgii6ezbvhdix4hc7p2uwuotu");
-  // await collection.addCollection("Stylish", "bafybeifjiplwfr52wvogoxidckgpq2urq66cjrqfdvfsgn2y3kscxjlcu4");
-  // await collection.addCollection("Combat", "bafybeico3paszepcemcprmsav47ntzy4cohqiw56m6o7pyi7oslhtf4ro4");
+  await collection.addCollection("Punk", "bafybeid3p33trzeklhvblet72wmt2rfnfvgii6ezbvhdix4hc7p2uwuotu");
+  await collection.addCollection("Stylish", "bafybeifjiplwfr52wvogoxidckgpq2urq66cjrqfdvfsgn2y3kscxjlcu4");
+  await collection.addCollection("Combat", "bafybeico3paszepcemcprmsav47ntzy4cohqiw56m6o7pyi7oslhtf4ro4");
 
   console.log("Collections added");
 
-  for (let i = 0; i < 5; i++) {
-    await landNFT.connect(account1).safeMint({ value: ethers.utils.parseEther("0.33") });
-    await zombieNFT.connect(account1).safeMint(i);
-    console.log('+');
-  }
-
-  console.log("Seed data added");
+  // for (let i = 0; i < 5; i++) {
+  //   await landNFT.connect(account1).safeMint({ value: ethers.utils.parseEther("0.33") });
+  //   await zombieNFT.connect(account1).safeMint(i);
+  //   console.log('+');
+  // }
+  // console.log("Seed data added");
 
   // For each contract, pass the deployed contract and name to this function to save a copy of the contract ABI and address to the front end.
   saveFrontendFiles(main, "MainContract");
