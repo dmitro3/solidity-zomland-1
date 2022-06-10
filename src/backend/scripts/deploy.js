@@ -103,6 +103,8 @@ async function main() {
 }
 
 function saveFrontendFiles(contract, name) {
+  console.log('process.env.network', process.env.network);
+
   const fs = require("fs");
   const contractsDir = __dirname + "/../../frontend/contractsData";
 
