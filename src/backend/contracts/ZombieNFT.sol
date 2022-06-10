@@ -2,12 +2,14 @@
 pragma solidity ^0.8.12;
 
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "../interfaces/interface.sol";
 import "../abstract/utils.sol";
 import "../abstract/modifiers.sol";
@@ -17,13 +19,13 @@ import "../abstract/modifiers.sol";
   error MonsterMintError(string message, uint tokenId);
   error MonsterMintPaymentError(string message, uint get, uint expected);
 
-contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Utils, Modifiers {
-  using Counters for Counters.Counter;
-  Counters.Counter private _tokenIdCounter;
+contract ZombieNFTContract is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721URIStorageUpgradeable, ERC721BurnableUpgradeable, OwnableUpgradeable, UUPSUpgradeable, Utils, Modifiers {
+  using CountersUpgradeable for CountersUpgradeable.Counter;
+  CountersUpgradeable.Counter private _tokenIdCounter;
+  uint killedZombies;
   mapping(uint => Zombie) zombies;
   mapping(address => mapping(uint => uint[])) userCollectionZombie;
   mapping(address => mapping(CardRarity => uint[])) userRarityZombie;
-  uint killedZombies;
 
   struct Zombie {
     uint tokenId;
@@ -43,9 +45,23 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     uint next_battle;
   }
 
-  constructor(address _mainContract) ERC721("ZomLand", "ZMLZ") {
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
+  function initialize(address _mainContract) public initializer {
+    __ERC721_init("ZomLand", "ZMLZ");
+    __ERC721Enumerable_init();
+    __ERC721URIStorage_init();
+    __ERC721Burnable_init();
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+
     mainContract = _mainContract;
   }
+
+  function _authorizeUpgrade(address newImplementation) internal onlyOwner override {}
 
   // ---------------- Internal & Private methods ---------------
 
@@ -53,7 +69,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return "https://ipfs.io/ipfs/";
   }
 
-  function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721, ERC721Enumerable) {
+  function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721Upgradeable, ERC721EnumerableUpgradeable) {
     super._beforeTokenTransfer(_from, _to, _tokenId);
 
     if (_from != NULL_ADDRESS) {
@@ -66,7 +82,7 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
   }
 
-  function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
+  function _burn(uint _tokenId) internal override(ERC721Upgradeable, ERC721URIStorageUpgradeable) {
     Zombie storage _zombie = zombies[_tokenId];
     removeZombieCollectionRarity(msg.sender, _tokenId, _zombie.collection, _zombie.cardRarity);
     removeZombieFromMarket(_tokenId);
@@ -78,55 +94,6 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
   function removeZombieFromMarket(uint _tokenId) internal {
     address _marketContract = IMain(mainContract).getContractMarket();
     IMarket(_marketContract).removeFromMarketExternal(_tokenId, "zombie");
-  }
-
-  function randomNumberByRarity(uint _max, uint8 _shift, CardRarity _rarity) internal view returns (uint) {
-    uint _from = 0;
-    uint _to = _max;
-
-    if (_rarity == CardRarity.Common) {
-      _to = _max / 4;
-    } else if (_rarity == CardRarity.Uncommon) {
-      _from = _max / 5;
-      _to = _max / 2;
-    } else if (_rarity == CardRarity.Rare) {
-      _from = _max * 2 / 5;
-      _to = _max * 3 / 4;
-    } else {
-      _from = _max * 13 / 20;
-    }
-
-    uint _rand_range = _to - _from;
-    if (_rand_range > 0) {
-      uint _rand_divider = 1000 / (_rand_range + 1);
-      uint _result = randomNumber(1000, _shift) / _rand_divider;
-      return _from + _result;
-    }
-    return 0;
-  }
-
-  function randomRarity(uint8 _num) internal view returns (CardRarity) {
-    uint _index = randomNumber(1000, _num);
-    if (_index <= 10) {
-      return CardRarity.Epic;
-    } else if (_index <= 60) {
-      return CardRarity.Rare;
-    } else if (_index <= 300) {
-      return CardRarity.Uncommon;
-    }
-    return CardRarity.Common;
-  }
-
-  function zombieKillTokens(CardRarity _rarity, uint8 _health, uint8 _attack, uint8 _brain, uint8 _speed) internal pure returns (uint) {
-    uint _multiplier = 1;
-    if (_rarity == CardRarity.Epic) {
-      _multiplier = 21;
-    } else if (_rarity == CardRarity.Rare) {
-      _multiplier = 9;
-    } else if (_rarity == CardRarity.Uncommon) {
-      _multiplier = 3;
-    }
-    return _multiplier * (uint((_health + _attack + _brain + _speed * 10)) / 7) * 1e18;
   }
 
   function removeZombieCollectionRarity(address _owner, uint _tokenId, uint _collectionId, CardRarity _rarity) private {
@@ -150,36 +117,26 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     userRarityZombie[_owner][_rarity].push(_tokenId);
   }
 
-  function getRarityTokenPrice(CardRarity cardRarity) internal pure returns (uint){
-    if (cardRarity == CardRarity.Common) {
-      return 50 * 1e18;
-    } else if (cardRarity == CardRarity.Uncommon) {
-      return 100 * 1e18;
-    } else if (cardRarity == CardRarity.Rare) {
-      return 200 * 1e18;
-    }
-    return 400 * 1e18;
-  }
-
   // ---------------- External Limited methods ---------------
 
   function checkAndBurnZombies(address _owner, uint[] memory _zombiesList, uint _payAmount) external onlyMonsterContract returns (uint, uint, uint, uint, uint) {
     MonsterResultMetadata memory _metadata = MonsterResultMetadata(0, 0, 0, 0, zombies[_zombiesList[0]].collection);
     uint _count = _zombiesList.length;
     uint _totalPayForMint = 0;
+    address _zombieHelper = IMain(mainContract).getContractZombieNFTHelper();
 
     for (uint _i = 0; _i < _count; ++_i) {
       uint _index = _zombiesList[_i];
-      Zombie storage _zombie = zombies[_index];
-      if (_zombie.ownerId != _owner) {
-        revert MonsterMintError({message : "You don't own this zombie", tokenId : _zombie.tokenId});
+      Zombie storage zombie = zombies[_index];
+      if (zombie.ownerId != _owner) {
+        revert MonsterMintError({message : "You don't own this zombie", tokenId : zombie.tokenId});
       } else {
-        _totalPayForMint += getRarityTokenPrice(_zombie.cardRarity);
-        _metadata.health += _zombie.health;
-        _metadata.attack += _zombie.attack;
-        _metadata.brain += _zombie.brain;
-        _metadata.killTokens += _zombie.killTokens;
-        _burn(_zombie.tokenId);
+        _totalPayForMint += IZombieNFTHelper(_zombieHelper).getRarityTokenPrice(rarityToString(zombie.cardRarity));
+        _metadata.health += zombie.health;
+        _metadata.attack += zombie.attack;
+        _metadata.brain += zombie.brain;
+        _metadata.killTokens += zombie.killTokens;
+        _burn(zombie.tokenId);
       }
     }
 
@@ -227,17 +184,17 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return (rarityToString(zombie.cardRarity), zombie.collection);
   }
 
-  function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+  function tokenURI(uint _tokenId) public view override(ERC721Upgradeable, ERC721URIStorageUpgradeable) returns (string memory) {
     return super.tokenURI(_tokenId);
   }
 
-  function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
+  function supportsInterface(bytes4 _interfaceId) public view override(ERC721Upgradeable, ERC721EnumerableUpgradeable) returns (bool) {
     return super.supportsInterface(_interfaceId);
   }
 
   function safeMint(uint _landId) public {
     address _landContract = IMain(mainContract).getContractLandNFT();
-    address _collectionContract = IMain(mainContract).getContractCollection();
+    address _zombieHelper = IMain(mainContract).getContractZombieNFTHelper();
     (address _ownerId, string memory _landType, uint _landMintedZombies) = ILandNFT(_landContract).landInfo(_landId);
 
     if (_ownerId != msg.sender) {
@@ -250,38 +207,34 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     uint8 _zombiesMintCount = ILandNFT(_landContract).getLandMintZombiesCount(_landId);
     if (_zombiesMintCount > 0) {
       for (uint8 _i = 0; _i < _zombiesMintCount; ++_i) {
-        CardRarity _rarity = randomRarity(_i);
-        (uint _collectionId, string memory _uri) = ICollection(_collectionContract).getCollectionAndZombie(_i + 8);
-        uint _tokenId = _tokenIdCounter.current();
-        uint8 _health = uint8(randomNumberByRarity(49, _i + 15, _rarity) + 1);
-        uint8 _attack = uint8(randomNumberByRarity(24, _i + 20, _rarity) + 1);
-        uint8 _brain = uint8(randomNumberByRarity(24, _i + 25, _rarity) + 1);
-        uint8 _speed = uint8(randomNumberByRarity(1, _i + 30, _rarity) + 1);
-        uint _killTokens = zombieKillTokens(_rarity, _health, _attack, _brain, _speed);
+        ZombieResultMetadata memory _meta = ZombieResultMetadata("", 0, 0, 0, 0, 0, 0, "");
+        (_meta.rarityStr, _meta.health, _meta.attack, _meta.brain, _meta.speed, _meta.killTokens, _meta.collectionId, _meta.uri) = IZombieNFTHelper(_zombieHelper).generateMetadata(_i);
+        CardRarity _rarity = rarityFromString(_meta.rarityStr);
 
+        uint _tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(msg.sender, _tokenId);
-        _setTokenURI(_tokenId, _uri);
+        _setTokenURI(_tokenId, _meta.uri);
 
         zombies[_tokenId] = Zombie(
           _tokenId,
           _rarity,
-          _collectionId,
-          _killTokens,
+          _meta.collectionId,
+          _meta.killTokens,
           0,
           block.timestamp,
-          _uri,
-          _health,
-          _attack,
-          _brain,
-          _speed,
+          _meta.uri,
+          _meta.health,
+          _meta.attack,
+          _meta.brain,
+          _meta.speed,
           "Zombie",
           msg.sender,
           new ModifierItems[](0),
           block.timestamp
         );
 
-        addZombieCollectionRarity(msg.sender, _tokenId, _collectionId, _rarity);
+        addZombieCollectionRarity(msg.sender, _tokenId, _meta.collectionId, _rarity);
       }
       ILandNFT(_landContract).landSetMintTimestamp(_landId);
     } else {
@@ -320,7 +273,21 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     return (_totalListLength, _resultZombies);
   }
 
-  function filterCollectionRarity(uint _collectionFilter, string memory _rarityFilter, uint _startIndex, uint _endIndex) internal view returns (uint[] memory, uint, uint){
+  function mapByList(uint[] memory _source, uint _innerListLength, uint _startIndex, uint _endIndex) private pure returns (uint[] memory, uint, uint){
+    uint _innerIndex = 0;
+    uint[] memory _innerList = new uint[](_endIndex - _startIndex);
+
+    for (uint _i = _startIndex; _i < _endIndex; ++_i) {
+      if (_innerListLength > _i) {
+        _innerList[_innerIndex] = _source[_i];
+        _innerIndex += 1;
+      }
+    }
+
+    return (_innerList, _innerIndex, _innerListLength);
+  }
+
+  function filterCollectionRarity(uint _collectionFilter, string memory _rarityFilter, uint _startIndex, uint _endIndex) private view returns (uint[] memory, uint, uint){
     uint[] memory collectionList = userCollectionZombie[msg.sender][_collectionFilter - 1];
     uint[] memory rarityList = userRarityZombie[msg.sender][rarityFromString(_rarityFilter)];
 
@@ -335,20 +302,6 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     }
 
     return mapByList(collectionRarityList, _innerIndex, _startIndex, _endIndex);
-  }
-
-  function mapByList(uint[] memory source, uint _innerListLength, uint _startIndex, uint _endIndex) private pure returns (uint[] memory, uint, uint){
-    uint _innerIndex = 0;
-    uint[] memory _innerList = new uint[](_endIndex - _startIndex);
-
-    for (uint _i = _startIndex; _i < _endIndex; ++_i) {
-      if (_innerListLength > _i) {
-        _innerList[_innerIndex] = source[_i];
-        _innerIndex += 1;
-      }
-    }
-
-    return (_innerList, _innerIndex, _innerListLength);
   }
 
   function killNftList(uint[] memory _tokenList) public {
@@ -369,39 +322,39 @@ contract ZombieNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721
     ITokenFT(_contractTokenFT).transferOnKill(msg.sender, _totalKillTokens);
   }
 
-  function getRandomRarityByZombies(uint[] memory zombiesList) external view returns (string memory) {
+  function getRandomRarityByZombies(uint[] memory _zombiesList) external view returns (string memory) {
     uint _rarityIndex = randomNumber(9, 1);
-    uint _zombieByIndex = zombiesList[_rarityIndex];
+    uint _zombieByIndex = _zombiesList[_rarityIndex];
     CardRarity _rarity = zombies[_zombieByIndex].cardRarity;
     return rarityToString(_rarity);
   }
 
   function getUserCollectionZombieCount() external view returns (uint[] memory) {
     address _collectionContract = IMain(mainContract).getContractCollection();
-    uint collectionCount = ICollection(_collectionContract).getAllCollectionsCount();
-    uint[] memory _result = new uint[](collectionCount);
+    uint _collectionCount = ICollection(_collectionContract).getAllCollectionsCount();
+    uint[] memory _result = new uint[](_collectionCount);
 
     uint _count = super.balanceOf(msg.sender);
     for (uint _i = 0; _i < _count; ++_i) {
       uint _zombieId = super.tokenOfOwnerByIndex(msg.sender, _i);
-      uint collection = zombies[_zombieId].collection;
-      _result[collection] += 1;
+      uint _collection = zombies[_zombieId].collection;
+      _result[_collection] += 1;
     }
 
     return _result;
   }
 
-  function getMarketItems(uint _startIndex, uint8 _count, string memory rarity, string memory collection) public view returns (uint, Zombie[] memory) {
+  function getMarketItems(uint _startIndex, uint8 _count, string memory _rarity, string memory _collection) public view returns (uint, Zombie[] memory) {
     Zombie[] memory _userZombies = new Zombie[](_count);
     address _marketContract = IMain(mainContract).getContractMarket();
 
-    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getZombiesMonstersFromMarket(_startIndex, _count, "zombies", rarity, collection);
+    (uint _total, uint[] memory _saleIdList) = IMarket(_marketContract).getZombiesMonstersFromMarket(_startIndex, _count, "zombies", _rarity, _collection);
     for (uint _i = 0; _i < _count; ++_i) {
-      if (_i < total) {
+      if (_i < _total) {
         _userZombies[_i] = zombies[_saleIdList[_i]];
       }
     }
-    return (total, _userZombies);
+    return (_total, _userZombies);
   }
 
   function leaderboardStats() public view returns (uint, uint){

@@ -2,14 +2,16 @@
 pragma solidity ^0.8.12;
 
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "../interfaces/interface.sol";
 import "../abstract/utils.sol";
 import "../abstract/modifiers.sol";
@@ -17,9 +19,9 @@ import "../abstract/modifiers.sol";
   error MonsterKillError(string message);
   error MonsterMintCountError(string message, uint required);
 
-contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Utils, Modifiers {
-  using Counters for Counters.Counter;
-  Counters.Counter private _tokenIdCounter;
+contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721URIStorageUpgradeable, ERC721BurnableUpgradeable, OwnableUpgradeable, UUPSUpgradeable, Utils, Modifiers {
+  using CountersUpgradeable for CountersUpgradeable.Counter;
+  CountersUpgradeable.Counter private _tokenIdCounter;
   mapping(uint => Monster) monsters;
   mapping(address => mapping(CardRarity => uint[])) userRarityMonster;
   uint killedMonsters;
@@ -41,9 +43,23 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     uint nextBattle;
   }
 
-  constructor(address _mainContract) ERC721("ZomLand", "ZMLM") {
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
+
+  function initialize(address _mainContract) public initializer {
+    __ERC721_init("ZomLand", "ZMLM");
+    __ERC721Enumerable_init();
+    __ERC721URIStorage_init();
+    __ERC721Burnable_init();
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+
     mainContract = _mainContract;
   }
+
+  function _authorizeUpgrade(address newImplementation) internal onlyOwner override {}
 
   // ---------------- Internal & Private methods ---------------
 
@@ -51,7 +67,7 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     return "https://ipfs.io/ipfs/";
   }
 
-  function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721, ERC721Enumerable) {
+  function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721Upgradeable, ERC721EnumerableUpgradeable) {
     super._beforeTokenTransfer(_from, _to, _tokenId);
 
     if (_from != NULL_ADDRESS) {
@@ -64,7 +80,7 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     }
   }
 
-  function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
+  function _burn(uint _tokenId) internal override(ERC721Upgradeable, ERC721URIStorageUpgradeable) {
     Monster storage _monster = monsters[_tokenId];
     removeMonsterRarity(msg.sender, _tokenId, _monster.cardRarity);
     removeMonsterFromMarket(_tokenId);
@@ -134,8 +150,8 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     return _tokenId;
   }
 
-  function setMarketSalePrice(uint _tokenId, uint _price, address ownerId) external onlyMarketContract {
-    require(monsters[_tokenId].ownerId == ownerId, "You can't change price for this NFT");
+  function setMarketSalePrice(uint _tokenId, uint _price, address _ownerId) external onlyMarketContract {
+    require(monsters[_tokenId].ownerId == _ownerId, "You can't change price for this NFT");
     monsters[_tokenId].salePrice = _price;
   }
 
@@ -158,11 +174,11 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
   // ---------------- Public & External methods ---------------
 
   function getListById(uint[] memory _listId) public view returns (Monster[] memory) {
-    Monster[] memory result = new Monster[](_listId.length);
+    Monster[] memory _result = new Monster[](_listId.length);
     for (uint _i = 0; _i < _listId.length; ++_i) {
-      result[_i] = monsters[_listId[_i]];
+      _result[_i] = monsters[_listId[_i]];
     }
-    return result;
+    return _result;
   }
 
   function killNftList(uint[] memory _tokenList) public {
@@ -188,11 +204,11 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     return (rarityToString(monster.cardRarity), monster.collection);
   }
 
-  function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
+  function tokenURI(uint _tokenId) public view override(ERC721Upgradeable, ERC721URIStorageUpgradeable) returns (string memory){
     return super.tokenURI(_tokenId);
   }
 
-  function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
+  function supportsInterface(bytes4 _interfaceId) public view override(ERC721Upgradeable, ERC721EnumerableUpgradeable) returns (bool) {
     return super.supportsInterface(_interfaceId);
   }
 
@@ -204,11 +220,11 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
 
     if (bytes(_rarityFilter).length != 0) {
       CardRarity _rarity = rarityFromString(_rarityFilter);
-      uint[] memory rarityList = userRarityMonster[msg.sender][_rarity];
-      _innerListLength = rarityList.length;
+      uint[] memory _rarityList = userRarityMonster[msg.sender][_rarity];
+      _innerListLength = _rarityList.length;
       for (uint _i = _startIndex; _i < _endIndex; ++_i) {
         if (_innerListLength > _i) {
-          _innerList[_innerIndex] = rarityList[_i];
+          _innerList[_innerIndex] = _rarityList[_i];
           _innerIndex += 1;
         }
       }
@@ -229,17 +245,17 @@ contract MonsterNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC72
     return (_innerListLength, _resultMonsters);
   }
 
-  function getMarketItems(uint _startIndex, uint8 _count, string memory rarity, string memory collection) public view returns (uint, Monster[] memory) {
+  function getMarketItems(uint _startIndex, uint8 _count, string memory _rarity, string memory _collection) public view returns (uint, Monster[] memory) {
     Monster[] memory _userMonsters = new Monster[](_count);
     address _marketContract = IMain(mainContract).getContractMarket();
 
-    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getZombiesMonstersFromMarket(_startIndex, _count, "monsters", rarity, collection);
+    (uint _total, uint[] memory _saleIdList) = IMarket(_marketContract).getZombiesMonstersFromMarket(_startIndex, _count, "monsters", _rarity, _collection);
     for (uint _i = 0; _i < _count; ++_i) {
-      if (_i < total) {
+      if (_i < _total) {
         _userMonsters[_i] = monsters[_saleIdList[_i]];
       }
     }
-    return (total, _userMonsters);
+    return (_total, _userMonsters);
   }
 
   function leaderboardStats() public view returns (uint, uint){

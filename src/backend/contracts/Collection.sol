@@ -1,26 +1,38 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "../interfaces/interface.sol";
 import "../abstract/utils.sol";
 import "../abstract/modifiers.sol";
 
-contract CollectionContract is Ownable, Modifiers {
-  string public collectionIpfsHash;
-  mapping(uint => Collection) public collections;
+contract CollectionContract is Initializable, OwnableUpgradeable, UUPSUpgradeable, Modifiers {
+  string private collectionIpfsHash;
   uint public collectionCount;
+  mapping(uint => Collection) public collections;
 
   struct Collection {
     string title;
     string image;
   }
 
-  constructor(address _mainContract) {
-    mainContract = _mainContract;
-    collectionIpfsHash = "bafybeigm2p2cm3pqrlel326s6kjfh4x22ne5sfrlvpgouq7tltatulbqru";
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
   }
+
+  function initialize(address _mainContract, string memory _collectionHash) public initializer {
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+
+    mainContract = _mainContract;
+    collectionIpfsHash = _collectionHash;
+  }
+
+  function _authorizeUpgrade(address newImplementation) internal onlyOwner override {}
 
   // ---------------- Internal & Private methods ---------------
 
@@ -42,7 +54,7 @@ contract CollectionContract is Ownable, Modifiers {
 
     Collection storage _collection = collections[_collectionIndex];
     uint _num = randomNumber(999, _shift + 10) + 1;
-    string memory _image = string.concat(_collection.image, "/", Strings.toString(_num), ".png");
+    string memory _image = string.concat(_collection.image, "/", StringsUpgradeable.toString(_num), ".png");
     return (_collectionIndex, _image);
   }
 

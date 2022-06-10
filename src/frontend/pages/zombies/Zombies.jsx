@@ -194,6 +194,7 @@ export const Zombies = () => {
         }, 2000);
       });
     }).catch(err => {
+      console.log('222', landId)
       addTransactionError(dispatch, err.message);
       removeMintInProgressList(landId);
     });

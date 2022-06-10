@@ -2,12 +2,14 @@
 pragma solidity ^0.8.12;
 
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "../interfaces/interface.sol";
 import "../abstract/modifiers.sol";
 import "../abstract/utils.sol";
@@ -16,9 +18,14 @@ import "../abstract/utils.sol";
   error LandsCallError(string message);
   error LandsSmallLimitError(string message);
 
-contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Utils, Modifiers {
-  using Counters for Counters.Counter;
-  Counters.Counter private _tokenIdCounter;
+contract LandNFTContract is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721URIStorageUpgradeable, ERC721BurnableUpgradeable, OwnableUpgradeable, UUPSUpgradeable, Utils, Modifiers {
+  using CountersUpgradeable for CountersUpgradeable.Counter;
+  CountersUpgradeable.Counter private _tokenIdCounter;
+  mapping(uint8 => LandType) public landTypeIndex;
+  mapping(LandType => uint) public landTypeCount;
+  mapping(LandType => LandTypeData) public landTypeData;
+  mapping(address => bool) accountsWithMicroLand;
+  mapping(uint => Land) lands;
 
   enum LandType {
     Micro,
@@ -46,13 +53,19 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     string media;
   }
 
-  mapping(uint8 => LandType) public landTypeIndex;
-  mapping(LandType => uint) public landTypeCount;
-  mapping(LandType => LandTypeData) public landTypeData;
-  mapping(address => bool) accountsWithMicroLand;
-  mapping(uint => Land) lands;
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
+  }
 
-  constructor(address _mainContract) ERC721("ZomLand", "ZMLL") {
+  function initialize(address _mainContract) public initializer {
+    __ERC721_init("ZomLand", "ZMLL");
+    __ERC721Enumerable_init();
+    __ERC721URIStorage_init();
+    __ERC721Burnable_init();
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+
     mainContract = _mainContract;
 
     landTypeIndex[0] = LandType.Micro;
@@ -89,13 +102,15 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     });
   }
 
+  function _authorizeUpgrade(address newImplementation) internal onlyOwner override {}
+
   // ---------------- Internal & Private methods ---------------
 
   function _baseURI() internal pure override returns (string memory) {
     return "https://ipfs.io/ipfs/";
   }
 
-  function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721, ERC721Enumerable) {
+  function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721Upgradeable, ERC721EnumerableUpgradeable) {
     super._beforeTokenTransfer(_from, _to, _tokenId);
 
     if (_from != NULL_ADDRESS) {
@@ -105,7 +120,7 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     }
   }
 
-  function _burn(uint _tokenId) internal override(ERC721, ERC721URIStorage) {
+  function _burn(uint _tokenId) internal override(ERC721Upgradeable, ERC721URIStorageUpgradeable) {
     super._burn(_tokenId);
     removeLandFromMarket(_tokenId);
   }
@@ -161,8 +176,8 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     lands[_landId].countMintedZombies += 1;
   }
 
-  function setMarketSalePrice(uint _tokenId, uint _price, address ownerId) external onlyMarketContract {
-    require(lands[_tokenId].ownerId == ownerId, "You can't change price for this NFT");
+  function setMarketSalePrice(uint _tokenId, uint _price, address _ownerId) external onlyMarketContract {
+    require(lands[_tokenId].ownerId == _ownerId, "You can't change price for this NFT");
     lands[_tokenId].salePrice = _price;
   }
 
@@ -185,11 +200,11 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
   // ---------------- Public & External methods ---------------
 
   function getListById(uint[] memory _listId) public view returns (Land[] memory) {
-    Land[] memory result = new Land[](_listId.length);
+    Land[] memory _result = new Land[](_listId.length);
     for (uint _i = 0; _i < _listId.length; ++_i) {
-      result[_i] = lands[_listId[_i]];
+      _result[_i] = lands[_listId[_i]];
     }
-    return result;
+    return _result;
   }
 
   function landInfo(uint _id) external view returns (address, string memory, uint) {
@@ -203,8 +218,8 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
 
   function getAllLands() public view returns (LandTypeData[] memory) {
     LandTypeData[] memory _lands = new LandTypeData[](4);
-    for (uint8 i = 0; i < 4; ++i) {
-      _lands[i] = landTypeData[landTypeIndex[i]];
+    for (uint8 _i = 0; _i < 4; ++_i) {
+      _lands[_i] = landTypeData[landTypeIndex[_i]];
     }
 
     return _lands;
@@ -250,25 +265,25 @@ contract LandNFTContract is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Bu
     return _userLands;
   }
 
-  function tokenURI(uint _tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory){
+  function tokenURI(uint _tokenId) public view override(ERC721Upgradeable, ERC721URIStorageUpgradeable) returns (string memory){
     return super.tokenURI(_tokenId);
   }
 
-  function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
+  function supportsInterface(bytes4 _interfaceId) public view override(ERC721Upgradeable, ERC721EnumerableUpgradeable) returns (bool) {
     return super.supportsInterface(_interfaceId);
   }
 
-  function getMarketItems(uint _startIndex, uint8 _count, string memory filterLandType) public view returns (uint, Land[] memory) {
+  function getMarketItems(uint _startIndex, uint8 _count, string memory _filterLandType) public view returns (uint, Land[] memory) {
     Land[] memory _userLands = new Land[](_count);
     address _marketContract = IMain(mainContract).getContractMarket();
 
-    (uint total, uint[] memory _saleIdList) = IMarket(_marketContract).getLandsFromMarket(_startIndex, _count, filterLandType);
+    (uint _total, uint[] memory _saleIdList) = IMarket(_marketContract).getLandsFromMarket(_startIndex, _count, _filterLandType);
     for (uint _i = 0; _i < _count; ++_i) {
-      if (_i < total) {
+      if (_i < _total) {
         _userLands[_i] = lands[_saleIdList[_i]];
       }
     }
-    return (total, _userLands);
+    return (_total, _userLands);
   }
 
 }

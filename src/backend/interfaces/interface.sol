@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 interface IMain {
   function getContractLandNFT() external view returns (address);
 
   function getContractZombieNFT() external view returns (address);
+
+  function getContractZombieNFTHelper() external view returns (address);
 
   function getContractMonsterNFT() external view returns (address);
 
@@ -17,7 +19,6 @@ interface IMain {
 
   function getContractMarket() external view returns (address);
 }
-
 
 interface ICollection {
   function getAllCollectionsCount() external view returns (uint);
@@ -33,7 +34,7 @@ interface INFT {
   function setMarketSalePrice(uint, uint, address) external;
 }
 
-interface ILandNFT is IERC721, INFT {
+interface ILandNFT is IERC721Upgradeable, INFT {
   function landInfo(uint) external view returns (address, string memory, uint);
 
   function landInfoType(uint) external view returns (string memory);
@@ -43,24 +44,27 @@ interface ILandNFT is IERC721, INFT {
   function landSetMintTimestamp(uint) external;
 }
 
-interface IZombieNFT is IERC721, INFT {
+interface IZombieNFT is IERC721Upgradeable, INFT {
   function checkAndBurnZombies(address, uint[] calldata, uint) external returns (uint, uint, uint, uint, uint);
 
   function getRandomRarityByZombies(uint[] calldata) external returns (string memory);
 
   function getRarityCollection(uint) external view returns (string memory, uint);
-
 }
 
-interface IMonsterNFT is IERC721, INFT {
+interface IZombieNFTHelper is IERC721Upgradeable {
+  function getRarityTokenPrice(string memory) external pure returns (uint);
+
+  function generateMetadata(uint8) external returns (string memory, uint8, uint8, uint8, uint8, uint, uint, string memory);
+}
+
+interface IMonsterNFT is IERC721Upgradeable, INFT {
   function safeMint(uint, uint[] memory, address) external returns (uint);
 
   function getRarityCollection(uint) external view returns (string memory, uint);
-
 }
 
-
-interface ITokenFT is IERC20 {
+interface ITokenFT is IERC20Upgradeable {
   function transferOnKill(address, uint) external;
 }
 

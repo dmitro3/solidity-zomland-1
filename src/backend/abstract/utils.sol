@@ -2,7 +2,7 @@
 pragma solidity ^0.8.12;
 
 abstract contract Utils {
-  address public constant NULL_ADDRESS = 0x0000000000000000000000000000000000000000;
+  address internal constant NULL_ADDRESS = 0x0000000000000000000000000000000000000000;
 
   enum CardRarity {
     Common,
@@ -16,6 +16,17 @@ abstract contract Utils {
     WeaponV2,
     ArmorV1,
     ArmorV2
+  }
+
+  struct ZombieResultMetadata {
+    string rarityStr;
+    uint8 health;
+    uint8 attack;
+    uint8 brain;
+    uint8 speed;
+    uint killTokens;
+    uint collectionId;
+    string uri;
   }
 
   struct MonsterResultMetadata {
@@ -54,19 +65,19 @@ abstract contract Utils {
     return uint(keccak256(abi.encodePacked(_shift, msg.sender, block.difficulty, block.timestamp, uint(1)))) % _max;
   }
 
-  function has(uint[] memory self, uint value) public pure returns (bool) {
+  function has(uint[] memory self, uint value) internal pure returns (bool) {
     uint length = self.length;
     for (uint i = 0; i < length; ++i) if (self[i] == value) return true;
     return false;
   }
 
-  function indexOf(uint[] memory self, uint value) public pure returns (uint, bool) {
+  function indexOf(uint[] memory self, uint value) internal pure returns (uint, bool) {
     uint length = self.length;
     for (uint i = 0; i < length; ++i) if (self[i] == value) return (i, true);
     return (0, false);
   }
 
-  function string_compare(string memory _a, string memory _b) internal pure returns (int) {
+  function string_compare(string memory _a, string memory _b) private pure returns (int) {
     bytes memory a = bytes(_a);
     bytes memory b = bytes(_b);
     uint minLength = a.length;
@@ -87,6 +98,5 @@ abstract contract Utils {
   function string_equal(string memory _a, string memory _b) internal pure returns (bool) {
     return string_compare(_a, _b) == 0;
   }
-
 
 }

@@ -2,18 +2,21 @@
 pragma solidity ^0.8.12;
 
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "../interfaces/interface.sol";
 import "../abstract/modifiers.sol";
 
-contract TokenFTContract is ERC20, Modifiers {
-  uint public rewardRate = 1000000000000000;
+contract TokenFTContract is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, OwnableUpgradeable, UUPSUpgradeable, Modifiers {
+  uint public rewardRate;
   uint public lastUpdateTime;
   uint public rewardPerTokenStored;
-
+  uint public stakingTotalSupply;
   mapping(address => uint) public userRewardPerTokenPaid;
   mapping(address => uint) public rewards;
-  uint public stakingTotalSupply;
   mapping(address => uint) private _balances;
 
   modifier updateReward(address _account) {
@@ -25,19 +28,31 @@ contract TokenFTContract is ERC20, Modifiers {
     _;
   }
 
-  constructor(address _mainContract) ERC20("Zomland", "ZML") {
-    mainContract = _mainContract;
-
-    uint allTokenSupply = 1000000000 * 10 ** decimals();
-    uint stakingSupply = 80000000 * 10 ** decimals();
-    _mint(msg.sender, allTokenSupply - stakingSupply);
-    _mint(address(this), stakingSupply);
+  /// @custom:oz-upgrades-unsafe-allow constructor
+  constructor() {
+    _disableInitializers();
   }
+
+  function initialize(address _mainContract) public initializer {
+    __ERC20_init("Zomland", "ZML");
+    __ERC20Burnable_init();
+    __Ownable_init();
+    __UUPSUpgradeable_init();
+
+    mainContract = _mainContract;
+    rewardRate = 1000000000000000;
+    uint _allTokenSupply = 1000000000 * 10 ** decimals();
+    uint _stakingSupply = 80000000 * 10 ** decimals();
+    _mint(msg.sender, _allTokenSupply - _stakingSupply);
+    _mint(address(this), _stakingSupply);
+  }
+
+  function _authorizeUpgrade(address newImplementation) internal onlyOwner override {}
 
   // ---------------- External Limited methods ---------------
 
   function transferOnKill(address _account, uint _amount) external onlyZombieMonsterContract {
-    IERC20(address(this)).transfer(_account, _amount);
+    IERC20Upgradeable(address(this)).transfer(_account, _amount);
   }
 
   // ---------------- Public & External methods ---------------
@@ -66,13 +81,13 @@ contract TokenFTContract is ERC20, Modifiers {
   function withdraw(uint _amount) external updateReward(msg.sender) {
     stakingTotalSupply -= _amount;
     _balances[msg.sender] -= _amount;
-    IERC20(address(this)).transfer(msg.sender, _amount);
+    IERC20Upgradeable(address(this)).transfer(msg.sender, _amount);
   }
 
   function getReward() external updateReward(msg.sender) {
     uint _reward = rewards[msg.sender];
     rewards[msg.sender] = 0;
-    IERC20(address(this)).transfer(msg.sender, _reward);
+    IERC20Upgradeable(address(this)).transfer(msg.sender, _reward);
   }
 
   function myBalance() external view returns (uint) {
@@ -90,13 +105,13 @@ contract TokenFTContract is ERC20, Modifiers {
   //  function isStakeMonster() external {}
   //  function getStakeMonsterPct() external {}
 
-  function mintMonsterPay(uint _payAmount, uint[] memory zombiesList) public returns (uint) {
+  function mintMonsterPay(uint _payAmount, uint[] memory _zombiesList) public returns (uint) {
     require(_payAmount > 0, "Wrong payment amount");
 
     address _monsterContract = IMain(mainContract).getContractMonsterNFT();
-    uint tokenId = IMonsterNFT(_monsterContract).safeMint(_payAmount, zombiesList, msg.sender);
+    uint _tokenId = IMonsterNFT(_monsterContract).safeMint(_payAmount, _zombiesList, msg.sender);
     transfer(address(this), _payAmount);
 
-    return tokenId;
+    return _tokenId;
   }
 }
