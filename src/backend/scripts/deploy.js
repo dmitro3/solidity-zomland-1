@@ -1,3 +1,4 @@
+const { saveFrontendFiles } = require('./utils');
 const { ethers, upgrades } = require("hardhat");
 
 async function main() {
@@ -100,29 +101,6 @@ async function main() {
   saveFrontendFiles(collection, "CollectionContract");
   saveFrontendFiles(tokenFT, "TokenFTContract");
   saveFrontendFiles(market, "MarketContract");
-}
-
-function saveFrontendFiles(contract, name) {
-  console.log('process.env.network', process.env.network);
-
-  const fs = require("fs");
-  const contractsDir = __dirname + "/../../frontend/contractsData";
-
-  if (!fs.existsSync(contractsDir)) {
-    fs.mkdirSync(contractsDir);
-  }
-
-  fs.writeFileSync(
-    contractsDir + `/${name}-address.json`,
-    JSON.stringify({ address: contract.address }, undefined, 2)
-  );
-
-  const contractArtifact = artifacts.readArtifactSync(name);
-
-  fs.writeFileSync(
-    contractsDir + `/${name}.json`,
-    JSON.stringify(contractArtifact, null, 2)
-  );
 }
 
 main()

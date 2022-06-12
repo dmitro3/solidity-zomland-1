@@ -249,7 +249,7 @@ contract ZombieNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerable
 
   // TODO: TMP
   //  function getNext() public view returns (uint){
-  //    return mintZombies + 1;
+  //    return 123;
   //  }
 
   function userZombies(uint _startIndex, uint8 _count, uint _collectionFilter, string memory _rarityFilter) public view returns (uint, Zombie[] memory) {

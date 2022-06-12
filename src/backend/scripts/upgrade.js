@@ -1,11 +1,14 @@
 const { ethers, upgrades } = require("hardhat");
+const { saveFrontendFiles } = require('./utils');
 
 const ZOMBIE_PROXY = "";
 
 async function main() {
   const ZombieV2 = await ethers.getContractFactory("ZombieNFTContract");
-  await upgrades.upgradeProxy(ZOMBIE_PROXY, ZombieV2);
-  console.log('Zombie upgraded');
+  const zombieNFT = await upgrades.upgradeProxy(ZOMBIE_PROXY, ZombieV2);
+  console.log('Contract upgraded');
+
+  saveFrontendFiles(zombieNFT, "ZombieNFTContract");
 }
 
 main()
