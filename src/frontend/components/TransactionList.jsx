@@ -27,7 +27,7 @@ export const TransactionList = () => {
   }
 
   return (
-    <div className={`top-0 right-0 fixed w-[400px] px-3 py-4 z-50 translate-x-0`}>
+    <div className={`top-0 right-0 fixed w-[400px] mx-3 my-4 z-50 translate-x-0`}>
 
       {transactions.map(tx => (
         <div className={`${statusColorMap[tx.status]} px-4 py-3 rounded-md mb-4 text-sm w-full flex flex-row shadow-lg`} key={tx.id}>
