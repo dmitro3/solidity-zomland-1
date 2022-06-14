@@ -79,10 +79,9 @@ export const Zombies = () => {
   }, [currentUser]);
 
   async function fetchUserZombies(currentPage, rarity, collection) {
-    const startIndex = (currentPage - 1) * PAGE_LIMIT;
     const collectionFilter = collection !== "" ? parseInt(collection) + 1 : 0;
-    const zombiesObj = await window.contracts.zombie.userZombies(startIndex, PAGE_LIMIT, collectionFilter, rarity);
-    const zombies = zombiesObj[1].filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie));
+    const zombiesObj = await window.contracts.zombie.userZombies(currentPage, PAGE_LIMIT, collectionFilter, rarity);
+    const zombies = zombiesObj[1].filter(zombie => zombie.nftType).map(zombie => transformZombie(zombie)).reverse();
     setUserZombiesCount(parseInt(zombiesObj[0]));
 
     setUserZombies(zombies);
@@ -199,7 +198,6 @@ export const Zombies = () => {
         }, 2000);
       });
     }).catch(err => {
-      console.log('222', landId)
       addTransactionError(dispatch, err.message);
       removeMintInProgressList(landId);
     });

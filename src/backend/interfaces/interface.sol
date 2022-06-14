@@ -50,12 +50,20 @@ interface IZombieNFT is IERC721Upgradeable, INFT {
   function getRandomRarityByZombies(uint[] calldata) external returns (string memory);
 
   function getRarityCollection(uint) external view returns (string memory, uint);
+
+  function tokenOfOwnerByIndex(address, uint) external view returns (uint);
+
+  function getUserZombieCollection(address, uint) external view returns (uint[] memory);
+
+  function getUserZombieRarity(address, string memory) external view returns (uint[] memory);
 }
 
 interface IZombieNFTHelper is IERC721Upgradeable {
   function getRarityTokenPrice(string memory) external pure returns (uint);
 
   function generateMetadata(uint8) external returns (string memory, uint8, uint8, uint8, uint8, uint, uint, string memory);
+
+  function getPageIdList(uint, uint, uint, string memory, address) external view returns (uint[] memory, uint, uint);
 }
 
 interface IMonsterNFT is IERC721Upgradeable, INFT {

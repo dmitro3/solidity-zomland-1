@@ -100,4 +100,82 @@ contract ZombieNFTHelperContract is Initializable, OwnableUpgradeable, UUPSUpgra
     return uint8(1);
   }
 
+  // Get user zombies (pagination + filters)
+  function getPageIdList(uint _page, uint _count, uint _collectionFilter, string memory _rarityFilter, address _owner) external view returns (uint[] memory, uint, uint) {
+    address _zombieContract = IMain(mainContract).getContractZombieNFT();
+    uint[] memory _innerList = new uint[](_count);
+    uint _innerIndex;
+    uint _totalListLength;
+
+    if (_collectionFilter != 0 && bytes(_rarityFilter).length != 0) {
+      (_innerList, _innerIndex, _totalListLength) = filterCollectionRarity(_collectionFilter, _rarityFilter, _page, _count, _owner);
+    } else if (_collectionFilter != 0) {
+      uint[] memory _collectionList = IZombieNFT(_zombieContract).getUserZombieCollection(_owner, _collectionFilter);
+      (_innerList, _innerIndex, _totalListLength) = mapByList(_collectionList, _collectionList.length, _page, _count);
+    } else if (bytes(_rarityFilter).length != 0) {
+      uint[] memory _rarityList = IZombieNFT(_zombieContract).getUserZombieRarity(_owner, _rarityFilter);
+      (_innerList, _innerIndex, _totalListLength) = mapByList(_rarityList, _rarityList.length, _page, _count);
+    } else {
+      _totalListLength = IZombieNFT(_zombieContract).balanceOf(_owner);
+      (uint _startItem, uint _endItem) = getStartEndIndex(_page, _count, _totalListLength);
+      for (uint _i = _endItem; _i <= _startItem; ++_i) {
+        if (_totalListLength > _i) {
+          _innerList[_innerIndex] = IZombieNFT(_zombieContract).tokenOfOwnerByIndex(_owner, _i);
+          _innerIndex += 1;
+        }
+      }
+    }
+
+    return (_innerList, _innerIndex, _totalListLength);
+  }
+
+  // Reverse pages indexes
+  function getStartEndIndex(uint _page, uint _count, uint _totalListLength) private pure returns (uint, uint){
+    uint _startItem;
+    uint _endItem;
+    uint _lastIndex = (_page - 1) * _count;
+    if (_totalListLength > 0) {
+      _startItem = (_totalListLength - 1) - _lastIndex;
+      if (_startItem > _count) {
+        _endItem = _startItem - _count + 1;
+      }
+    }
+    return (_startItem, _endItem);
+  }
+
+  // Map user zombies for collection or rarity list
+  function mapByList(uint[] memory _source, uint _innerListLength, uint _page, uint _count) private pure returns (uint[] memory, uint, uint){
+    uint _innerIndex;
+    uint[] memory _innerList = new uint[](_count);
+
+    (uint _startItem, uint _endItem) = getStartEndIndex(_page, _count, _innerListLength);
+    for (uint _i = _endItem; _i <= _startItem; ++_i) {
+      if (_innerListLength > _i) {
+        _innerList[_innerIndex] = _source[_i];
+        _innerIndex += 1;
+      }
+    }
+
+    return (_innerList, _innerIndex, _innerListLength);
+  }
+
+  // Filter user zombies by collection and rarity
+  function filterCollectionRarity(uint _collectionFilter, string memory _rarityFilter, uint _page, uint _count, address _owner) private view returns (uint[] memory, uint, uint){
+    address _zombieContract = IMain(mainContract).getContractZombieNFT();
+    uint[] memory collectionList = IZombieNFT(_zombieContract).getUserZombieCollection(_owner, _collectionFilter);
+    uint[] memory rarityList = IZombieNFT(_zombieContract).getUserZombieRarity(_owner, _rarityFilter);
+
+    uint _innerIndex = 0;
+    uint _collectionLength = collectionList.length;
+    uint[] memory _collectionRarityList = new uint[](_collectionLength);
+    for (uint _i = 0; _i < _collectionLength; ++_i) {
+      if (Utils.has(rarityList, collectionList[_i])) {
+        _collectionRarityList[_innerIndex] = collectionList[_i];
+        _innerIndex += 1;
+      }
+    }
+
+    return mapByList(_collectionRarityList, _innerIndex, _page, _count);
+  }
+
 }
