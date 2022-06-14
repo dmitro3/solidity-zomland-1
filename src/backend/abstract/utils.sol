@@ -6,7 +6,7 @@ abstract contract Utils {
 
   enum CardRarity {
     Common,
-    Uncommon,
+    UnCommon,
     Rare,
     Epic
   }
@@ -40,8 +40,8 @@ abstract contract Utils {
   function rarityToString(CardRarity _rarity) internal pure returns (string memory) {
     if (_rarity == CardRarity.Common) {
       return "Common";
-    } else if (_rarity == CardRarity.Uncommon) {
-      return "Uncommon";
+    } else if (_rarity == CardRarity.UnCommon) {
+      return "UnCommon";
     } else if (_rarity == CardRarity.Rare) {
       return "Rare";
     }
@@ -52,8 +52,8 @@ abstract contract Utils {
     bytes32 _rarityHash = keccak256(abi.encodePacked(_rarity));
     if (_rarityHash == keccak256(abi.encodePacked("Common"))) {
       return CardRarity.Common;
-    } else if (_rarityHash == keccak256(abi.encodePacked("Uncommon"))) {
-      return CardRarity.Uncommon;
+    } else if (_rarityHash == keccak256(abi.encodePacked("UnCommon"))) {
+      return CardRarity.UnCommon;
     } else if (_rarityHash == keccak256(abi.encodePacked("Rare"))) {
       return CardRarity.Rare;
     } else {

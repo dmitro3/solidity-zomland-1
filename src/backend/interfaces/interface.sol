@@ -13,6 +13,8 @@ interface IMain {
 
   function getContractMonsterNFT() external view returns (address);
 
+  function getContractMonsterNFTHelper() external view returns (address);
+
   function getContractTokenFT() external view returns (address);
 
   function getContractCollection() external view returns (address);
@@ -64,12 +66,22 @@ interface IZombieNFTHelper is IERC721Upgradeable {
   function generateMetadata(uint8) external returns (string memory, uint8, uint8, uint8, uint8, uint, uint, string memory);
 
   function getPageIdList(uint, uint, uint, string memory, address) external view returns (uint[] memory, uint, uint);
+
+  function getStartEndIndex(uint, uint, uint) external pure returns (uint, uint);
 }
 
 interface IMonsterNFT is IERC721Upgradeable, INFT {
   function safeMint(uint, uint[] memory, address) external returns (uint);
 
   function getRarityCollection(uint) external view returns (string memory, uint);
+
+  function getUserMonsterRarity(address, string memory) external view returns (uint[] memory);
+
+  function tokenOfOwnerByIndex(address, uint) external view returns (uint);
+}
+
+interface IMonsterNFTHelper is IERC721Upgradeable {
+  function getPageIdList(uint, uint, string memory, address) external view returns (uint[] memory, uint, uint);
 }
 
 interface ITokenFT is IERC20Upgradeable {

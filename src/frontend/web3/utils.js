@@ -10,7 +10,7 @@ export const landTypeMap = {
 
 export const rarityMap = {
   0: "Common",
-  1: "Uncommon",
+  1: "UnCommon",
   2: "Rare",
   3: "Epic",
 };
@@ -46,7 +46,7 @@ export const formatLandId = (landType, tokenId, size = "md") => {
 
 export const statusColorTextMap = (status) => {
   let result = "text-gray-500";
-  if (status === "Small" || status === "Uncommon") {
+  if (status === "Small" || status === "UnCommon") {
     result = "text-green-500";
   } else if (status === "Medium" || status === "Rare") {
     result = "text-blue-500";
@@ -58,7 +58,7 @@ export const statusColorTextMap = (status) => {
 
 export const statusColorBorderMap = (status) => {
   let result = "border-gray-500";
-  if (status === "Small" || status === "Uncommon") {
+  if (status === "Small" || status === "UnCommon") {
     result = "border-green-500";
   } else if (status === "Medium" || status === "Rare") {
     result = "border-blue-500";
@@ -190,7 +190,7 @@ export const addTransactionError = (dispatch, message) => {
 
 export const rarityOptions = (setFilterRarity) => {
   const result = [];
-  const options = ["All Rarities", "Common", "Uncommon", "Rare", "Epic"];
+  const options = ["All Rarities", "Common", "UnCommon", "Rare", "Epic"];
 
   options.map(option => {
     result.push({

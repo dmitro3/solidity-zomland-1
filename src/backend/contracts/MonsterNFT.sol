@@ -204,6 +204,10 @@ contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerabl
     return (rarityToString(monster.cardRarity), monster.collection);
   }
 
+  function getUserMonsterRarity(address _owner, string memory _rarityFilter) external view returns (uint[] memory){
+    return userRarityMonster[_owner][rarityFromString(_rarityFilter)];
+  }
+
   function tokenURI(uint _tokenId) public view override(ERC721Upgradeable, ERC721URIStorageUpgradeable) returns (string memory){
     return super.tokenURI(_tokenId);
   }
@@ -212,34 +216,16 @@ contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerabl
     return super.supportsInterface(_interfaceId);
   }
 
-  function userMonsters(uint _startIndex, uint8 _count, string memory _rarityFilter) public view returns (uint, Monster[] memory) {
+  function userMonsters(uint _page, uint8 _count, string memory _rarityFilter) public view returns (uint, Monster[] memory) {
     uint[] memory _innerList = new uint[](_count);
-    uint _endIndex = _startIndex + _count;
     uint _innerListLength;
-    uint _innerIndex = 0;
+    uint _innerLength;
 
-    if (bytes(_rarityFilter).length != 0) {
-      CardRarity _rarity = rarityFromString(_rarityFilter);
-      uint[] memory _rarityList = userRarityMonster[msg.sender][_rarity];
-      _innerListLength = _rarityList.length;
-      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
-        if (_innerListLength > _i) {
-          _innerList[_innerIndex] = _rarityList[_i];
-          _innerIndex += 1;
-        }
-      }
-    } else {
-      _innerListLength = super.balanceOf(msg.sender);
-      for (uint _i = _startIndex; _i < _endIndex; ++_i) {
-        if (_innerListLength > _i) {
-          _innerList[_innerIndex] = super.tokenOfOwnerByIndex(msg.sender, _i);
-          _innerIndex += 1;
-        }
-      }
-    }
+    address _monsterHelper = IMain(mainContract).getContractMonsterNFTHelper();
+    (_innerList, _innerLength, _innerListLength) = IMonsterNFTHelper(_monsterHelper).getPageIdList(_page, _count, _rarityFilter, msg.sender);
 
     Monster[] memory _resultMonsters = new Monster[](_innerListLength);
-    for (uint _i = 0; _i < _innerIndex; ++_i) {
+    for (uint _i = 0; _i < _innerLength; ++_i) {
       _resultMonsters[_i] = monsters[_innerList[_i]];
     }
     return (_innerListLength, _resultMonsters);

@@ -63,7 +63,7 @@ export const HomeContent = {
         <div class="text-gray-400">Common: <span class="font-semibold">68%</span></div>
       </li>
       <li>
-        <div class="text-blue-400">Uncommon: <span class="font-semibold">26%</span></div>
+        <div class="text-blue-400">UnCommon: <span class="font-semibold">26%</span></div>
       </li>
       <li>
         <div class="text-rose-400">Rare: <span class="font-semibold">5%</span></div>

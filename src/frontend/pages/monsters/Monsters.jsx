@@ -26,7 +26,7 @@ import { addForKill, cleanupKillList } from '../../store/sidebarSlice';
 import { TransferPopup } from '../../components/TransferPopup';
 import { Api } from '../../db/api';
 
-const PAGE_LIMIT = "20";
+const PAGE_LIMIT = "5";
 
 export const Monsters = () => {
   const dispatch = useDispatch();
@@ -70,9 +70,8 @@ export const Monsters = () => {
   }, [filterRarity]);
 
   async function fetchUserMonsters(currentPage, rarity) {
-    const startIndex = (currentPage - 1) * PAGE_LIMIT;
-    const monstersObj = await window.contracts.monster.userMonsters(startIndex, PAGE_LIMIT, rarity || "");
-    const monsters = monstersObj[1].filter(monster => monster.nftType).map(monster => transformMonster(monster));
+    const monstersObj = await window.contracts.monster.userMonsters(currentPage, PAGE_LIMIT, rarity || "");
+    const monsters = monstersObj[1].filter(monster => monster.nftType).map(monster => transformMonster(monster)).reverse();
     setUserMonstersCount(parseInt(monstersObj[0]));
 
     setUserMonsters(monsters);

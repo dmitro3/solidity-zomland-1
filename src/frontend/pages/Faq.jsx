@@ -135,7 +135,7 @@ export const Faq = () => {
                     Each zombie has it's own characteristics of health,
                     attack, brain and speed that affect its price.
                   </p>
-                  <p>We have 4 types of Zombie Card Rarity: Common, Uncommon, Rare and Epic.</p>
+                  <p>We have 4 types of Zombie Card Rarity: Common, UnCommon, Rare and Epic.</p>
 
                   <p className="mt-3">
                     Main actions that you can perform with zombies:

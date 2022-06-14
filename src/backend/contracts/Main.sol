@@ -10,6 +10,7 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
   address internal contractZombieNFT;
   address internal contractZombieNFTHelper;
   address internal contractMonsterNFT;
+  address internal contractMonsterNFTHelper;
   address internal contractTokenFT;
   address internal contractCollection;
   address internal contractMarket;
@@ -31,6 +32,7 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     address _zombieNFT,
     address _zombieNFTHelper,
     address _monsterNFT,
+    address _monsterNFTHelper,
     address _tokenFT,
     address _collection,
     address _market
@@ -39,6 +41,7 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     contractZombieNFT = _zombieNFT;
     contractZombieNFTHelper = _zombieNFTHelper;
     contractMonsterNFT = _monsterNFT;
+    contractMonsterNFTHelper = _monsterNFTHelper;
     contractTokenFT = _tokenFT;
     contractCollection = _collection;
     contractMarket = _market;
@@ -58,6 +61,10 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
   function getContractMonsterNFT() external view returns (address) {
     return contractMonsterNFT;
+  }
+
+  function getContractMonsterNFTHelper() external view returns (address) {
+    return contractMonsterNFTHelper;
   }
 
   function getContractTokenFT() external view returns (address) {

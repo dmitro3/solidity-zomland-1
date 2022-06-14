@@ -38,6 +38,12 @@ async function main() {
   })
   await monsterNFT.deployed();
 
+  const MonsterNFTHelper = await ethers.getContractFactory("MonsterNFTHelperContract");
+  const monsterNFTHelper = await upgrades.deployProxy(MonsterNFTHelper, [main.address], {
+    initializer: "initialize"
+  })
+  await monsterNFTHelper.deployed();
+
   const Collection = await ethers.getContractFactory("CollectionContract");
   const collection = await upgrades.deployProxy(Collection, [main.address, "bafybeigm2p2cm3pqrlel326s6kjfh4x22ne5sfrlvpgouq7tltatulbqru"], {
     initializer: "initialize"
@@ -62,6 +68,7 @@ async function main() {
     zombieNFT.address,
     zombieNFTHelper.address,
     monsterNFT.address,
+    monsterNFTHelper.address,
     tokenFT.address,
     collection.address,
     market.address,
@@ -72,6 +79,7 @@ async function main() {
   console.log("ZombieNFT address", zombieNFT.address);
   console.log("ZombieNFTHelper address", zombieNFTHelper.address);
   console.log("MonsterNFT address", monsterNFT.address);
+  console.log("MonsterNFTHelper address", monsterNFTHelper.address);
   console.log("Collection address", collection.address);
   console.log("TokenFT address", tokenFT.address);
   console.log("Market address", market.address);
@@ -98,6 +106,7 @@ async function main() {
   saveFrontendFiles(zombieNFT, "ZombieNFTContract");
   saveFrontendFiles(zombieNFTHelper, "ZombieNFTHelperContract");
   saveFrontendFiles(monsterNFT, "MonsterNFTContract");
+  saveFrontendFiles(monsterNFTHelper, "MonsterNFTHelperContract");
   saveFrontendFiles(collection, "CollectionContract");
   saveFrontendFiles(tokenFT, "TokenFTContract");
   saveFrontendFiles(market, "MarketContract");

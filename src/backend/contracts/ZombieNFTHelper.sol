@@ -26,13 +26,13 @@ contract ZombieNFTHelperContract is Initializable, OwnableUpgradeable, UUPSUpgra
 
   function getRarityTokenPrice(string memory _rarityStr) external pure returns (uint){
     if (string_equal(_rarityStr, "Common")) {
-      return 50 * 1e18;
-    } else if (string_equal(_rarityStr, "Uncommon")) {
-      return 100 * 1e18;
+      return 5 * 1e18;
+    } else if (string_equal(_rarityStr, "UnCommon")) {
+      return 10 * 1e18;
     } else if (string_equal(_rarityStr, "Rare")) {
-      return 200 * 1e18;
+      return 20 * 1e18;
     }
-    return 400 * 1e18;
+    return 40 * 1e18;
   }
 
   function zombieKillTokens(CardRarity _rarity, uint8 _health, uint8 _attack, uint8 _brain, uint8 _speed) internal pure returns (uint) {
@@ -41,7 +41,7 @@ contract ZombieNFTHelperContract is Initializable, OwnableUpgradeable, UUPSUpgra
       _multiplier = 21;
     } else if (_rarity == CardRarity.Rare) {
       _multiplier = 9;
-    } else if (_rarity == CardRarity.Uncommon) {
+    } else if (_rarity == CardRarity.UnCommon) {
       _multiplier = 3;
     }
     return _multiplier * (uint((_health + _attack + _brain + _speed * 10)) / 7) * 1e18;
@@ -70,7 +70,7 @@ contract ZombieNFTHelperContract is Initializable, OwnableUpgradeable, UUPSUpgra
     } else if (_index <= 60) {
       return CardRarity.Rare;
     } else if (_index <= 300) {
-      return CardRarity.Uncommon;
+      return CardRarity.UnCommon;
     }
     return CardRarity.Common;
   }
@@ -81,7 +81,7 @@ contract ZombieNFTHelperContract is Initializable, OwnableUpgradeable, UUPSUpgra
 
     if (_rarity == CardRarity.Common) {
       _to = _max / 4;
-    } else if (_rarity == CardRarity.Uncommon) {
+    } else if (_rarity == CardRarity.UnCommon) {
       _from = _max / 5;
       _to = _max / 2;
     } else if (_rarity == CardRarity.Rare) {
@@ -130,13 +130,13 @@ contract ZombieNFTHelperContract is Initializable, OwnableUpgradeable, UUPSUpgra
   }
 
   // Reverse pages indexes
-  function getStartEndIndex(uint _page, uint _count, uint _totalListLength) private pure returns (uint, uint){
+  function getStartEndIndex(uint _page, uint _count, uint _totalListLength) public pure returns (uint, uint){
     uint _startItem;
     uint _endItem;
     uint _lastIndex = (_page - 1) * _count;
     if (_totalListLength > 0) {
       _startItem = (_totalListLength - 1) - _lastIndex;
-      if (_startItem > _count) {
+      if (_startItem >= _count) {
         _endItem = _startItem - _count + 1;
       }
     }

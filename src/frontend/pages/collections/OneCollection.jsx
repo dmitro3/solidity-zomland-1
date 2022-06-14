@@ -141,25 +141,9 @@ export const OneCollection = () => {
   const mintMonster = async () => {
     if (countZombieSelected() === COLLECTION_ZOMBIES_COUNT) {
       setIsMintLoader(true);
-
       const zombieList = zombieCards.filter((zombie) => zombie).map(
         (zombie) => parseInt(zombie.tokenId)
       );
-      // const gas = await window.contracts.monster.estimateGas.safeMint(zombieList);
-      // await window.contracts.token.stake(depositAmount).then(transaction => {
-      //   addPendingTransaction(dispatch, transaction, "Deposit ZML to staking");
-      //
-      //   transaction.wait().then(receipt => {
-      //     if (receipt.status === 1) {
-      //       updateDepositedAmount();
-      //       updateTotalDeposit();
-      //       updateUserBalance(dispatch, currentUser.accountId);
-      //       setDepositInput(0);
-      //     }
-      //   });
-      // }).catch(err => {
-      //   addTransactionError(dispatch, err.message)
-      // });
 
       const depositAmount = convertToYocto(getMintDeposit());
       await window.contracts.token.mintMonsterPay(depositAmount, zombieList).then(transaction => {
@@ -180,24 +164,6 @@ export const OneCollection = () => {
         addTransactionError(dispatch, err.message);
         setIsMintLoader(false);
       });
-
-      // await window.contracts.monster.safeMint(zombieList, {
-      //   gasLimit: parseInt(gas * 1.5)
-      // }).then(transaction => {
-      //   addPendingTransaction(dispatch, transaction, "Minting Monster");
-      //
-      //   transaction.wait().then(receipt => {
-      //     if (receipt.status === 1) {
-      //       setIsMintLoader(false);
-      //       navigate("/monsters");
-      //     } else {
-      //       alert('Minting error');
-      //     }
-      //   });
-      // }).catch(err => {
-      //   addTransactionError(dispatch, err.message);
-      //   setIsMintLoader(false);
-      // });
     } else {
       alert(`You need to add ${COLLECTION_ZOMBIES_COUNT} zombies to mint the Monster`);
       setIsMintLoader(false);
@@ -212,13 +178,13 @@ export const OneCollection = () => {
     let requiredDeposit = 0;
     zombieCards.filter((zombie) => zombie).map(item => {
       if (item.cardRarity === 'Common') {
-        requiredDeposit += 50;
-      } else if (item.cardRarity === 'Uncommon') {
-        requiredDeposit += 100;
+        requiredDeposit += 5;
+      } else if (item.cardRarity === 'UnCommon') {
+        requiredDeposit += 10;
       } else if (item.cardRarity === 'Rare') {
-        requiredDeposit += 200;
+        requiredDeposit += 20;
       } else {
-        requiredDeposit += 400;
+        requiredDeposit += 40;
       }
     });
 
@@ -340,7 +306,7 @@ export const OneCollection = () => {
                                 />
                                 <MonsterParam
                                   title="UnCommon"
-                                  pct={monsterCardRarity("Uncommon")}
+                                  pct={monsterCardRarity("UnCommon")}
                                 />
                               </div>
                               <div className="2xl:ml-6 ml-2">
@@ -398,7 +364,7 @@ export const OneCollection = () => {
                               size="lg"
                               noIcon
                               title="Mint Monster"
-                              disabled={countZombieSelected() < 10}
+                              disabled={countZombieSelected() < 10 || !isEnoughBalance()}
                               onClick={mintMonster}
                             />
                           </div>
