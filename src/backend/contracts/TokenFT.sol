@@ -67,9 +67,15 @@ contract TokenFTContract is Initializable, ERC20Upgradeable, ERC20BurnableUpgrad
   }
 
   function earned(address _account) public view returns (uint) {
-    return ((_balances[_account] *
-    (rewardPerToken() - userRewardPerTokenPaid[_account])) / 1e18) +
-    rewards[_account];
+    uint _result = ((_balances[_account] * (rewardPerToken() - userRewardPerTokenPaid[_account])) / 1e18) + rewards[_account];
+
+    address _monsterContract = IMain(mainContract).getContractMonsterNFT();
+    (uint _pct, bool _exists) = IMonsterNFT(_monsterContract).stakeMonsterRewardPct(msg.sender);
+    if (_exists) {
+      _result = _result + (_result / 100) * _pct;
+    }
+
+    return _result;
   }
 
   function stake(uint _amount) external updateReward(msg.sender) {
@@ -101,9 +107,6 @@ contract TokenFTContract is Initializable, ERC20Upgradeable, ERC20BurnableUpgrad
     }
     return 0;
   }
-
-  //  function isStakeMonster() external {}
-  //  function getStakeMonsterPct() external {}
 
   function mintMonsterPay(uint _payAmount, uint[] memory _zombiesList) public returns (uint) {
     require(_payAmount > 0, "Wrong payment amount");

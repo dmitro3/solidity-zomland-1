@@ -28,10 +28,10 @@ module.exports = {
   },
   networks: {
     hardhat: {
-      // mining: {
-      //   auto: false,
-      //   interval: 1000
-      // }
+      mining: {
+        auto: false,
+        interval: 1000
+      }
     },
     meter_testnet: {
       url: "https://rpctest.meter.io",
@@ -46,7 +46,7 @@ module.exports = {
       accounts: process.env.BSC_TESTNET_PRIVATE_KEY !== undefined ? [process.env.BSC_TESTNET_PRIVATE_KEY] : [],
     },
     bsc_mainnet: {
-      url: "https://bsc-dataseed.binance.org/",
+      url: "https://rpc.ankr.com/bsc",
       accounts: { mnemonic: process.env.BSC_MAINNET_PRIVATE_KEY || "" }
     },
     emerald_testnet: {

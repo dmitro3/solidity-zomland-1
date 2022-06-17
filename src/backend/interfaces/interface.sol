@@ -78,6 +78,8 @@ interface IMonsterNFT is IERC721Upgradeable, INFT {
   function getUserMonsterRarity(address, string memory) external view returns (uint[] memory);
 
   function tokenOfOwnerByIndex(address, uint) external view returns (uint);
+
+  function stakeMonsterRewardPct(address) external view returns (uint, bool);
 }
 
 interface IMonsterNFTHelper is IERC721Upgradeable {

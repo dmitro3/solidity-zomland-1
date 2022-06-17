@@ -1,22 +1,35 @@
 const { ethers, upgrades } = require("hardhat");
 const { saveFrontendFiles } = require('./utils');
 
-const MAIN_PROXY = "";
-const LAND_PROXY = "";
-const ZOMBIE_PROXY = "";
-const ZOMBIE_HELPER_PROXY = "";
-const MONSTER_PROXY = "";
-const MONSTER_HELPER_PROXY = "";
-const COLLECTION_PROXY = "";
-const TOKEN_PROXY = "";
-const MARKET_PROXY = "";
-
+const MAIN_PROXY = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";
+const LAND_PROXY = "0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f";
+const ZOMBIE_PROXY = "0xB0D4afd8879eD9F52b28595d31B441D079B2Ca07";
+const ZOMBIE_HELPER_PROXY = "0x162A433068F51e18b7d13932F27e66a3f99E6890";
+const MONSTER_PROXY = "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f";
+const MONSTER_HELPER_PROXY = "0x1fA02b2d6A771842690194Cf62D91bdd92BfE28d";
+const COLLECTION_PROXY = "0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6";
+const TOKEN_PROXY = "0x04C89607413713Ec9775E14b954286519d836FEf";
+const MARKET_PROXY = "0x4C4a2f8c81640e47606d3fd77B353E87Ba015584";
 
 async function main() {
-  const [deployer, account1] = await ethers.getSigners();
+  const [deployer] = await ethers.getSigners();
 
-  console.log("Deploying contracts with the account:", deployer.address);
-  console.log("Account balance:", (await deployer.getBalance()).toString());
+  // console.log("Deploying contracts with the account:", deployer.address);
+  // console.log("Account balance:", (await deployer.getBalance()).toString());
+  //
+  // const LandV2 = await ethers.getContractFactory("LandNFTContract");
+  // await upgrades.upgradeProxy(LAND_PROXY, LandV2);
+  //
+  // const LandContract = await ethers.getContractAt("LandNFTContract", LAND_PROXY, deployer);
+  // const transaction = await LandContract.provider.getBalance(LAND_PROXY);
+  // console.log('transaction', transaction);
+  //
+  // const transaction2 = await LandContract.withdrawToken(ethers.utils.parseEther("19.1"), {
+  //   gasLimit: 50000
+  // });
+  // await transaction2.wait().then(result => {
+  //   console.log('result', result);
+  // })
 
   const MainV2 = await ethers.getContractFactory("MainContract");
   const main = await upgrades.upgradeProxy(MAIN_PROXY, MainV2);
@@ -46,18 +59,6 @@ async function main() {
   const monsterHelperNFT = await upgrades.upgradeProxy(MONSTER_HELPER_PROXY, MonsterHelperV2);
 
   console.log('Contract upgraded');
-
-  // const MainContract = await ethers.getContractAt("MainContract", MAIN_PROXY);
-  // await MainContract.updateContractAddress(
-  //   LAND_PROXY,
-  //   ZOMBIE_PROXY,
-  //   ZOMBIE_HELPER_PROXY,
-  //   MONSTER_PROXY,
-  //   MONSTER_HELPER_PROXY,
-  //   TOKEN_PROXY,
-  //   COLLECTION_PROXY,
-  //   MARKET_PROXY,
-  // );
 
   saveFrontendFiles(main, "MainContract");
   saveFrontendFiles(landNFT, "LandNFTContract");

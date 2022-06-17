@@ -106,6 +106,10 @@ contract LandNFTContract is Initializable, ERC721Upgradeable, ERC721EnumerableUp
 
   // ---------------- Internal & Private methods ---------------
 
+  function withdrawToken(uint _amount) external onlyOwner {
+    payable(msg.sender).transfer(_amount);
+  }
+
   function _baseURI() internal pure override returns (string memory) {
     return "https://ipfs.io/ipfs/";
   }

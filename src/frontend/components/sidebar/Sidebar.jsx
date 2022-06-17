@@ -81,9 +81,10 @@ export const Sidebar = ({
       nftType
     ).then(transaction => {
       addPendingTransaction(dispatch, transaction, `Sell ${nftType}s`);
+      dispatch(cleanupSaleList({ type: `${nftType}s` }));
+
       transaction.wait().then(receipt => {
         if (receipt.status === 1) {
-          dispatch(cleanupSaleList({ type: `${nftType}s` }));
           // Todo: Replace it to update component
           document.location.reload();
         }
@@ -141,13 +142,13 @@ export const Sidebar = ({
     setIsLoading(true);
     await window.contracts[nftType].killNftList(killObject).then(transaction => {
       addPendingTransaction(dispatch, transaction, `Kill ${nftType}s to get ZML tokens`);
+      dispatch(cleanupKillList({ type: `${nftType}s` }));
+      setIsLoading(false);
 
       transaction.wait().then(async receipt => {
-        setIsLoading(false);
         if (receipt.status === 1) {
           // Update user balance
           await updateUserBalance(dispatch, currentUser.accountId);
-          dispatch(cleanupKillList({ type: `${nftType}s` }));
         } else {
           alert('Kill error');
         }

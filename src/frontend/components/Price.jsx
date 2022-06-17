@@ -16,13 +16,9 @@ export const Price = ({ title, size }) => {
       {title && (
         <>
           {title}
-          <img
-            className={`${sizeMap[size || "base"]} m-1`}
-            src={near_logo}
-            alt="near logo"
-          />
+          <small className="ml-1">{process.env.TOKEN_SYMBOL}</small>
         </>
       )}
     </div>
   );
-};
+}

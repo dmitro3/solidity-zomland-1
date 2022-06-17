@@ -17,6 +17,7 @@ import "../abstract/utils.sol";
 import "../abstract/modifiers.sol";
 
   error MonsterKillError(string message);
+  error MonsterStakeError(string message);
   error MonsterMintCountError(string message, uint required);
 
 contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721URIStorageUpgradeable, ERC721BurnableUpgradeable, OwnableUpgradeable, UUPSUpgradeable, Utils, Modifiers {
@@ -25,6 +26,7 @@ contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerabl
   mapping(uint => Monster) monsters;
   mapping(address => mapping(CardRarity => uint[])) userRarityMonster;
   uint killedMonsters;
+  mapping(address => StakedMonster) stakedMonsters;
 
   struct Monster {
     uint tokenId;
@@ -41,6 +43,12 @@ contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerabl
     address ownerId;
     uint nextLandDiscovery;
     uint nextBattle;
+  }
+
+  struct StakedMonster {
+    bool exists;
+    uint tokenId;
+    uint rewardPct;
   }
 
   /// @custom:oz-upgrades-unsafe-allow constructor
@@ -67,6 +75,18 @@ contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerabl
     return "https://ipfs.io/ipfs/";
   }
 
+  function getMonsterStakingReward(uint _tokenId) private returns (uint){
+    Monster storage monster = monsters[_tokenId];
+    if (monster.cardRarity == CardRarity.Common) {
+      return 2;
+    } else if (monster.cardRarity == CardRarity.UnCommon) {
+      return 5;
+    } else if (monster.cardRarity == CardRarity.Rare) {
+      return 12;
+    }
+    return 22;
+  }
+
   function _beforeTokenTransfer(address _from, address _to, uint _tokenId) internal override(ERC721Upgradeable, ERC721EnumerableUpgradeable) {
     super._beforeTokenTransfer(_from, _to, _tokenId);
 
@@ -77,6 +97,15 @@ contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerabl
       removeMonsterFromMarket(_tokenId);
       removeMonsterRarity(_from, _tokenId, _monster.cardRarity);
       addMonsterRarity(_to, _tokenId, _monster.cardRarity);
+
+      // sent to staking
+      if (_to == IMain(mainContract).getContractTokenFT()) {
+        if (stakedMonsters[_from].exists) {
+          revert MonsterStakeError({message : "You already have staked Monster"});
+        }
+
+        stakedMonsters[_from] = StakedMonster(true, _tokenId, getMonsterStakingReward(_tokenId));
+      }
     }
   }
 
@@ -172,6 +201,26 @@ contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerabl
   }
 
   // ---------------- Public & External methods ---------------
+
+  function isStakeMonster(address _owner) public view returns (Monster memory, uint, bool) {
+    StakedMonster memory stakedMonster = stakedMonsters[_owner];
+    return (monsters[stakedMonster.tokenId], stakedMonster.rewardPct, stakedMonster.exists);
+  }
+
+  function stakeMonsterRewardPct(address _owner) external view returns (uint, bool) {
+    StakedMonster storage stakedMonster = stakedMonsters[_owner];
+    return (stakedMonster.rewardPct, stakedMonster.exists);
+  }
+
+  function unStakeMonster() public {
+    if (!stakedMonsters[msg.sender].exists) {
+      revert MonsterStakeError({message : "You don't have staked Monster"});
+    }
+
+    address _currentOwner = IMain(mainContract).getContractTokenFT();
+    _transfer(_currentOwner, msg.sender, stakedMonsters[msg.sender].tokenId);
+    delete stakedMonsters[msg.sender];
+  }
 
   function getListById(uint[] memory _listId) public view returns (Monster[] memory) {
     Monster[] memory _result = new Monster[](_listId.length);
