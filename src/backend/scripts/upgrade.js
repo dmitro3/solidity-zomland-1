@@ -1,36 +1,17 @@
 const { ethers, upgrades } = require("hardhat");
 const { saveFrontendFiles } = require('./utils');
 
-const MAIN_PROXY = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";
-const LAND_PROXY = "0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f";
-const ZOMBIE_PROXY = "0xB0D4afd8879eD9F52b28595d31B441D079B2Ca07";
-const ZOMBIE_HELPER_PROXY = "0x162A433068F51e18b7d13932F27e66a3f99E6890";
-const MONSTER_PROXY = "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f";
-const MONSTER_HELPER_PROXY = "0x1fA02b2d6A771842690194Cf62D91bdd92BfE28d";
-const COLLECTION_PROXY = "0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6";
-const TOKEN_PROXY = "0x04C89607413713Ec9775E14b954286519d836FEf";
-const MARKET_PROXY = "0x4C4a2f8c81640e47606d3fd77B353E87Ba015584";
+const MAIN_PROXY = "0xCFF245fad71954fB62fa8c82FDA2CA9527E99240";
+const LAND_PROXY = "0xb4a0b98eF353Fe109d664c8023c3292740b11686";
+const ZOMBIE_PROXY = "0x4e1912CC0192FeCd614ba883363b0C77de853C60";
+const ZOMBIE_HELPER_PROXY = "0x4d0DCD5E5FE3D7Ac7bC7aA93c2573BBe87dDD9Dc";
+const MONSTER_PROXY = "0x8d39c28571f6C02Ed1D84B4Bd9519c9988D86B0A";
+const MONSTER_HELPER_PROXY = "0xC7DAB6f8D4246B3592eCE7a98B16D09341BeC979";
+const COLLECTION_PROXY = "0x87b9B6CBA3926eF35d0ea0Cc29DD3556Ba31FbE8";
+const TOKEN_PROXY = "0x16d9Fe9e19EcE57Aea7A46275EE18a5A2553585d";
+const MARKET_PROXY = "0x27ab1244dCb52c27FaA8E121E2452cD8957c5498";
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
-
-  // console.log("Deploying contracts with the account:", deployer.address);
-  // console.log("Account balance:", (await deployer.getBalance()).toString());
-  //
-  // const LandV2 = await ethers.getContractFactory("LandNFTContract");
-  // await upgrades.upgradeProxy(LAND_PROXY, LandV2);
-  //
-  // const LandContract = await ethers.getContractAt("LandNFTContract", LAND_PROXY, deployer);
-  // const transaction = await LandContract.provider.getBalance(LAND_PROXY);
-  // console.log('transaction', transaction);
-  //
-  // const transaction2 = await LandContract.withdrawToken(ethers.utils.parseEther("19.1"), {
-  //   gasLimit: 50000
-  // });
-  // await transaction2.wait().then(result => {
-  //   console.log('result', result);
-  // })
-
   const MainV2 = await ethers.getContractFactory("MainContract");
   const main = await upgrades.upgradeProxy(MAIN_PROXY, MainV2);
 

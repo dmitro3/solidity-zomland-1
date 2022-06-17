@@ -125,7 +125,7 @@ export const Token = () => {
 
   const updateTotalDeposit = async () => {
     let totalStake = await window.contracts.token.stakingTotalSupply();
-    setTotalStake(parseInt(totalStake));
+    setTotalStake(convertFromYocto(totalStake, 2));
   };
 
   const updateDepositedAmount = async () => {
@@ -259,7 +259,7 @@ export const Token = () => {
                           <p className="mb-2 whitespace-nowrap">
                             <span className="w-32 inline-block">Total Staked:</span>
                             <span className="font-semibold">
-                            {convertFromYocto(totalStake, 2)} ZML
+                            {totalStake} ZML
                           </span>
                           </p>
                         )}
