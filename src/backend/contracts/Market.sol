@@ -49,11 +49,11 @@ contract MarketContract is Initializable, UUPSUpgradeable, OwnableUpgradeable, U
 
   // ---------------- Internal & Private methods ---------------
 
-  function removeFromMarketInternal(uint _tokenId, uint[] storage _source) internal {
-    (uint _index, bool _exist) = Utils.indexOf(_source, _tokenId);
+  function removeFromMarketInternal(uint _tokenId, uint[] storage source) internal {
+    (uint _index, bool _exist) = Utils.indexOf(source, _tokenId);
     if (_exist) {
-      _source[_index] = _source[_source.length - 1];
-      _source.pop();
+      source[_index] = source[source.length - 1];
+      source.pop();
     }
   }
 
@@ -227,17 +227,17 @@ contract MarketContract is Initializable, UUPSUpgradeable, OwnableUpgradeable, U
   }
 
   function buyNFT(uint _tokenId, string memory _typeNFT) payable public {
-    uint[] storage _source;
+    uint[] storage source;
     address _sourceContract;
 
     if (string_equal(_typeNFT, "land")) {
-      _source = lands;
+      source = lands;
       _sourceContract = IMain(mainContract).getContractLandNFT();
     } else if (string_equal(_typeNFT, "zombie")) {
-      _source = zombies;
+      source = zombies;
       _sourceContract = IMain(mainContract).getContractZombieNFT();
     } else if (string_equal(_typeNFT, "monster")) {
-      _source = monsters;
+      source = monsters;
       _sourceContract = IMain(mainContract).getContractMonsterNFT();
     } else {
       revert MarketError({message : "Wrong typeNFT param"});
@@ -250,10 +250,10 @@ contract MarketContract is Initializable, UUPSUpgradeable, OwnableUpgradeable, U
     payable(_seller).transfer(_restAmount);
 
     // remove from market
-    (uint _index, bool _exist) = Utils.indexOf(_source, _tokenId);
+    (uint _index, bool _exist) = Utils.indexOf(source, _tokenId);
     if (_exist) {
-      _source[_index] = _source[_source.length - 1];
-      _source.pop();
+      source[_index] = source[source.length - 1];
+      source.pop();
     }
 
     // Add history

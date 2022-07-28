@@ -75,18 +75,18 @@ contract ZombieNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerable
     super._beforeTokenTransfer(_from, _to, _tokenId);
 
     if (_from != NULL_ADDRESS) {
-      Zombie storage _zombie = zombies[_tokenId];
-      _zombie.ownerId = _to;
+      Zombie storage zombie = zombies[_tokenId];
+      zombie.ownerId = _to;
 
       removeZombieFromMarket(_tokenId);
-      removeZombieCollectionRarity(_from, _tokenId, _zombie.collection, _zombie.cardRarity);
-      addZombieCollectionRarity(_to, _tokenId, _zombie.collection, _zombie.cardRarity);
+      removeZombieCollectionRarity(_from, _tokenId, zombie.collection, zombie.cardRarity);
+      addZombieCollectionRarity(_to, _tokenId, zombie.collection, zombie.cardRarity);
     }
   }
 
   function _burn(uint _tokenId) internal override(ERC721Upgradeable, ERC721URIStorageUpgradeable) {
-    Zombie storage _zombie = zombies[_tokenId];
-    removeZombieCollectionRarity(msg.sender, _tokenId, _zombie.collection, _zombie.cardRarity);
+    Zombie storage zombie = zombies[_tokenId];
+    removeZombieCollectionRarity(msg.sender, _tokenId, zombie.collection, zombie.cardRarity);
     removeZombieFromMarket(_tokenId);
     killedZombies += 1;
 
