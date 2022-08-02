@@ -2,7 +2,6 @@
 pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
 interface IMain {
   function getContractLandNFT() external view returns (address);
@@ -20,6 +19,8 @@ interface IMain {
   function getContractCollection() external view returns (address);
 
   function getContractMarket() external view returns (address);
+
+  function transferOnKill(address, uint) external;
 }
 
 interface ICollection {
@@ -84,10 +85,6 @@ interface IMonsterNFT is IERC721Upgradeable, INFT {
 
 interface IMonsterNFTHelper is IERC721Upgradeable {
   function getPageIdList(uint, uint, string memory, address) external view returns (uint[] memory, uint, uint);
-}
-
-interface ITokenFT is IERC20Upgradeable {
-  function transferOnKill(address, uint) external;
 }
 
 interface IMarket {

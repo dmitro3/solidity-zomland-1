@@ -4,8 +4,10 @@ pragma solidity ^0.8.12;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "../abstract/modifiers.sol";
 
-contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
+contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable, Modifiers {
   address internal contractLandNFT;
   address internal contractLandNFTHelper;
   address internal contractZombieNFT;
@@ -84,5 +86,11 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
   function getContractMarket() external view returns (address) {
     return contractMarket;
+  }
+
+  // ---------------- External Limited methods ---------------
+
+  function transferOnKill(address _account, uint _amount) external onlyZombieMonsterContract {
+    IERC20Upgradeable(address(contractTokenFT)).transfer(_account, _amount);
   }
 }

@@ -268,7 +268,6 @@ contract ZombieNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerable
   }
 
   function killNftList(uint[] memory _tokenList) public {
-    address _contractTokenFT = IMain(mainContract).getContractTokenFT();
     uint _totalKillTokens = 0;
 
     for (uint _i = 0; _i < _tokenList.length; ++_i) {
@@ -282,7 +281,7 @@ contract ZombieNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerable
       _burn(_tokenId);
     }
 
-    ITokenFT(_contractTokenFT).transferOnKill(msg.sender, _totalKillTokens);
+    IMain(mainContract).transferOnKill(msg.sender, _totalKillTokens);
   }
 
   function getRandomRarityByZombies(uint[] memory _zombiesList) external view returns (string memory) {

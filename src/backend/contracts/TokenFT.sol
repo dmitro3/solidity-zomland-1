@@ -43,17 +43,13 @@ contract TokenFTContract is Initializable, ERC20Upgradeable, ERC20BurnableUpgrad
     rewardRate = 1000000000000000;
     uint _allTokenSupply = 1000000000 * 10 ** decimals();
     uint _stakingSupply = 80000000 * 10 ** decimals();
-    _mint(msg.sender, _allTokenSupply - _stakingSupply);
+    uint _ecosystemSupply = 320000000 * 10 ** decimals();
+    _mint(msg.sender, _allTokenSupply - _stakingSupply - _ecosystemSupply);
     _mint(address(this), _stakingSupply);
+    _mint(address(_mainContract), _ecosystemSupply);
   }
 
   function _authorizeUpgrade(address newImplementation) internal onlyOwner override {}
-
-  // ---------------- External Limited methods ---------------
-
-  function transferOnKill(address _account, uint _amount) external onlyZombieMonsterContract {
-    IERC20Upgradeable(address(this)).transfer(_account, _amount);
-  }
 
   // ---------------- Public & External methods ---------------
 
