@@ -46,18 +46,6 @@ abstract contract Modifiers {
     _;
   }
 
-  function _onlyZombieMonsterContract() private view {
-    address monsterContract = IMain(mainContract).getContractMonsterNFT();
-    address zombieContract = IMain(mainContract).getContractZombieNFT();
-    require(zombieContract == msg.sender || monsterContract == msg.sender, "You can't call this method");
-  }
-
-
-  modifier onlyZombieMonsterContract() {
-    _onlyZombieMonsterContract();
-    _;
-  }
-
   function _onlyNFTContract() private view {
     address monsterContract = IMain(mainContract).getContractMonsterNFT();
     address zombieContract = IMain(mainContract).getContractZombieNFT();

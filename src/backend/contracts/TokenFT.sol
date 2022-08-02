@@ -40,7 +40,7 @@ contract TokenFTContract is Initializable, ERC20Upgradeable, ERC20BurnableUpgrad
     __UUPSUpgradeable_init();
 
     mainContract = _mainContract;
-    rewardRate = 1000000000000000;
+    rewardRate = 1000000000000000000;
     uint _allTokenSupply = 1000000000 * 10 ** decimals();
     uint _stakingSupply = 80000000 * 10 ** decimals();
     uint _ecosystemSupply = 320000000 * 10 ** decimals();

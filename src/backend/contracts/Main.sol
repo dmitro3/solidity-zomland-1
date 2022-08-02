@@ -90,7 +90,9 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable, Mod
 
   // ---------------- External Limited methods ---------------
 
-  function transferOnKill(address _account, uint _amount) external onlyZombieMonsterContract {
+  function transferOnKill(address _account, uint _amount) external {
+    require(contractZombieNFT == msg.sender || contractMonsterNFT == msg.sender, "You can't call this method");
+
     IERC20Upgradeable(address(contractTokenFT)).transfer(_account, _amount);
   }
 }
