@@ -1,15 +1,16 @@
 const { ethers, upgrades } = require("hardhat");
 const { saveFrontendFiles } = require('./utils');
 
-const MAIN_PROXY = "0xCFF245fad71954fB62fa8c82FDA2CA9527E99240";
-const LAND_PROXY = "0xb4a0b98eF353Fe109d664c8023c3292740b11686";
-const ZOMBIE_PROXY = "0x4e1912CC0192FeCd614ba883363b0C77de853C60";
-const ZOMBIE_HELPER_PROXY = "0x4d0DCD5E5FE3D7Ac7bC7aA93c2573BBe87dDD9Dc";
-const MONSTER_PROXY = "0x8d39c28571f6C02Ed1D84B4Bd9519c9988D86B0A";
-const MONSTER_HELPER_PROXY = "0xC7DAB6f8D4246B3592eCE7a98B16D09341BeC979";
-const COLLECTION_PROXY = "0x87b9B6CBA3926eF35d0ea0Cc29DD3556Ba31FbE8";
-const TOKEN_PROXY = "0x16d9Fe9e19EcE57Aea7A46275EE18a5A2553585d";
-const MARKET_PROXY = "0x27ab1244dCb52c27FaA8E121E2452cD8957c5498";
+const MAIN_PROXY = "0x59b670e9fA9D0A427751Af201D676719a970857b";
+const LAND_PROXY = "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1";
+const LAND_HELPER_PROXY = "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44";
+const ZOMBIE_PROXY = "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f";
+const ZOMBIE_HELPER_PROXY = "0x4A679253410272dd5232B3Ff7cF5dbB88f295319";
+const MONSTER_PROXY = "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F";
+const MONSTER_HELPER_PROXY = "0x09635F643e140090A9A8Dcd712eD6285858ceBef";
+const COLLECTION_PROXY = "0xc5a5C42992dECbae36851359345FE25997F5C42d";
+const TOKEN_PROXY = "0x67d269191c92Caf3cD7723F116c85e6E9bf55933";
+const MARKET_PROXY = "0xE6E340D132b5f46d1e472DebcD681B2aBc16e57E";
 
 async function main() {
   const MainV2 = await ethers.getContractFactory("MainContract");
@@ -17,6 +18,9 @@ async function main() {
 
   const LandV2 = await ethers.getContractFactory("LandNFTContract");
   const landNFT = await upgrades.upgradeProxy(LAND_PROXY, LandV2);
+
+  const LandHelperV2 = await ethers.getContractFactory("LandNFTHelperContract");
+  const landHelperNFT = await upgrades.upgradeProxy(LAND_HELPER_PROXY, LandHelperV2);
 
   const ZombieV2 = await ethers.getContractFactory("ZombieNFTContract");
   const zombieNFT = await upgrades.upgradeProxy(ZOMBIE_PROXY, ZombieV2);
@@ -43,6 +47,7 @@ async function main() {
 
   saveFrontendFiles(main, "MainContract");
   saveFrontendFiles(landNFT, "LandNFTContract");
+  saveFrontendFiles(landHelperNFT, "LandNFTHelperContract");
   saveFrontendFiles(zombieNFT, "ZombieNFTContract");
   saveFrontendFiles(zombieHelperNFT, "ZombieNFTHelperContract");
   saveFrontendFiles(monsterNFT, "MonsterNFTContract");
