@@ -75,7 +75,7 @@ contract MonsterNFTContract is Initializable, ERC721Upgradeable, ERC721Enumerabl
     return "https://ipfs.io/ipfs/";
   }
 
-  function getMonsterStakingReward(uint _tokenId) private returns (uint){
+  function getMonsterStakingReward(uint _tokenId) private view returns (uint){
     Monster storage monster = monsters[_tokenId];
     if (monster.cardRarity == CardRarity.Common) {
       return 2;

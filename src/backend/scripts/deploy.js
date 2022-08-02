@@ -20,6 +20,12 @@ async function main() {
   })
   await landNFT.deployed();
 
+  const LandNFTHelper = await ethers.getContractFactory("LandNFTHelperContract");
+  const landNFTHelper = await upgrades.deployProxy(LandNFTHelper, [main.address], {
+    initializer: "initialize"
+  })
+  await landNFTHelper.deployed();
+
   const ZombieNFT = await ethers.getContractFactory("ZombieNFTContract");
   const zombieNFT = await upgrades.deployProxy(ZombieNFT, [main.address], {
     initializer: "initialize"
@@ -65,6 +71,7 @@ async function main() {
   const MainContract = await ethers.getContractAt("MainContract", main.address);
   await MainContract.updateContractAddress(
     landNFT.address,
+    landNFTHelper.address,
     zombieNFT.address,
     zombieNFTHelper.address,
     monsterNFT.address,
@@ -76,6 +83,7 @@ async function main() {
 
   console.log("Main address", main.address);
   console.log("LandNFT address", landNFT.address);
+  console.log("LandNFTHelper address", landNFTHelper.address);
   console.log("ZombieNFT address", zombieNFT.address);
   console.log("ZombieNFTHelper address", zombieNFTHelper.address);
   console.log("MonsterNFT address", monsterNFT.address);
@@ -103,6 +111,7 @@ async function main() {
   // For each contract, pass the deployed contract and name to this function to save a copy of the contract ABI and address to the front end.
   saveFrontendFiles(main, "MainContract");
   saveFrontendFiles(landNFT, "LandNFTContract");
+  saveFrontendFiles(landNFTHelper, "LandNFTHelperContract");
   saveFrontendFiles(zombieNFT, "ZombieNFTContract");
   saveFrontendFiles(zombieNFTHelper, "ZombieNFTHelperContract");
   saveFrontendFiles(monsterNFT, "MonsterNFTContract");
