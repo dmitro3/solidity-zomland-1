@@ -42,7 +42,7 @@ module.exports = {
       accounts: process.env.METER_MAINNET_PRIVATE_KEY !== undefined ? [process.env.METER_MAINNET_PRIVATE_KEY] : [],
     },
     bsc_testnet: {
-      url: "https://speedy-nodes-nyc.moralis.io/18b96875dba26752e869bbfb/bsc/testnet",
+      url: "",
       accounts: process.env.BSC_TESTNET_PRIVATE_KEY !== undefined ? [process.env.BSC_TESTNET_PRIVATE_KEY] : [],
     },
     bsc_mainnet: {
