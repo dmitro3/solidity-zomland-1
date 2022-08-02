@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
   address internal contractLandNFT;
+  address internal contractLandNFTHelper;
   address internal contractZombieNFT;
   address internal contractZombieNFTHelper;
   address internal contractMonsterNFT;
@@ -29,6 +30,7 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
   function updateContractAddress(
     address _landNFT,
+    address _landNFTHelper,
     address _zombieNFT,
     address _zombieNFTHelper,
     address _monsterNFT,
@@ -38,6 +40,7 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
     address _market
   ) public onlyOwner {
     contractLandNFT = _landNFT;
+    contractLandNFTHelper = _landNFTHelper;
     contractZombieNFT = _zombieNFT;
     contractZombieNFTHelper = _zombieNFTHelper;
     contractMonsterNFT = _monsterNFT;
@@ -49,6 +52,10 @@ contract MainContract is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
   function getContractLandNFT() external view returns (address) {
     return contractLandNFT;
+  }
+
+  function getContractLandNFTHelper() external view returns (address) {
+    return contractLandNFTHelper;
   }
 
   function getContractZombieNFT() external view returns (address) {
