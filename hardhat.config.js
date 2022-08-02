@@ -49,13 +49,13 @@ module.exports = {
       url: "https://rpc.ankr.com/bsc",
       accounts: { mnemonic: process.env.BSC_MAINNET_PRIVATE_KEY || "" }
     },
-    emerald_testnet: {
-      url: "https://testnet.emerald.oasis.dev",
-      accounts: process.env.OASIS_TESTNET_PRIVATE_KEY !== undefined ? [process.env.OASIS_TESTNET_PRIVATE_KEY] : [],
+    mumbai_testnet: {
+      url: "https://matic-mumbai.chainstacklabs.com",
+      accounts: process.env.MUMBAI_TESTNET_PRIVATE_KEY !== undefined ? [process.env.MUMBAI_TESTNET_PRIVATE_KEY] : [],
     },
-    emerald_mainnet: {
-      url: "https://emerald.oasis.dev",
-      accounts: process.env.OASIS_MAINNET_PRIVATE_KEY !== undefined ? [process.env.OASIS_MAINNET_PRIVATE_KEY] : [],
+    polygon_mainnet: {
+      url: "https://polygon-rpc.com",
+      accounts: process.env.POLYGON_MAINNET_PRIVATE_KEY !== undefined ? [process.env.POLYGON_MAINNET_PRIVATE_KEY] : [],
     },
   },
 };
