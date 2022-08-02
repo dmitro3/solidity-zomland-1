@@ -24,6 +24,7 @@
     "update:local": "env $(cat .env) npx hardhat run src/backend/scripts/upgrade.js --network localhost",
     "update:dev:bsc": "env $(cat .env) npx hardhat run src/backend/scripts/upgrade.bsc.js --network bsc_testnet",
     "update:dev:mumbai": "env $(cat .env) npx hardhat run src/backend/scripts/upgrade.mumbai.js --network mumbai_testnet",
+    "update:dev:local": "env $(cat .env) npx hardhat run src/backend/scripts/upgrade.local.js --network localhost",
     "console": "npx hardhat console --network localhost",
     "local": "npx hardhat node",
     "test": "react-scripts test",
