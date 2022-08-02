@@ -44,7 +44,7 @@ contract ZombieNFTHelperContract is Initializable, OwnableUpgradeable, UUPSUpgra
     } else if (_rarity == CardRarity.UnCommon) {
       _multiplier = 3;
     }
-    return _multiplier * (uint((_health + _attack + _brain + _speed * 10)) / 7) * 1e18;
+    return _multiplier * (uint((_health + _attack + _brain + _speed * 10)) / 4) * 1e18;
   }
 
   function generateMetadata(uint8 _index) external view returns (string memory, uint8, uint8, uint8, uint8, uint, uint, string memory){
