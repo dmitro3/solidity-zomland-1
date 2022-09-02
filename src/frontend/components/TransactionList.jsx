@@ -1,7 +1,7 @@
 import React from "react";
-import loading from "../assets/images/loading.png";
-import success from "../assets/images/success.png";
-import error from "../assets/images/error.png";
+import loadingImage from "../assets/images/loading.png";
+import successImage from "../assets/images/success.png";
+import errImage from "../assets/images/err.png";
 import { XIcon } from '@heroicons/react/outline';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeTransaction } from '../store/transactionSlice';
@@ -17,9 +17,9 @@ export const TransactionList = () => {
   }
 
   const statusImageMap = {
-    pending: loading,
-    success: success,
-    error: error,
+    pending: loadingImage,
+    success: successImage,
+    error: errImage,
   }
 
   const hideTransaction = (id) => {
